@@ -1,0 +1,201 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-bhero color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-bhero__inner">
+    {% if s.eyebrow != blank %}
+      <div class="nani-bhero__eyebrow">{{ s.eyebrow }}</div>
+    {% endif %}
+    {% if s.headline != blank %}
+      <h1 class="nani-bhero__title">{{ s.headline }}</h1>
+    {% endif %}
+    {% if s.subcopy != blank %}
+      <p class="nani-bhero__sub">{{ s.subcopy }}</p>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <div class="nani-bhero__stats">
+        {% for block in section.blocks %}
+          <div class="nani-bhero__stat" {{ block.shopify_attributes }}>
+            <div class="nani-bhero__stat-num">{{ block.settings.value }}</div>
+            <div class="nani-bhero__stat-lbl">{{ block.settings.label }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .nani-bhero {
+    position: relative;
+    overflow: hidden;
+  }
+  .nani-bhero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 80% 30%, rgba(201,162,39,0.18), transparent 60%);
+    pointer-events: none;
+  }
+  .nani-bhero__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .nani-bhero__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #C9A227;
+    margin-bottom: 22px;
+    font-weight: 500;
+  }
+  .nani-bhero__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(56px, 8vw, 112px);
+    line-height: 0.95;
+    margin: 0 0 20px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--color-foreground-heading);
+  }
+  .nani-bhero__title em {
+    font-style: italic;
+    color: #F0E3B8;
+  }
+  .nani-bhero__sub {
+    max-width: 620px;
+    margin: 0 auto 36px;
+    color: var(--color-foreground);
+    opacity: 0.8;
+    line-height: 1.6;
+    font-family: var(--font-body--family);
+  }
+  .nani-bhero__stats {
+    display: flex;
+    gap: 48px;
+    justify-content: center;
+    padding-top: 48px;
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.18);
+    margin-top: 48px;
+    max-width: 860px;
+    margin-left: auto;
+    margin-right: auto;
+    flex-wrap: wrap;
+  }
+  .nani-bhero__stat-num {
+    font-family: var(--font-heading--family);
+    font-size: 48px;
+    color: #C9A227;
+    line-height: 1;
+    font-weight: 500;
+  }
+  .nani-bhero__stat-lbl {
+    font-family: var(--font-body--family);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    opacity: 0.65;
+    margin-top: 6px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .nani-bhero__inner { padding-left: 24px; padding-right: 24px; }
+    .nani-bhero__stats { gap: 28px; }
+    .nani-bhero__stat-num { font-size: 36px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Bundles hero",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["collection", "page", "index"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Save up to 25% · 6 kits made in Akron"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "headline",
+      "label": "Headline",
+      "default": "One box. Everything to <em>shine.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "subcopy",
+      "label": "Subcopy",
+      "default": "Our gift sets take the guesswork out. Each one is hand-packed in Akron, priced below the pieces on their own, and shipped free."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-5"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 88
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 100
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        { "type": "text", "id": "value", "label": "Value", "default": "6" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Kits available" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Bundles hero",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "stat", "settings": { "value": "6", "label": "Kits available" } },
+        { "type": "stat", "settings": { "value": "25%", "label": "Avg. savings" } },
+        { "type": "stat", "settings": { "value": "500+", "label": "Kits shipped" } },
+        { "type": "stat", "settings": { "value": "4.9★", "label": "Avg. rating" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

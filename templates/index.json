@@ -1,0 +1,434 @@
+{
+  "sections": {
+    "hero_split_home": {
+      "type": "hero-split",
+      "name": "Hero (split)",
+      "settings": {
+        "eyebrow": "Spring '26 · Redkisses Essentials",
+        "headline": "Premium beauty. <em>Everyday</em>-woman <em>prices.</em>",
+        "subcopy": "Lip gloss, jewelry, shades and matching sets — curated by Redkisses and shipped from Akron, OH to your front door.",
+        "primary_cta_label": "Shop the collection",
+        "primary_cta_link": "shopify://collections/all",
+        "secondary_cta_label": "Gift sets from $25",
+        "secondary_cta_link": "/collections/gift-sets",
+        "meta_1_value": "1,000+",
+        "meta_1_label": "happy customers",
+        "meta_2_value": "4.9★",
+        "meta_2_label": "average rating",
+        "meta_3_value": "Free",
+        "meta_3_label": "shipping over $50",
+        "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-hero/public",
+        "image_alt": "Redkisses jewelry and lip gloss flat-lay",
+        "show_badge": true,
+        "badge_eyebrow": "New Drop",
+        "badge_title": "The Kiss Kit",
+        "badge_amount": "$30",
+        "show_ticker": true,
+        "ticker_text": "Rated 4.9 by 300+ reviews",
+        "color_scheme": "scheme-2",
+        "image_color_scheme": "scheme-4",
+        "min_height": 640,
+        "padding-block-start": 90,
+        "padding-block-end": 90
+      }
+    },
+    "category_grid_home": {
+      "type": "category-grid",
+      "blocks": {
+        "cat_gloss": {
+          "type": "category",
+          "settings": {
+            "name": "Lip Gloss",
+            "count_text": "3 shades",
+            "link": "shopify://collections/lip-gloss",
+            "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-cat_gloss/public",
+            "gradient_from": "#F7E1E4",
+            "gradient_to": "#EFB7BE"
+          }
+        },
+        "cat_jewelry": {
+          "type": "category",
+          "settings": {
+            "name": "Jewelry",
+            "count_text": "4 pieces",
+            "link": "shopify://collections/jewelry",
+            "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-cat_jewelry/public",
+            "gradient_from": "#F0E3B8",
+            "gradient_to": "#C9A227"
+          }
+        },
+        "cat_anklets": {
+          "type": "category",
+          "settings": {
+            "name": "Anklets",
+            "count_text": "2 styles",
+            "link": "shopify://collections/jewelry",
+            "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-cat_anklets/public",
+            "gradient_from": "#FBF8F6",
+            "gradient_to": "#E0455F"
+          }
+        },
+        "cat_shades": {
+          "type": "category",
+          "settings": {
+            "name": "Shades",
+            "count_text": "4 styles",
+            "link": "shopify://collections/shades",
+            "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-cat_shades/public",
+            "gradient_from": "#F7E1E4",
+            "gradient_to": "#C8102E"
+          }
+        },
+        "cat_sets": {
+          "type": "category",
+          "settings": {
+            "name": "Sets & Apparel",
+            "count_text": "3 looks",
+            "link": "shopify://collections/sets-apparel",
+            "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-cat_sets/public",
+            "gradient_from": "#EFB7BE",
+            "gradient_to": "#E0455F"
+          }
+        },
+        "cat_giftsets": {
+          "type": "category",
+          "settings": {
+            "name": "Gift Sets",
+            "count_text": "6 kits",
+            "link": "shopify://collections/gift-sets",
+            "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-cat_giftsets/public",
+            "gradient_from": "#F0E3B8",
+            "gradient_to": "#C8102E"
+          }
+        }
+      },
+      "block_order": [
+        "cat_gloss",
+        "cat_jewelry",
+        "cat_anklets",
+        "cat_shades",
+        "cat_sets",
+        "cat_giftsets"
+      ],
+      "settings": {
+        "eyebrow": "Shop by category",
+        "title": "Find your <em>thing.</em>",
+        "subcopy": "Six categories, one-stop shop. From signature gloss to gift sets — filter, scroll, checkout.",
+        "link_label": "View all products",
+        "link_url": "shopify://collections/all",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 96,
+        "padding-block-end": 96
+      }
+    },
+    "value_bar_home": {
+      "type": "value-bar",
+      "blocks": {
+        "v_ship": {
+          "type": "value",
+          "settings": {
+            "icon": "shipping",
+            "title": "Free shipping $50+",
+            "description": "Ships in 1–2 days from Akron, OH. Delivered nationwide."
+          }
+        },
+        "v_star": {
+          "type": "value",
+          "settings": {
+            "icon": "star",
+            "title": "Rated 4.9 by our customers",
+            "description": "Over 300 five-star reviews from customers across the country."
+          }
+        },
+        "v_mail": {
+          "type": "value",
+          "settings": {
+            "icon": "mail",
+            "title": "Real customer service",
+            "description": "Text or DM @redkisses — you'll get Redkisses herself, not a bot."
+          }
+        },
+        "v_check": {
+          "type": "value",
+          "settings": {
+            "icon": "check",
+            "title": "30-day easy returns",
+            "description": "Changed your mind? No problem. Unused items returnable within 30 days."
+          }
+        }
+      },
+      "block_order": [
+        "v_ship",
+        "v_star",
+        "v_mail",
+        "v_check"
+      ],
+      "settings": {
+        "color_scheme": "scheme-2",
+        "padding-block": 44
+      }
+    },
+    "bundle_feat_home": {
+      "type": "bundle-feature",
+      "blocks": {
+        "li1": {
+          "type": "list_item",
+          "settings": {
+            "text": "3× Signature Lip Gloss"
+          }
+        },
+        "li2": {
+          "type": "list_item",
+          "settings": {
+            "text": "Hot Pink · Ruby Red · Nude Kiss"
+          }
+        },
+        "li3": {
+          "type": "list_item",
+          "settings": {
+            "text": "High-shine, non-sticky formula"
+          }
+        },
+        "li4": {
+          "type": "list_item",
+          "settings": {
+            "text": "Gold crystal cap, black gift box"
+          }
+        },
+        "li5": {
+          "type": "list_item",
+          "settings": {
+            "text": "Free shipping included"
+          }
+        },
+        "li6": {
+          "type": "list_item",
+          "settings": {
+            "text": "Handwritten thank-you card"
+          }
+        }
+      },
+      "block_order": [
+        "li1",
+        "li2",
+        "li3",
+        "li4",
+        "li5",
+        "li6"
+      ],
+      "settings": {
+        "eyebrow": "The Kiss Kit",
+        "headline": "Everything you need to <em>shine.</em>",
+        "description": "Three signature lip glosses in Hot Pink, Ruby Red and Nude Kiss — high-shine, non-sticky, gift-boxed and ready to give. One checkout, one box, zero stress.",
+        "price": "$30",
+        "compare_price": "$36",
+        "save_text": "Save 17%",
+        "primary_cta_label": "Add to bag",
+        "primary_cta_link": "/collections/gift-sets",
+        "secondary_cta_label": "See what's inside",
+        "secondary_cta_link": "/collections/gift-sets",
+        "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-giftset_feature/public",
+        "image_alt": "The Kiss Kit — three signature lip glosses",
+        "show_seal": true,
+        "seal_text": "★ Best Seller · Ships in 1–2 days",
+        "color_scheme": "scheme-5"
+      }
+    },
+    "newsletter_home": {
+      "type": "newsletter-cta",
+      "settings": {
+        "eyebrow": "Join the list",
+        "title": "First to know. First to <em>save.</em>",
+        "subcopy": "Early access to drops, subscriber-only gift set codes, and the occasional Redkisses story. No spam — promise.",
+        "placeholder": "your@email.com",
+        "button_label": "Join",
+        "success_message": "You're in ✧",
+        "fine_print": "15% off your first order · Unsubscribe anytime",
+        "color_scheme": "scheme-6",
+        "padding-block-start": 96,
+        "padding-block-end": 96
+      }
+    },
+    "ig_grid_home": {
+      "type": "instagram-grid",
+      "blocks": {
+        "ig1": {
+          "type": "ig_post",
+          "settings": {
+            "likes": "412",
+            "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-ig1/public"
+          }
+        },
+        "ig2": {
+          "type": "ig_post",
+          "settings": {
+            "likes": "289",
+            "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-ig2/public"
+          }
+        },
+        "ig3": {
+          "type": "ig_post",
+          "settings": {
+            "likes": "1.1K",
+            "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-ig3/public"
+          }
+        },
+        "ig4": {
+          "type": "ig_post",
+          "settings": {
+            "likes": "376",
+            "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-ig4/public"
+          }
+        },
+        "ig5": {
+          "type": "ig_post",
+          "settings": {
+            "likes": "822",
+            "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-ig5/public"
+          }
+        },
+        "ig6": {
+          "type": "ig_post",
+          "settings": {
+            "likes": "512",
+            "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-ig6/public"
+          }
+        }
+      },
+      "block_order": [
+        "ig1",
+        "ig2",
+        "ig3",
+        "ig4",
+        "ig5",
+        "ig6"
+      ],
+      "settings": {
+        "eyebrow": "@redkisses",
+        "title": "Tagged by <em>you.</em>",
+        "link_label": "Follow on Instagram",
+        "link_url": "https://instagram.com/redkisses",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 96,
+        "padding-block-end": 96
+      }
+    },
+    "reviews_home": {
+      "type": "reviews",
+      "blocks": {
+        "r1": {
+          "type": "review",
+          "settings": {
+            "stars": "★★★★★",
+            "quote": "The Kiss Kit literally saved my gift shopping. Three glosses, gift-boxed — showed up two days after I ordered. No notes.",
+            "reviewer_name": "Brianna K.",
+            "product_name": "The Kiss Kit",
+            "verified": true
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "stars": "★★★★★",
+            "quote": "Been buying my lip gloss from Redkisses for six months. Better pigment and shine than the mall brands at half the price.",
+            "reviewer_name": "Jasmine T.",
+            "product_name": "Signature Lip Gloss · Ruby Red",
+            "verified": true
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "stars": "★★★★★",
+            "quote": "Ordered a custom name bracelet and it came out even better than I imagined. Customer for life.",
+            "reviewer_name": "Alexis R.",
+            "product_name": "Custom Name Bracelet",
+            "verified": true
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3"
+      ],
+      "settings": {
+        "eyebrow": "★★★★★ · 4.9 from 300+ reviews",
+        "title": "What <em>everyone</em> is saying.",
+        "color_scheme": "scheme-2",
+        "padding-block-start": 96,
+        "padding-block-end": 96
+      }
+    },
+    "new_arrivals_home": {
+      "type": "featured-products",
+      "settings": {
+        "eyebrow": "Just dropped",
+        "title": "New in, <em>now.</em>",
+        "link_label": "Shop all new",
+        "link_url": "/collections/all",
+        "collection": "all",
+        "max_products": 4,
+        "columns": 4,
+        "show_category": true,
+        "show_rating": true,
+        "show_wishlist": true,
+        "show_quick_add": true,
+        "color_scheme": "scheme-1",
+        "padding-block-start": 96,
+        "padding-block-end": 96
+      }
+    },
+    "editorial_home": {
+      "type": "editorial",
+      "settings": {
+        "eyebrow": "Meet Redkisses · Founder",
+        "headline": "Hey — it's <em>Redkisses.</em>",
+        "body": "<p>I started making custom bracelets and glosses for friends right here in Akron, Ohio. Friends became customers, customers became a brand — but the rule never changed: stock the pieces I actually wear, at prices my friends can actually afford.</p><p>Every order is packed by hand, every gloss and piece is tested first, and every DM gets answered. That's the whole brand.</p>",
+        "signature_name": "Redkisses",
+        "signature_role": "Founder & Owner · Akron, Ohio",
+        "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-founder/public",
+        "image_alt": "Redkisses — Founder & Owner",
+        "show_stats": true,
+        "stat_1_value": "1,000+",
+        "stat_1_label": "Happy customers",
+        "stat_2_value": "300+",
+        "stat_2_label": "Five-star reviews",
+        "stat_3_value": "1–2 days",
+        "stat_3_label": "Avg. fulfillment",
+        "color_scheme": "scheme-2"
+      }
+    },
+    "best_sellers_home": {
+      "type": "featured-products",
+      "settings": {
+        "eyebrow": "Best sellers · This week",
+        "title": "Flying <em>off the shelf.</em>",
+        "link_label": "Shop all best sellers",
+        "link_url": "/collections/all",
+        "collection": "all",
+        "max_products": 4,
+        "columns": 4,
+        "show_category": true,
+        "show_rating": true,
+        "show_wishlist": true,
+        "show_quick_add": true,
+        "color_scheme": "scheme-1",
+        "padding-block-start": 96,
+        "padding-block-end": 96
+      }
+    }
+  },
+  "order": [
+    "hero_split_home",
+    "category_grid_home",
+    "value_bar_home",
+    "bundle_feat_home",
+    "best_sellers_home",
+    "editorial_home",
+    "new_arrivals_home",
+    "reviews_home",
+    "ig_grid_home",
+    "newsletter_home"
+  ]
+}

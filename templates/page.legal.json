@@ -1,0 +1,33 @@
+{
+  "sections": {
+    "nani_policy": {
+      "type": "nani-policy",
+      "blocks": {
+        "d_privacy": { "type": "doc", "settings": { "title": "Privacy Policy", "number": "01", "url": "/pages/privacy-policy" } },
+        "d_terms": { "type": "doc", "settings": { "title": "Terms of Service", "number": "02", "url": "/pages/terms-of-service" } },
+        "d_refund": { "type": "doc", "settings": { "title": "Refund Policy", "number": "03", "url": "/pages/refund-policy" } }
+      },
+      "block_order": ["d_privacy", "d_terms", "d_refund"],
+      "settings": {
+        "show_crumb": true,
+        "eyebrow": "Legal",
+        "effective_date": "September 1, 2026",
+        "updated_date": "September 1, 2026",
+        "intro": "<p>In plain English: we collect what we need to run the store, we don't sell your data, and you can delete your account any time. The full legal version follows below.</p>",
+        "show_help_card": true,
+        "help_title": "Questions?",
+        "help_copy": "Our legal docs are in plain English — but if anything's unclear, reach out.",
+        "help_cta": "Contact us →",
+        "help_url": "/pages/contact",
+        "foot_title": "Need something in writing?",
+        "foot_sub": "Hit print above to save a PDF copy of any policy.",
+        "foot_cta_label": "Contact support →",
+        "foot_cta_url": "/pages/contact",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 40,
+        "padding-block-end": 96
+      }
+    }
+  },
+  "order": ["nani_policy"]
+}

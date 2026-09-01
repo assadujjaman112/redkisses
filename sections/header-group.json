@@ -1,0 +1,91 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header",
+  "sections": {
+    "header_announcements_9jGBFp": {
+      "type": "header-announcements",
+      "blocks": {
+        "announcement_shipping": {
+          "type": "_announcement",
+          "settings": {
+            "text": "Free US shipping over $50",
+            "link": "",
+            "font": "var(--font-body--family)",
+            "font_size": "0.72rem",
+            "weight": "400",
+            "letter_spacing": "normal",
+            "case": "none"
+          },
+          "blocks": {}
+        },
+        "announcement_slay_drop": {
+          "type": "_announcement",
+          "settings": {
+            "text": "New: <strong>The Kiss Kit</strong> — 3 glosses for $30",
+            "link": "",
+            "font": "var(--font-body--family)",
+            "font_size": "0.72rem",
+            "weight": "400",
+            "letter_spacing": "normal",
+            "case": "none"
+          },
+          "blocks": {}
+        },
+        "announcement_ships_from": {
+          "type": "_announcement",
+          "settings": {
+            "text": "Made in Akron, Ohio · Ships in 1–2 days",
+            "link": "",
+            "font": "var(--font-body--family)",
+            "font_size": "0.72rem",
+            "weight": "400",
+            "letter_spacing": "normal",
+            "case": "none"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "announcement_shipping",
+        "announcement_slay_drop",
+        "announcement_ships_from"
+      ],
+      "name": "t:names.announcement_bar",
+      "settings": {
+        "speed": 5,
+        "section_width": "full-width",
+        "color_scheme": "scheme-5",
+        "divider_width": 0,
+        "padding-block-start": 10,
+        "padding-block-end": 10
+      }
+    },
+    "nani_header": {
+      "type": "nani-header",
+      "settings": {
+        "menu": "main-menu",
+        "sticky": true,
+        "logo_text": "Redkisses",
+        "logo_sub": "Jewelry & Beauty",
+        "show_search": true,
+        "show_account": true,
+        "show_cart_label": true,
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": [
+    "header_announcements_9jGBFp",
+    "nani_header"
+  ]
+}
+

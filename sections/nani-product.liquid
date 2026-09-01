@@ -1,0 +1,1215 @@
+{% liquid
+  assign s = section.settings
+  assign p = product
+
+  assign has_product = false
+  if p != blank and p.available != blank
+    assign has_product = true
+  endif
+
+  assign current_variant = p.selected_or_first_available_variant
+  assign price_now = current_variant.price | default: 6800
+  assign price_was = current_variant.compare_at_price
+  assign has_sale = false
+  if price_was != blank and price_was > price_now
+    assign has_sale = true
+    assign save_amount = price_was | minus: price_now
+  endif
+
+  assign category_label = p.type
+  if category_label == blank
+    assign category_label = s.fallback_category | default: 'Beauty'
+  endif
+
+  assign placeholder_title = s.fallback_title | default: 'Signature Lip Gloss'
+  assign placeholder_sub = s.fallback_subtitle | default: "High-shine, non-sticky gloss with a gold crystal cap. Comes in a black Redkisses gift box."
+
+  assign media_items = p.media
+  assign placeholder_thumbs = 'pink gold mauve rose plum' | split: ' '
+  assign inventory_label = ''
+  if current_variant.inventory_management == 'shopify' and current_variant.inventory_policy == 'deny'
+    if current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= 5
+      assign inventory_label = 'Only ' | append: current_variant.inventory_quantity | append: ' left'
+    elsif current_variant.inventory_quantity == 0
+      assign inventory_label = 'Sold out'
+    endif
+  endif
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-pdp color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  {% if s.show_crumb %}
+    <nav class="nani-pdp__crumb" aria-label="Breadcrumb">
+      <a href="{{ routes.root_url }}">Home</a>
+      <span class="sep">/</span>
+      <a href="{{ routes.collections_url }}/all">Shop</a>
+      <span class="sep">/</span>
+      {% if category_label != blank %}
+        <a href="{{ routes.collections_url }}/all">{{ category_label }}</a>
+        <span class="sep">/</span>
+      {% endif %}
+      <span class="here">{{ p.title | default: placeholder_title }}</span>
+    </nav>
+  {% endif %}
+
+  <div class="nani-pdp__grid">
+    {%- comment -%} GALLERY {%- endcomment -%}
+    <div class="nani-pdp__gallery">
+      <div class="nani-pdp__thumbs" role="tablist" aria-label="Product gallery thumbnails">
+        {% if has_product and p.media.size > 0 %}
+          {% for media in p.media limit: 6 %}
+            <button class="nani-pdp__thumb{% if forloop.first %} nani-pdp__thumb--on{% endif %}"
+              type="button"
+              role="tab"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              data-media-id="{{ media.id }}"
+              data-index="{{ forloop.index0 }}">
+              {{ media.preview_image | image_url: width: 200 | image_tag:
+                loading: 'lazy',
+                widths: '88, 176',
+                class: 'nani-pdp__thumb-img',
+                alt: media.alt | default: p.title }}
+              {% if media.media_type == 'video' or media.media_type == 'external_video' %}
+                <span class="nani-pdp__thumb-play" aria-hidden="true">▶</span>
+              {% endif %}
+            </button>
+          {% endfor %}
+        {% else %}
+          {% for i in (1..5) %}
+            <button class="nani-pdp__thumb nani-pdp__thumb--{{ placeholder_thumbs[forloop.index0] }}{% if forloop.first %} nani-pdp__thumb--on{% endif %}"
+              type="button"
+              role="tab"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              data-index="{{ forloop.index0 }}"
+              aria-label="Gallery placeholder {{ forloop.index }}">
+              {% if forloop.index == 5 %}
+                <span class="nani-pdp__thumb-play" aria-hidden="true">▶</span>
+              {% endif %}
+            </button>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      <div class="nani-pdp__main-img">
+        {% if has_product and p.featured_media != blank %}
+          {% for media in p.media limit: 6 %}
+            <div class="nani-pdp__main-slot{% if forloop.first %} nani-pdp__main-slot--on{% endif %}"
+              data-media-id="{{ media.id }}"
+              data-index="{{ forloop.index0 }}">
+              {{ media.preview_image | image_url: width: 1200 | image_tag:
+                loading: 'eager',
+                widths: '480, 720, 960, 1200',
+                sizes: '(min-width: 1100px) 50vw, 90vw',
+                class: 'nani-pdp__main-image',
+                alt: media.alt | default: p.title }}
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="nani-pdp__main-slot nani-pdp__main-slot--on nani-pdp__placeholder nani-pdp__placeholder--rose" data-index="0"></div>
+          <div class="nani-pdp__main-slot nani-pdp__placeholder nani-pdp__placeholder--champagne" data-index="1"></div>
+          <div class="nani-pdp__main-slot nani-pdp__placeholder nani-pdp__placeholder--mauve" data-index="2"></div>
+          <div class="nani-pdp__main-slot nani-pdp__placeholder nani-pdp__placeholder--gold" data-index="3"></div>
+          <div class="nani-pdp__main-slot nani-pdp__placeholder nani-pdp__placeholder--plum" data-index="4"></div>
+        {% endif %}
+
+        <div class="nani-pdp__main-badges">
+          {% if has_sale %}
+            <span class="nani-pdp__badge nani-pdp__badge--sale">Save {{ save_amount | money }}</span>
+          {% elsif s.show_placeholder_badges %}
+            <span class="nani-pdp__badge nani-pdp__badge--sale">Save 24%</span>
+          {% endif %}
+          {% if p.tags contains 'best-seller' or s.show_placeholder_badges %}
+            <span class="nani-pdp__badge nani-pdp__badge--best">Best Seller</span>
+          {% endif %}
+        </div>
+
+        {% if s.show_zoom_cta %}
+          <button class="nani-pdp__zoom" type="button" aria-label="Zoom">
+            <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/><path d="M20 20L17 17"/><path d="M11 8v6M8 11h6"/>
+            </svg>
+            Tap to zoom
+          </button>
+        {% endif %}
+      </div>
+    </div>
+
+    {%- comment -%} BUY BOX {%- endcomment -%}
+    <div class="nani-pdp__info">
+      {% if category_label != blank %}
+        <div class="nani-pdp__cat">{{ category_label }}</div>
+      {% endif %}
+
+      <h1 class="nani-pdp__title">{{ p.title | default: placeholder_title }}</h1>
+
+      {% assign sub = p.metafields.nani.subtitle | default: s.subtitle_override %}
+      {% if sub == blank %}
+        {% assign sub = placeholder_sub %}
+      {% endif %}
+      <p class="nani-pdp__sub">{{ sub }}</p>
+
+      <div class="nani-pdp__rating">
+        <span class="nani-pdp__stars">★★★★★</span>
+        <b>{{ s.rating_value | default: '4.9' }}</b>
+        <a href="#reviews">{{ s.rating_count | default: '300+' }} reviews</a>
+        {% if current_variant.sku != blank %}
+          <span class="nani-pdp__sku">· SKU: {{ current_variant.sku }}</span>
+        {% endif %}
+      </div>
+
+      <div class="nani-pdp__price">
+        <span class="nani-pdp__price-now" data-price>{{ price_now | money }}</span>
+        {% if has_sale %}
+          <span class="nani-pdp__price-was" data-compare-price>{{ price_was | money }}</span>
+          <span class="nani-pdp__price-save">Save {{ save_amount | money }}</span>
+        {% elsif s.show_placeholder_badges and price_was == blank %}
+          <span class="nani-pdp__price-was">$16.00</span>
+          <span class="nani-pdp__price-save">Save $4</span>
+        {% endif %}
+      </div>
+
+      {% if s.show_installments %}
+        {% assign installment_amount = price_now | divided_by: 4 %}
+        <div class="nani-pdp__installments">
+          or 4 interest-free payments of <b data-installment>{{ installment_amount | money }}</b> with
+          <span class="nani-pdp__klarna">Klarna</span>
+        </div>
+      {% endif %}
+
+      {%- comment -%} FORM {%- endcomment -%}
+      {% form 'product', p, id: 'nani-pdp-form', class: 'nani-pdp__form', novalidate: 'novalidate' %}
+        <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-input>
+
+        {% if has_product and p.has_only_default_variant == false %}
+          {% for option in p.options_with_values %}
+            {% assign opt_name_lc = option.name | downcase %}
+            <fieldset class="nani-pdp__variant" data-option-index="{{ forloop.index0 }}">
+              <legend class="nani-pdp__variant-head">
+                <span>{{ option.name }}</span>
+                <span class="nani-pdp__variant-picked">
+                  Selected: <b data-option-selected="{{ forloop.index0 }}">{{ option.selected_value }}</b>
+                </span>
+              </legend>
+              <div class="nani-pdp__variant-opts">
+                {% for value in option.values %}
+                  {% liquid
+                    assign is_swatch = false
+                    if opt_name_lc contains 'color' or opt_name_lc contains 'colour' or opt_name_lc contains 'shade'
+                      assign is_swatch = true
+                    endif
+                    assign swatch_hex = ''
+                    if value.swatch.color != blank
+                      assign swatch_hex = value.swatch.color
+                    elsif is_swatch
+                      assign v_lc = value | downcase
+                      case v_lc
+                        when 'jet 1b','1b','jet','black','natural black'
+                          assign swatch_hex = '#0D0A0B'
+                        when 'chocolate','dark brown','2'
+                          assign swatch_hex = '#5c3a1f'
+                        when 'honey','4','brown'
+                          assign swatch_hex = '#a0704a'
+                        when 'caramel','27','light brown'
+                          assign swatch_hex = '#d4a574'
+                        when 'blonde','613','platinum'
+                          assign swatch_hex = '#e8c88c'
+                        when 'rose','pink','rose gold'
+                          assign swatch_hex = '#E0455F'
+                        when 'burgundy','99j','wine'
+                          assign swatch_hex = '#C8102E'
+                        when 'ombre','ombré','two-tone'
+                          assign swatch_hex = 'linear-gradient(135deg,#d4a574 0%,#0D0A0B 100%)'
+                        when 'white','ivory','cream'
+                          assign swatch_hex = '#FBF8F6'
+                        when 'red'
+                          assign swatch_hex = '#B5281E'
+                        else
+                          assign swatch_hex = '#E0455F'
+                      endcase
+                    endif
+                  %}
+                  <label class="nani-pdp__vopt{% if is_swatch %} nani-pdp__vopt--swatch{% endif %}{% if value == option.selected_value %} nani-pdp__vopt--on{% endif %}"
+                    title="{{ value }}"
+                    {% if is_swatch %}style="--swatch: {{ swatch_hex }}"{% endif %}>
+                    <input type="radio"
+                      name="option-{{ forloop.parentloop.index0 }}"
+                      value="{{ value | escape }}"
+                      data-option-position="{{ forloop.parentloop.index0 }}"
+                      {% if value == option.selected_value %}checked{% endif %}>
+                    <span>{{ value }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </fieldset>
+          {% endfor %}
+        {% elsif has_product == false %}
+          {%- comment -%} Placeholder variant UI when no product data {%- endcomment -%}
+          <fieldset class="nani-pdp__variant">
+            <legend class="nani-pdp__variant-head">
+              <span>Shade</span>
+              <span class="nani-pdp__variant-picked">Selected: <b>Ruby Red</b></span>
+            </legend>
+            <div class="nani-pdp__variant-opts">
+              <button type="button" class="nani-pdp__vopt" disabled>Hot Pink</button>
+              <button type="button" class="nani-pdp__vopt nani-pdp__vopt--on" disabled>Ruby Red</button>
+              <button type="button" class="nani-pdp__vopt" disabled>Nude Kiss</button>
+            </div>
+          </fieldset>
+          <fieldset class="nani-pdp__variant">
+            <legend class="nani-pdp__variant-head">
+              <span>Finish</span>
+              <span class="nani-pdp__variant-picked">Selected: <b>High-shine</b></span>
+            </legend>
+            <div class="nani-pdp__variant-opts">
+              <button type="button" class="nani-pdp__vopt nani-pdp__vopt--swatch nani-pdp__vopt--on" disabled style="--swatch:#E0115F"></button>
+              <button type="button" class="nani-pdp__vopt nani-pdp__vopt--swatch" disabled style="--swatch:#C8102E"></button>
+              <button type="button" class="nani-pdp__vopt nani-pdp__vopt--swatch" disabled style="--swatch:#C98C7A"></button>
+              <button type="button" class="nani-pdp__vopt nani-pdp__vopt--swatch" disabled style="--swatch:#C9A227"></button>
+              <button type="button" class="nani-pdp__vopt nani-pdp__vopt--swatch" disabled style="--swatch:#0D0A0B"></button>
+              <button type="button" class="nani-pdp__vopt nani-pdp__vopt--swatch" disabled style="--swatch:#FBF8F6"></button>
+            </div>
+          </fieldset>
+        {% endif %}
+
+        {% if s.show_stock_row %}
+          <div class="nani-pdp__stock">
+            <span class="nani-pdp__stock-dot" aria-hidden="true"></span>
+            {% if inventory_label != blank %}
+              <span class="nani-pdp__stock-low">{{ inventory_label }}</span>
+              <span class="nani-pdp__stock-ship">· Ships from Akron, OH in 1–2 days</span>
+            {% elsif has_product %}
+              <span>In stock</span>
+              <span class="nani-pdp__stock-ship">· Ships from Akron, OH in 1–2 days</span>
+            {% else %}
+              <span class="nani-pdp__stock-low">Only 4 left</span>
+              <span class="nani-pdp__stock-ship">· Ships from Akron, OH in 1–2 days</span>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <div class="nani-pdp__ctas">
+          <div class="nani-pdp__qty">
+            <button type="button" class="nani-pdp__qty-btn" data-qty-step="-1" aria-label="Decrease quantity">−</button>
+            <span class="nani-pdp__qty-val" data-qty-display>1</span>
+            <button type="button" class="nani-pdp__qty-btn" data-qty-step="1" aria-label="Increase quantity">+</button>
+            <input type="hidden" name="quantity" value="1" data-qty-input>
+          </div>
+          <button type="submit" class="nani-pdp__atc" {% if has_product and current_variant.available == false %}disabled{% endif %}>
+            <span>{% if has_product and current_variant.available == false %}Sold out{% else %}Add to bag{% endif %}</span>
+            <span class="nani-pdp__atc-price" data-atc-price>— {{ price_now | money }}</span>
+          </button>
+        </div>
+
+        {% if s.show_buy_now and has_product and current_variant.available %}
+          <div class="nani-pdp__buynow-wrap" data-buy-now>
+            {{ content_for_additional_checkout_buttons | default: '' }}
+          </div>
+        {% endif %}
+
+        <button type="button" class="nani-pdp__wish">
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>
+          Save to wishlist
+        </button>
+      {% endform %}
+
+      {%- comment -%} TRUST ROW {%- endcomment -%}
+      <div class="nani-pdp__trust">
+        {% for block in section.blocks %}
+          {% if block.type == 'trust' %}
+            <div class="nani-pdp__trust-item" {{ block.shopify_attributes }}>
+              {% case block.settings.icon %}
+                {% when 'shipping' %}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18l-2 10H5L3 7z"/><path d="M3 7l-1-3h2"/><circle cx="9" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/></svg>
+                {% when 'returns' %}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>
+                {% when 'secure' %}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="12" rx="1"/><path d="M8 6V4M16 6V4"/><path d="M4 10h16"/></svg>
+                {% when 'leaf' %}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c3-8 9-14 16-14 0 7-6 13-14 16-1-.6-2-1-2-2z"/></svg>
+                {% else %}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>
+              {% endcase %}
+              <div>
+                <b>{{ block.settings.title }}</b>
+                <span>{{ block.settings.description }}</span>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      {%- comment -%} ACCORDIONS {%- endcomment -%}
+      <div class="nani-pdp__acc-list">
+        {% for block in section.blocks %}
+          {% if block.type == 'accordion' %}
+            <details class="nani-pdp__acc"{% if block.settings.open_by_default %} open{% endif %} {{ block.shopify_attributes }}>
+              <summary class="nani-pdp__acc-head">
+                <span>{{ block.settings.title }}</span>
+                <span class="nani-pdp__acc-chev" aria-hidden="true">+</span>
+              </summary>
+              <div class="nani-pdp__acc-body">{{ block.settings.body }}</div>
+            </details>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if has_product %}
+<script type="application/json" data-nani-variants>
+  {{ p.variants | json }}
+</script>
+{% endif %}
+
+<script>
+  (function(){
+    const root = document.currentScript.previousElementSibling;
+    const section = document.querySelector('.nani-pdp');
+    if (!section) return;
+
+    // Thumbnail click → swap main image
+    const thumbs = section.querySelectorAll('.nani-pdp__thumb');
+    const mainSlots = section.querySelectorAll('.nani-pdp__main-slot');
+    thumbs.forEach((t) => {
+      t.addEventListener('click', () => {
+        const idx = t.dataset.index;
+        thumbs.forEach(o => { o.classList.remove('nani-pdp__thumb--on'); o.setAttribute('aria-selected','false'); });
+        t.classList.add('nani-pdp__thumb--on');
+        t.setAttribute('aria-selected','true');
+        mainSlots.forEach(s => s.classList.toggle('nani-pdp__main-slot--on', s.dataset.index === idx));
+      });
+    });
+
+    // Quantity stepper
+    const qtyDisplay = section.querySelector('[data-qty-display]');
+    const qtyInput = section.querySelector('[data-qty-input]');
+    section.querySelectorAll('[data-qty-step]').forEach((b) => {
+      b.addEventListener('click', () => {
+        const step = parseInt(b.dataset.qtyStep, 10);
+        let v = parseInt(qtyInput.value || '1', 10) + step;
+        if (v < 1) v = 1;
+        if (v > 99) v = 99;
+        qtyInput.value = v;
+        qtyDisplay.textContent = v;
+      });
+    });
+
+    // Variant picker: on radio change, recompute variant
+    const variantsEl = document.querySelector('script[data-nani-variants]');
+    if (!variantsEl) return;
+    let variants = [];
+    try { variants = JSON.parse(variantsEl.textContent); } catch(e){ return; }
+    const radios = section.querySelectorAll('input[type="radio"][name^="option-"]');
+    const variantInput = section.querySelector('[data-variant-input]');
+    const priceEl = section.querySelector('[data-price]');
+    const comparePriceEl = section.querySelector('[data-compare-price]');
+    const atcPrice = section.querySelector('[data-atc-price]');
+    const installmentEl = section.querySelector('[data-installment]');
+    const atcBtn = section.querySelector('.nani-pdp__atc');
+
+    function money(cents){
+      if (cents == null) return '';
+      const n = (cents / 100).toFixed(2);
+      return '$' + n;
+    }
+
+    function selectedOptions(){
+      const opts = [];
+      section.querySelectorAll('.nani-pdp__variant').forEach((f) => {
+        const checked = f.querySelector('input[type="radio"]:checked');
+        if (checked) opts.push(checked.value);
+      });
+      return opts;
+    }
+
+    function findVariant(opts){
+      return variants.find(v => (v.options || []).every((val, i) => val === opts[i]));
+    }
+
+    function updateVariant(){
+      const opts = selectedOptions();
+      const v = findVariant(opts);
+      if (!v) return;
+      variantInput.value = v.id;
+
+      if (priceEl) priceEl.textContent = money(v.price);
+      if (atcPrice) atcPrice.textContent = '— ' + money(v.price);
+      if (comparePriceEl) {
+        if (v.compare_at_price && v.compare_at_price > v.price) {
+          comparePriceEl.textContent = money(v.compare_at_price);
+          comparePriceEl.style.display = '';
+        } else {
+          comparePriceEl.style.display = 'none';
+        }
+      }
+      if (installmentEl) installmentEl.textContent = money(Math.round(v.price / 4));
+      if (atcBtn) {
+        atcBtn.disabled = !v.available;
+        const label = atcBtn.querySelector('span:first-child');
+        if (label) label.textContent = v.available ? 'Add to bag' : 'Sold out';
+      }
+
+      // Update selected labels
+      section.querySelectorAll('[data-option-selected]').forEach((el) => {
+        const i = parseInt(el.dataset.optionSelected, 10);
+        if (v.options && v.options[i]) el.textContent = v.options[i];
+      });
+
+      // Update swatch visual state
+      section.querySelectorAll('.nani-pdp__vopt').forEach((label) => {
+        const input = label.querySelector('input[type="radio"]');
+        if (input) label.classList.toggle('nani-pdp__vopt--on', input.checked);
+      });
+
+      // Push variant id to URL without reload
+      const url = new URL(window.location.href);
+      url.searchParams.set('variant', v.id);
+      window.history.replaceState({}, '', url);
+
+      // Update media if variant has a featured image
+      if (v.featured_media) {
+        const idx = v.featured_media.position - 1;
+        const matchThumb = section.querySelector('.nani-pdp__thumb[data-index="' + idx + '"]');
+        if (matchThumb) matchThumb.click();
+      }
+    }
+
+    radios.forEach((r) => r.addEventListener('change', updateVariant));
+  })();
+</script>
+
+{% stylesheet %}
+  .nani-pdp {
+    position: relative;
+    font-family: var(--font-body--family);
+  }
+  .nani-pdp__crumb {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 16px 40px 0;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    opacity: 0.7;
+  }
+  .nani-pdp__crumb a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .nani-pdp__crumb a:hover { color: var(--color-primary); }
+  .nani-pdp__crumb .sep { margin: 0 8px; color: var(--color-primary); }
+  .nani-pdp__crumb .here { color: var(--color-foreground-heading); font-weight: 500; }
+
+  .nani-pdp__grid {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 60px;
+  }
+
+  /* GALLERY */
+  .nani-pdp__gallery {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    gap: 14px;
+    position: sticky;
+    top: 100px;
+    align-self: start;
+  }
+  .nani-pdp__thumbs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .nani-pdp__thumb {
+    aspect-ratio: 3 / 4;
+    background: var(--color-background-secondary, rgba(13,10,11,0.04));
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    transition: outline 0.15s ease;
+  }
+  .nani-pdp__thumb--on {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+  .nani-pdp__thumb-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .nani-pdp__thumb--pink { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.05) 0 2px, transparent 2px 10px), linear-gradient(165deg, #F7E1E4, #EFB7BE); }
+  .nani-pdp__thumb--gold { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.05) 0 2px, transparent 2px 10px), linear-gradient(165deg, #FBF8F6, #F0E3B8); }
+  .nani-pdp__thumb--mauve { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.05) 0 2px, transparent 2px 10px), linear-gradient(165deg, #F7E1E4, #E0455F); }
+  .nani-pdp__thumb--rose { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.05) 0 2px, transparent 2px 10px), linear-gradient(165deg, #F0E3B8, #C9A227); }
+  .nani-pdp__thumb--plum { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.05) 0 2px, transparent 2px 10px), linear-gradient(165deg, #E0455F, #C8102E); }
+  .nani-pdp__thumb-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FBF8F6;
+    font-size: 14px;
+    z-index: 2;
+    background: rgba(13,10,11,0.4);
+  }
+
+  .nani-pdp__main-img {
+    aspect-ratio: 4 / 5;
+    position: relative;
+    overflow: hidden;
+    background: var(--color-background-secondary, rgba(13,10,11,0.04));
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+  }
+  .nani-pdp__main-slot {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .nani-pdp__main-slot--on { opacity: 1; }
+  .nani-pdp__main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .nani-pdp__placeholder--rose { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.04) 0 2px, transparent 2px 14px), linear-gradient(165deg, #F7E1E4, #EFB7BE); }
+  .nani-pdp__placeholder--champagne { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.04) 0 2px, transparent 2px 14px), linear-gradient(165deg, #FBF8F6, #F0E3B8); }
+  .nani-pdp__placeholder--mauve { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.04) 0 2px, transparent 2px 14px), linear-gradient(165deg, #F7E1E4, #E0455F); }
+  .nani-pdp__placeholder--gold { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.04) 0 2px, transparent 2px 14px), linear-gradient(165deg, #F0E3B8, #C9A227); }
+  .nani-pdp__placeholder--plum { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.04) 0 2px, transparent 2px 14px), linear-gradient(165deg, #E0455F, #C8102E); }
+
+  .nani-pdp__main-badges {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 2;
+  }
+  .nani-pdp__badge {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 5px 9px;
+    font-weight: 500;
+    color: #FBF8F6;
+  }
+  .nani-pdp__badge--sale { background: #C8102E; }
+  .nani-pdp__badge--best { background: #C9A227; color: #0D0A0B; }
+
+  .nani-pdp__zoom {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: var(--color-background);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.1);
+    color: var(--color-foreground-heading);
+    padding: 10px 14px;
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  /* BUY BOX */
+  .nani-pdp__info { padding: 8px 0; }
+  .nani-pdp__cat {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+  }
+  .nani-pdp__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(34px, 4vw, 46px);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin: 0 0 14px;
+    color: var(--color-foreground-heading);
+  }
+  .nani-pdp__sub {
+    color: var(--color-foreground);
+    opacity: 0.85;
+    margin: 0 0 20px;
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  .nani-pdp__rating {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    flex-wrap: wrap;
+  }
+  .nani-pdp__stars { color: #C9A227; font-size: 16px; letter-spacing: 0.05em; }
+  .nani-pdp__rating b { font-size: 13px; color: var(--color-foreground-heading); }
+  .nani-pdp__rating a {
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    opacity: 0.7;
+    text-decoration: underline;
+  }
+  .nani-pdp__rating a:hover { color: var(--color-primary); opacity: 1; }
+  .nani-pdp__sku {
+    font-size: 12px;
+    color: var(--color-foreground);
+    opacity: 0.6;
+  }
+
+  .nani-pdp__price {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .nani-pdp__price-now {
+    font-family: var(--font-heading--family);
+    font-size: 46px;
+    color: var(--color-primary);
+    font-weight: 500;
+    line-height: 1;
+  }
+  .nani-pdp__price-was {
+    color: rgb(var(--color-foreground-rgb) / 0.45);
+    text-decoration: line-through;
+    font-size: 20px;
+  }
+  .nani-pdp__price-save {
+    background: var(--color-primary);
+    color: var(--color-background);
+    padding: 4px 10px;
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-left: 6px;
+  }
+
+  .nani-pdp__installments {
+    font-size: 13px;
+    color: var(--color-foreground);
+    margin-bottom: 28px;
+  }
+  .nani-pdp__installments b { color: var(--color-primary); }
+  .nani-pdp__klarna {
+    background: var(--color-foreground-heading);
+    color: var(--color-background);
+    padding: 2px 7px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+  }
+
+  /* VARIANTS */
+  .nani-pdp__form { margin: 0; }
+  .nani-pdp__variant {
+    border: 0;
+    padding: 0;
+    margin: 0 0 22px;
+  }
+  .nani-pdp__variant-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 10px;
+    width: 100%;
+    color: var(--color-foreground-heading);
+  }
+  .nani-pdp__variant-picked {
+    color: var(--color-foreground);
+    opacity: 0.6;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  .nani-pdp__variant-picked b { color: var(--color-foreground-heading); opacity: 1; }
+  .nani-pdp__variant-opts {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .nani-pdp__vopt {
+    padding: 10px 16px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.15);
+    background: var(--color-background);
+    color: var(--color-foreground-heading);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    min-width: 54px;
+    text-align: center;
+    transition: all 0.15s ease;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+  }
+  .nani-pdp__vopt input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .nani-pdp__vopt:hover { border-color: var(--color-foreground-heading); }
+  .nani-pdp__vopt--on {
+    border-color: var(--color-foreground-heading);
+    background: var(--color-foreground-heading);
+    color: var(--color-background);
+  }
+  .nani-pdp__vopt--swatch {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--swatch, #ccc);
+    border: 2px solid var(--color-background);
+    outline: 1px solid rgb(var(--color-foreground-rgb) / 0.2);
+    outline-offset: 0;
+  }
+  .nani-pdp__vopt--swatch span { display: none; }
+  .nani-pdp__vopt--swatch.nani-pdp__vopt--on {
+    outline-color: var(--color-primary);
+    outline-width: 2px;
+    background: var(--swatch, #ccc);
+    color: transparent;
+  }
+
+  /* STOCK */
+  .nani-pdp__stock {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .nani-pdp__stock-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4a9f60;
+    box-shadow: 0 0 0 3px rgba(74,159,96,0.2);
+  }
+  .nani-pdp__stock-low { color: var(--color-primary); font-weight: 500; }
+  .nani-pdp__stock-ship { color: var(--color-foreground); opacity: 0.65; }
+
+  /* CTAS */
+  .nani-pdp__ctas {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    margin: 24px 0 14px;
+  }
+  .nani-pdp__qty {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--color-foreground-heading);
+  }
+  .nani-pdp__qty-btn {
+    padding: 14px 18px;
+    font-size: 16px;
+    background: transparent;
+    color: var(--color-foreground-heading);
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .nani-pdp__qty-val {
+    padding: 14px 16px;
+    font-size: 14px;
+    min-width: 50px;
+    text-align: center;
+    border-left: 1px solid var(--color-foreground-heading);
+    border-right: 1px solid var(--color-foreground-heading);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nani-pdp__atc {
+    background: var(--color-primary);
+    color: var(--color-background);
+    padding: 0 24px;
+    font-size: 12px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    border-radius: 2px;
+    border: 0;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-family: inherit;
+  }
+  .nani-pdp__atc:hover { background: var(--color-foreground-heading); }
+  .nani-pdp__atc:disabled { opacity: 0.55; cursor: not-allowed; }
+  .nani-pdp__atc-price {
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    font-size: 13px;
+  }
+  .nani-pdp__buynow-wrap {
+    margin: 0 0 8px;
+  }
+  .nani-pdp__wish {
+    background: transparent;
+    color: var(--color-foreground-heading);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.15);
+    padding: 13px;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    width: 100%;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .nani-pdp__wish:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  /* TRUST */
+  .nani-pdp__trust {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin: 24px 0 0;
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+  }
+  .nani-pdp__trust-item {
+    padding: 18px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    border-right: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .nani-pdp__trust-item:last-child { border-right: 0; }
+  .nani-pdp__trust-item svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--color-primary);
+    fill: none;
+    stroke-width: 1.4;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .nani-pdp__trust-item b {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 12.5px;
+    color: var(--color-foreground-heading);
+  }
+  .nani-pdp__trust-item span {
+    color: var(--color-foreground);
+    opacity: 0.7;
+    font-size: 11.5px;
+  }
+
+  /* ACCORDIONS */
+  .nani-pdp__acc-list { margin-top: 32px; }
+  .nani-pdp__acc {
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+  }
+  .nani-pdp__acc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 0;
+    cursor: pointer;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--color-foreground-heading);
+    list-style: none;
+  }
+  .nani-pdp__acc-head::-webkit-details-marker { display: none; }
+  .nani-pdp__acc-chev {
+    transition: transform 0.2s ease;
+    color: var(--color-primary);
+    font-size: 20px;
+    line-height: 1;
+    font-weight: 300;
+  }
+  .nani-pdp__acc[open] .nani-pdp__acc-chev { transform: rotate(45deg); }
+  .nani-pdp__acc-body {
+    padding: 0 0 22px;
+    font-size: 14px;
+    color: var(--color-foreground);
+    opacity: 0.88;
+    line-height: 1.7;
+  }
+  .nani-pdp__acc-body ul { margin: 0; padding-left: 20px; }
+  .nani-pdp__acc-body li { margin-bottom: 6px; }
+  .nani-pdp__acc-body a { color: var(--color-primary); text-decoration: underline; }
+
+  @media screen and (max-width: 1100px) {
+    .nani-pdp__grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+      padding: var(--pbs) 24px var(--pbe) 24px;
+    }
+    .nani-pdp__gallery {
+      position: static;
+      grid-template-columns: 1fr;
+    }
+    .nani-pdp__thumbs {
+      flex-direction: row;
+      order: 2;
+      overflow-x: auto;
+      gap: 8px;
+    }
+    .nani-pdp__thumb { min-width: 70px; flex-shrink: 0; }
+  }
+
+  @media screen and (max-width: 749px) {
+    .nani-pdp__title { font-size: 32px; }
+    .nani-pdp__price-now { font-size: 38px; }
+    .nani-pdp__trust { grid-template-columns: 1fr; }
+    .nani-pdp__trust-item {
+      border-right: 0;
+      border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    }
+    .nani-pdp__trust-item:last-child { border-bottom: 0; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product hero",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Breadcrumb & rating"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_crumb",
+      "label": "Show breadcrumb",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "rating_value",
+      "label": "Rating value (placeholder until reviews app installed)",
+      "default": "4.9"
+    },
+    {
+      "type": "text",
+      "id": "rating_count",
+      "label": "Rating count",
+      "default": "300+"
+    },
+    {
+      "type": "header",
+      "content": "Gallery"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_zoom_cta",
+      "label": "Show zoom CTA",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_placeholder_badges",
+      "label": "Show placeholder sale badges when no product",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Buy box"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_installments",
+      "label": "Show Klarna installments line",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stock_row",
+      "label": "Show stock / ship-from row",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_buy_now",
+      "label": "Show Shop Pay / Buy Now buttons",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle_override",
+      "label": "Short subtitle (overrides product subtitle metafield if set)"
+    },
+    {
+      "type": "header",
+      "content": "Placeholder (when previewing without a product)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_title",
+      "label": "Placeholder title",
+      "default": "Signature Lip Gloss"
+    },
+    {
+      "type": "text",
+      "id": "fallback_category",
+      "label": "Placeholder category",
+      "default": "Beauty · Lip Gloss"
+    },
+    {
+      "type": "textarea",
+      "id": "fallback_subtitle",
+      "label": "Placeholder subtitle",
+      "default": "High-shine, non-sticky gloss with a gold crystal cap. Comes in a black Redkisses gift box."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust",
+      "name": "Trust item",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "shipping", "label": "Shipping" },
+            { "value": "returns", "label": "Returns" },
+            { "value": "secure", "label": "Secure" },
+            { "value": "leaf", "label": "Leaf" }
+          ],
+          "default": "shipping"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Free shipping $50+"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description",
+          "default": "Ships in 1–2 days"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Accordion panel",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Details"
+        },
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "Body",
+          "default": "<p>High-shine, non-sticky lip gloss with a gold crystal cap. Buildable color, light vanilla scent, no stickiness. Wear it alone or over lipstick for extra shine.</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_by_default",
+          "label": "Open by default",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product hero",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "trust", "settings": { "icon": "shipping", "title": "Free shipping $50+", "description": "Ships in 1–2 days" } },
+        { "type": "trust", "settings": { "icon": "returns", "title": "30-day returns", "description": "Unworn & unopened" } },
+        { "type": "trust", "settings": { "icon": "secure", "title": "Secure checkout", "description": "SSL encrypted" } },
+        { "type": "accordion", "settings": { "title": "Details", "open_by_default": true, "body": "<p>High-shine, non-sticky lip gloss with a gold crystal cap. Buildable color, light vanilla scent, no stickiness. Wear it alone or over lipstick for extra shine.</p>" } },
+        { "type": "accordion", "settings": { "title": "What's in the box", "body": "<ul><li>1× Signature Lip Gloss</li><li>Black Redkisses gift box</li><li>Care card</li></ul>" } },
+        { "type": "accordion", "settings": { "title": "Care", "body": "<p>Store upright away from direct heat. Wipe the wand clean before recapping to keep the formula fresh. Avoid extreme temperatures for best shelf life.</p>" } },
+        { "type": "accordion", "settings": { "title": "Shipping & returns", "body": "<p>Ships in 1–2 days from Akron, OH. Free shipping on orders over $50. 30-day returns on unopened items.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

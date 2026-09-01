@@ -1,0 +1,45 @@
+{
+  "sections": {
+    "nani_banner": {
+      "type": "nani-collection-banner",
+      "settings": {
+        "show_crumb": true,
+        "crumb_label": "Shop",
+        "show_rating": true,
+        "rating_value": "★ 4.9",
+        "rating_label": "from 300+ reviews",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 60,
+        "padding-block-end": 40
+      }
+    },
+    "nani_pills": {
+      "type": "nani-category-pills",
+      "blocks": {
+        "p_all": { "type": "pill", "settings": { "label": "All", "url": "/collections/all", "force_active": true } },
+        "p_gloss": { "type": "pill", "settings": { "label": "Lip Gloss", "url": "/collections/lip-gloss" } },
+        "p_jewelry": { "type": "pill", "settings": { "label": "Jewelry", "url": "/collections/jewelry" } },
+        "p_shades": { "type": "pill", "settings": { "label": "Shades", "url": "/collections/shades" } },
+        "p_sets": { "type": "pill", "settings": { "label": "Sets & Apparel", "url": "/collections/sets-apparel" } },
+        "p_giftsets": { "type": "pill", "settings": { "label": "Gift Sets", "url": "/collections/gift-sets", "icon": "★", "featured": true } }
+      },
+      "block_order": ["p_all", "p_gloss", "p_jewelry", "p_shades", "p_sets", "p_giftsets"],
+      "settings": {
+        "color_scheme": "scheme-1",
+        "padding-block-start": 20,
+        "padding-block-end": 8
+      }
+    },
+    "nani_grid": {
+      "type": "nani-collection",
+      "settings": {
+        "products_per_page": 24,
+        "show_editorial_tile": true,
+        "color_scheme": "scheme-1",
+        "padding-block-start": 20,
+        "padding-block-end": 96
+      }
+    }
+  },
+  "order": ["nani_banner", "nani_pills", "nani_grid"]
+}

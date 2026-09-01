@@ -1,0 +1,118 @@
+{
+  "sections": {
+    "nani_doc": {
+      "type": "nani-shipping",
+      "blocks": {
+        "b_processing": {
+          "type": "text",
+          "settings": {
+            "toc_title": "Processing time",
+            "eyebrow": "Section 01",
+            "title": "Processing <em>time.</em>",
+            "body": "<p>Every order is packed by hand. We aim to get your box out the door within one business day of purchase. Orders placed before 2pm ET on a business day usually ship the same day.</p>",
+            "list": "Orders placed Mon–Sat before 2pm ET — ship same day\nOrders placed after 2pm ET or on Sunday — ship next business day\nDuring major launches (new gift set drops, BFCM) — processing can take up to 3 business days\nYou'll get a Shopify shipping confirmation email with a tracking link the moment your label prints"
+          }
+        },
+        "b_rates": {
+          "type": "rates",
+          "settings": {
+            "toc_title": "Rates & delivery",
+            "eyebrow": "Section 02",
+            "title": "Rates & delivery <em>times.</em>",
+            "body": "<p>We ship with USPS and UPS. Shipping cost is calculated at checkout based on your ZIP and box weight, but here are the flat options for reference:</p>",
+            "col_method": "Method",
+            "col_delivery": "Delivery",
+            "col_rate": "Rate",
+            "rows": "Standard — USPS Ground | 3–5 business days | $5.99\nFree standard — Orders $50+ | 3–5 business days | Free | highlight\nExpedited — USPS Priority | 2–3 business days | $12.99\nExpress — UPS Next Day | 1 business day | $28.99\nLocal pickup — Akron, OH | By appointment | Free",
+            "warn": "<p><b>Note:</b> Delivery estimates start when the carrier scans your package, not when you place the order. Add processing time (usually 1 business day) to the estimates above.</p>"
+          }
+        },
+        "b_international": {
+          "type": "text",
+          "settings": {
+            "toc_title": "International",
+            "eyebrow": "Section 03",
+            "title": "International <em>shipping.</em>",
+            "body": "<p>Right now we ship to the United States, Canada, and the UK. More countries coming — DM us and let us know where you want us to ship next.</p>",
+            "list": "Canada: $14.99 flat, 6–10 business days\nUK: $22.99 flat, 8–14 business days\nCustomer is responsible for any customs duties and import taxes assessed by the destination country\nInternational orders are final sale unless item arrives damaged or defective"
+          }
+        },
+        "b_tracking": {
+          "type": "text",
+          "settings": {
+            "toc_title": "Tracking your order",
+            "eyebrow": "Section 04",
+            "title": "Tracking your <em>order.</em>",
+            "body": "<p>The moment your label prints, Shopify sends you an email with a live tracking link. You'll also get SMS updates if you opted in at checkout. Tracking can take up to 24 hours to show movement after the label is generated — that's normal.</p><p>If your tracking hasn't updated in more than 5 business days, it's likely stuck in transit. Email us your order number and we'll open a carrier trace on your behalf.</p>"
+          }
+        },
+        "b_returns": {
+          "type": "steps",
+          "settings": {
+            "toc_title": "Returns policy",
+            "eyebrow": "Section 05",
+            "title": "Returns <em>policy.</em>",
+            "body": "<p>We want you to love what you bought. If something isn't right, you have 30 days from delivery to return unopened, unused items for a full refund.</p>",
+            "steps": "Email us | Send a note to sunsarae37@gmail.com with your order # and what you want to return.\nGet approval | We'll reply within 24hr with a return label or a pre-paid QR code (at your cost).\nShip it back | Pack items in original packaging. Drop at any USPS within 14 days of approval.\nGet refunded | Refund issued to original payment within 5 business days of us receiving the return.",
+            "sub_heading": "Not eligible for return",
+            "list": "Opened lip gloss (for hygiene reasons)\nPierced earrings\nCustom or personalised bracelets\nWorn apparel\nItems marked \"Final Sale\" on the product page\nItems returned after the 30-day window\nItems without original packaging or tags",
+            "warn": "<p><b>Damaged or defective?</b> That's on us — not you. Email within 7 days of delivery with photos and we'll send a replacement or full refund (including shipping), no return required.</p>"
+          }
+        },
+        "b_exchanges": {
+          "type": "text",
+          "settings": {
+            "toc_title": "Exchanges",
+            "eyebrow": "Section 06",
+            "title": "Exchanges.",
+            "body": "<p>We don't do traditional swaps because inventory moves fast. The smoothest path: return the original for a full refund, then place a new order for the item you want. We'll prioritize shipping it.</p><p>Wrong size, wrong shade, wrong color? Just reach out — we'll work something out.</p>"
+          }
+        },
+        "b_faq": {
+          "type": "faq",
+          "settings": {
+            "toc_title": "FAQ",
+            "eyebrow": "Section 07",
+            "title": "Frequently asked <em>questions.</em>",
+            "qa_list": "My package says \"delivered\" but I don't have it. What now? || Check with neighbors and your mail room first — USPS sometimes scans early. If nothing turns up within 48 hours, email us with your order number and we'll open a carrier claim. We cover lost packages on orders with tracked shipping.\nCan I change or cancel my order after placing it? || Yes, if it hasn't shipped yet. DM us on Instagram or email right away with your order number. Once a label is printed we can't recall it — you'll need to return it after delivery.\nDo you ship to PO boxes or APO/FPO addresses? || Yes to both. USPS handles PO boxes and military addresses just fine. Delivery to APO/FPO can take 2–4 weeks depending on base.\nWhat's your return address? || Returns only ship to the address we provide after you email for approval. Don't send anything to our ship-from address without talking to us first — we can't process unapproved returns.\nCan I get a refund on shipping? || Original shipping is non-refundable unless the return is due to our mistake (wrong item, damaged, defective). Return shipping is at the customer's cost.\nDo you do wholesale pricing? || For boutiques and retailers, yes. Email us with your business name and resale certificate and we'll send our wholesale rate sheet.\nHow do I use a discount code? || Enter the code at the first step of checkout (right below your email). One code per order. Newsletter signup gets you 15% off automatically."
+          }
+        },
+        "b_callout": {
+          "type": "callout",
+          "settings": {
+            "toc_title": "",
+            "callout_title": "Still <em>stuck?</em>",
+            "callout_copy": "Redkisses reads every DM and email. Usually replies within the hour.",
+            "cta_1_label": "Contact support →",
+            "cta_2_label": "DM us on IG"
+          }
+        }
+      },
+      "block_order": ["b_processing", "b_rates", "b_international", "b_tracking", "b_returns", "b_exchanges", "b_faq", "b_callout"],
+      "settings": {
+        "show_crumb": true,
+        "crumb_label": "Shipping & Returns",
+        "meta": "Support · Last updated Apr 2026",
+        "title": "Shipping & <em>returns.</em>",
+        "intro": "Everything you need to know about how your order gets to you, what to do if something isn't right, and the fine print. No hidden fees, no tricks — just plain English.",
+        "tldr_1_label": "Free shipping",
+        "tldr_1_value": "Orders $50+",
+        "tldr_1_sub": "3–5 business days in the US",
+        "tldr_2_label": "Processing",
+        "tldr_2_value": "1 business day",
+        "tldr_2_sub": "Ships from Akron, OH",
+        "tldr_3_label": "Returns window",
+        "tldr_3_value": "30 days",
+        "tldr_3_sub": "Unused, unopened items only",
+        "show_help_card": true,
+        "help_title": "Need a human?",
+        "help_copy": "Redkisses is usually on IG within the hour — fastest way to get unstuck.",
+        "help_cta": "Contact us →",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 40,
+        "padding-block-end": 96
+      }
+    }
+  },
+  "order": ["nani_doc"]
+}

@@ -1,0 +1,205 @@
+{% liquid
+  assign s = section.settings
+  assign stat_blocks = section.blocks | where: 'type', 'stat'
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-abhero color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-abhero__inner">
+    {% if s.eyebrow != blank %}
+      <div class="nani-abhero__eyebrow">{{ s.eyebrow }}</div>
+    {% endif %}
+    {% if s.headline != blank %}
+      <h1 class="nani-abhero__title">{{ s.headline }}</h1>
+    {% endif %}
+    {% if s.subcopy != blank %}
+      <p class="nani-abhero__sub">{{ s.subcopy }}</p>
+    {% endif %}
+  </div>
+
+  {% if stat_blocks.size > 0 %}
+    <div class="nani-abhero__stats">
+      {% for block in stat_blocks %}
+        <article class="nani-abhero__stat" {{ block.shopify_attributes }}>
+          <div class="nani-abhero__stat-num">{{ block.settings.value }}</div>
+          <div class="nani-abhero__stat-lbl">{{ block.settings.label }}</div>
+          {% if block.settings.description != blank %}
+            <p>{{ block.settings.description }}</p>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+
+{% stylesheet %}
+  .nani-abhero {
+    position: relative;
+    padding-bottom: 0 !important;
+  }
+  .nani-abhero__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px calc(var(--pbe) + 60px) 40px;
+    text-align: center;
+    position: relative;
+  }
+  .nani-abhero__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 18px;
+    font-weight: 500;
+  }
+  .nani-abhero__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(56px, 8vw, 108px);
+    line-height: 0.95;
+    margin: 0 0 24px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--color-foreground-heading);
+  }
+  .nani-abhero__title em { font-style: italic; color: var(--color-primary); }
+  .nani-abhero__sub {
+    max-width: 640px;
+    margin: 0 auto;
+    font-size: 18px;
+    color: var(--color-foreground);
+    opacity: 0.88;
+    line-height: 1.55;
+    font-family: var(--font-body--family);
+  }
+  .nani-abhero__stats {
+    max-width: 1440px;
+    margin: -60px auto 0;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    position: relative;
+    z-index: 5;
+  }
+  .nani-abhero__stat {
+    background: var(--color-background);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    padding: 28px;
+    box-shadow: 0 20px 40px rgba(13,10,11,0.08);
+  }
+  .nani-abhero__stat-num {
+    font-family: var(--font-heading--family);
+    font-size: 48px;
+    color: var(--color-primary);
+    line-height: 1;
+    font-weight: 500;
+  }
+  .nani-abhero__stat-lbl {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+    margin-top: 8px;
+  }
+  .nani-abhero__stat p {
+    font-family: var(--font-body--family);
+    color: var(--color-foreground);
+    opacity: 0.82;
+    font-size: 13.5px;
+    margin: 12px 0 0;
+    line-height: 1.5;
+  }
+
+  @media screen and (max-width: 749px) {
+    .nani-abhero__inner { padding-left: 24px; padding-right: 24px; }
+    .nani-abhero__stats { grid-template-columns: 1fr; padding: 0 24px; gap: 12px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "About hero",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["page", "index"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Our story · est. 2021"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "headline",
+      "label": "Headline",
+      "default": "Made to <em>shine.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "subcopy",
+      "label": "Subcopy",
+      "default": "Redkisses is jewelry, gloss and shades for the everyday woman and girl — made in Akron, Ohio, priced honestly. No gate-keeping. No markup nonsense."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-3"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 88
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 112
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        { "type": "text", "id": "value", "label": "Value", "default": "1,000+" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Happy customers" },
+        { "type": "text", "id": "description", "label": "Description", "default": "Customers across the country trust us with their order." }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "presets": [
+    {
+      "name": "About hero",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "stat", "settings": { "value": "1,000+", "label": "Happy customers", "description": "Customers across the country trust us with their order." } },
+        { "type": "stat", "settings": { "value": "4.9 ★", "label": "Avg. rating", "description": "From 300+ verified reviews — and climbing." } },
+        { "type": "stat", "settings": { "value": "20+", "label": "Products in stock", "description": "Gloss, jewelry, shades, sets. Curated, not cluttered." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

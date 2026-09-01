@@ -1,0 +1,418 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-prev color-{{ s.color_scheme }}" id="reviews"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-prev__inner">
+    <header class="nani-prev__head">
+      <div>
+        {% if s.eyebrow != blank %}
+          <div class="nani-prev__eyebrow">{{ s.eyebrow }}</div>
+        {% endif %}
+        {% if s.title != blank %}
+          <h2 class="nani-prev__title">{{ s.title }}</h2>
+        {% endif %}
+      </div>
+      {% if s.show_write_button %}
+        <button class="nani-prev__write" type="button">Write a review</button>
+      {% endif %}
+    </header>
+
+    <div class="nani-prev__summary">
+      <div class="nani-prev__big">
+        <div class="nani-prev__big-num">{{ s.rating_value | default: '4.9' }}</div>
+        <div class="nani-prev__big-stars">★★★★★</div>
+        <div class="nani-prev__big-of">Based on {{ s.rating_count | default: '300+' }} reviews</div>
+      </div>
+      <div class="nani-prev__bars">
+        {% assign star_rows = '5|88|264,4|9|27,3|2|6,2|1|3,1|0|0' | split: ',' %}
+        {% for row in star_rows %}
+          {% liquid
+            assign parts = row | split: '|'
+            assign star = parts[0]
+            assign pct = parts[1]
+            assign count = parts[2]
+          %}
+          <div class="nani-prev__bar-row">
+            <span>{{ star }} ★</span>
+            <div class="nani-prev__bar"><div style="width: {{ pct }}%"></div></div>
+            <span>{{ count }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="nani-prev__list">
+      {% for block in section.blocks %}
+        {% if block.type == 'review' %}
+          <article class="nani-prev__card" {{ block.shopify_attributes }}>
+            <div class="nani-prev__card-head">
+              <span class="nani-prev__card-stars">{{ block.settings.stars | default: '★★★★★' }}</span>
+              <span class="nani-prev__card-date">{{ block.settings.date }}</span>
+            </div>
+            {% if block.settings.heading != blank %}
+              <h4 class="nani-prev__card-heading">{{ block.settings.heading }}</h4>
+            {% endif %}
+            <p class="nani-prev__card-quote">{{ block.settings.quote }}</p>
+            <div class="nani-prev__card-foot">
+              <span class="nani-prev__card-name">{{ block.settings.reviewer_name }}</span>
+              {% if block.settings.variant_label != blank %}
+                <span class="nani-prev__card-dot">·</span>
+                <span class="nani-prev__card-variant">{{ block.settings.variant_label }}</span>
+              {% endif %}
+              {% if block.settings.verified %}
+                <span class="nani-prev__card-verified">✓ Verified</span>
+              {% endif %}
+            </div>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if s.show_load_more %}
+      <div class="nani-prev__cta">
+        <button class="nani-prev__load" type="button">{{ s.load_more_label | default: 'Load more reviews →' }}</button>
+      </div>
+    {% endif %}
+
+    <div class="nani-prev__note">{{ s.note | default: 'Reviews will populate automatically once a reviews app (Judge.me or Shopify Product Reviews) is connected. The cards above are placeholders.' }}</div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .nani-prev {
+    position: relative;
+  }
+  .nani-prev__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+  }
+  .nani-prev__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .nani-prev__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .nani-prev__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(34px, 4vw, 48px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0;
+    color: var(--color-foreground-heading);
+  }
+  .nani-prev__title em { font-style: italic; color: var(--color-primary); }
+  .nani-prev__write {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    background: transparent;
+    color: var(--color-foreground-heading);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.2);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .nani-prev__write:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .nani-prev__summary {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 56px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    margin-bottom: 40px;
+  }
+  .nani-prev__big { text-align: center; }
+  .nani-prev__big-num {
+    font-family: var(--font-heading--family);
+    font-size: 84px;
+    line-height: 1;
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+  .nani-prev__big-stars {
+    color: #C9A227;
+    font-size: 20px;
+    letter-spacing: 0.08em;
+    margin: 10px 0 6px;
+  }
+  .nani-prev__big-of {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    opacity: 0.7;
+  }
+
+  .nani-prev__bars {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-self: center;
+  }
+  .nani-prev__bar-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 50px;
+    gap: 12px;
+    align-items: center;
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    color: var(--color-foreground);
+  }
+  .nani-prev__bar {
+    height: 6px;
+    background: rgb(var(--color-foreground-rgb) / 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .nani-prev__bar div {
+    height: 100%;
+    background: #C9A227;
+  }
+
+  .nani-prev__list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .nani-prev__card {
+    padding: 24px;
+    background: var(--color-background-secondary, rgb(var(--color-foreground-rgb) / 0.03));
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+  }
+  .nani-prev__card-head {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+  .nani-prev__card-stars { color: #C9A227; letter-spacing: 0.06em; font-size: 14px; }
+  .nani-prev__card-date {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    color: var(--color-foreground);
+    opacity: 0.6;
+    letter-spacing: 0.1em;
+  }
+  .nani-prev__card-heading {
+    font-family: var(--font-heading--family);
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0 0 8px;
+    line-height: 1.2;
+    color: var(--color-foreground-heading);
+  }
+  .nani-prev__card-quote {
+    font-family: var(--font-body--family);
+    font-size: 13.5px;
+    margin: 0 0 14px;
+    color: var(--color-foreground);
+    opacity: 0.88;
+    line-height: 1.6;
+  }
+  .nani-prev__card-foot {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-family: var(--font-body--family);
+    font-size: 11.5px;
+    color: var(--color-foreground);
+    opacity: 0.7;
+    padding-top: 12px;
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    flex-wrap: wrap;
+  }
+  .nani-prev__card-name { font-weight: 500; color: var(--color-foreground-heading); opacity: 1; }
+  .nani-prev__card-dot { opacity: 0.5; }
+  .nani-prev__card-verified {
+    margin-left: auto;
+    color: var(--color-primary);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .nani-prev__cta {
+    text-align: center;
+    margin-top: 40px;
+  }
+  .nani-prev__load {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 13px 28px;
+    background: transparent;
+    color: var(--color-foreground-heading);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.2);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .nani-prev__load:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .nani-prev__note {
+    text-align: center;
+    font-family: var(--font-body--family);
+    font-size: 11.5px;
+    color: var(--color-foreground);
+    opacity: 0.5;
+    margin-top: 24px;
+    font-style: italic;
+  }
+
+  @media screen and (max-width: 1100px) {
+    .nani-prev__summary,
+    .nani-prev__list {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .nani-prev__inner {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product reviews",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Customer reviews"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "What <em>Redkisses</em> customers say."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_write_button",
+      "label": "Show \"Write a review\" button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "rating_value",
+      "label": "Rating value",
+      "default": "4.9"
+    },
+    {
+      "type": "text",
+      "id": "rating_count",
+      "label": "Rating count",
+      "default": "300+"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_load_more",
+      "label": "Show \"Load more\" button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "load_more_label",
+      "label": "Load more label",
+      "default": "Load more reviews →"
+    },
+    {
+      "type": "text",
+      "id": "note",
+      "label": "Footnote (shown under cards)"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "text", "id": "stars", "label": "Stars", "default": "★★★★★" },
+        { "type": "text", "id": "date", "label": "Date", "default": "Apr 8, 2026" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Literally the perfect gloss" },
+        { "type": "textarea", "id": "quote", "label": "Quote", "default": "Got the Ruby Red and it's so high-shine without being sticky. Wore it all day at work, still looked fresh by 5pm." },
+        { "type": "text", "id": "reviewer_name", "label": "Reviewer name", "default": "Brianna K." },
+        { "type": "text", "id": "variant_label", "label": "Variant label", "default": "Signature Lip Gloss · Ruby Red" },
+        { "type": "checkbox", "id": "verified", "label": "Verified badge", "default": true }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Product reviews",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "review", "settings": { "heading": "Literally the perfect gloss", "date": "Apr 8, 2026", "quote": "Got the Ruby Red and it's so high-shine without being sticky. Wore it all day at work, still looked fresh by 5pm. Sunsarae even texted me back on Instagram about a shade match — that level of service is unreal.", "reviewer_name": "Brianna K.", "variant_label": "Signature Lip Gloss · Ruby Red", "verified": true } },
+        { "type": "review", "settings": { "heading": "My anklet gets so many compliments", "date": "Mar 29, 2026", "quote": "Ordered the icy anklet and it hasn't tarnished once. Wore it in the shower by accident and it still looks brand new. Easily worth double what I paid.", "reviewer_name": "Jasmine T.", "variant_label": "Icy Anklet · Gold", "verified": true } },
+        { "type": "review", "settings": { "heading": "Packaging was so cute", "date": "Mar 17, 2026", "quote": "The gift box alone made me feel like I spent way more than I did. Ordered a custom bracelet and it fits perfectly — exactly what's in the photo.", "reviewer_name": "Alexis R.", "variant_label": "Custom Bracelet · Gold", "verified": true } },
+        { "type": "review", "settings": { "stars": "★★★★☆", "heading": "Great but took a minute to ship", "date": "Mar 2, 2026", "quote": "Took 5 days to arrive instead of 2 but the shades are top notch quality. Would absolutely reorder.", "reviewer_name": "Monique D.", "variant_label": "Classic Shades · Black", "verified": true } }
+      ]
+    }
+  ]
+}
+{% endschema %}

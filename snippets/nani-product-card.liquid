@@ -1,0 +1,101 @@
+{% doc %}
+  Renders a Redkisses-branded product card with optional badges, wishlist, quick-add, rating.
+  @param {product} product - The Shopify product object
+  @param {boolean} [show_rating] - Show rating line (default true)
+  @param {boolean} [show_wishlist] - Show wishlist heart (default true)
+  @param {boolean} [show_quick_add] - Show quick-add on hover (default true)
+  @param {boolean} [show_category] - Show category label (default true)
+  @param {string} [index] - Index for color rotation of placeholder gradient
+{% enddoc %}
+
+{% liquid
+  assign p = product
+  if show_rating == nil
+    assign show_rating = true
+  endif
+  if show_wishlist == nil
+    assign show_wishlist = true
+  endif
+  if show_quick_add == nil
+    assign show_quick_add = true
+  endif
+  if show_category == nil
+    assign show_category = true
+  endif
+
+  assign idx_num = index | default: 1 | plus: 0
+  assign idx_mod = idx_num | modulo: 4
+
+  assign grad_classes = 'nani-card__placeholder--pink nani-card__placeholder--gold nani-card__placeholder--mauve nani-card__placeholder--plum' | split: ' '
+  assign placeholder_class = grad_classes[idx_mod]
+
+  assign show_sale = false
+  if p != blank and p.compare_at_price > p.price
+    assign show_sale = true
+  endif
+
+  assign category_label = ''
+  if p != blank
+    assign category_label = p.type
+    if category_label == blank and p.collections.size > 0
+      assign category_label = p.collections.first.title
+    endif
+  endif
+%}
+
+{{ 'nani-product-card.css' | asset_url | stylesheet_tag }}
+
+<article class="nani-card">
+  <a class="nani-card__link" href="{{ p.url | default: '#' }}">
+    <div class="nani-card__img">
+      {% if p.featured_image != blank %}
+        {{ p.featured_image | image_url: width: 800 | image_tag:
+          class: 'nani-card__image',
+          widths: '240, 360, 480, 600, 800',
+          sizes: '(min-width: 1100px) 22vw, (min-width: 750px) 45vw, 80vw',
+          loading: 'lazy',
+          alt: p.featured_image.alt | default: p.title }}
+      {% else %}
+        <div class="nani-card__placeholder {{ placeholder_class }}" aria-hidden="true"></div>
+      {% endif %}
+
+      <div class="nani-card__badges">
+        {% if show_sale %}
+          <span class="nani-card__badge nani-card__badge--sale">Sale</span>
+        {% endif %}
+      </div>
+
+      {% if show_wishlist %}
+        <button class="nani-card__wish" aria-label="Save to wishlist" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6" aria-hidden="true">
+            <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/>
+          </svg>
+        </button>
+      {% endif %}
+
+      {% if show_quick_add %}
+        <span class="nani-card__quickadd">Quick add +</span>
+      {% endif %}
+    </div>
+  </a>
+
+  <div class="nani-card__meta">
+    {% if show_category and category_label != blank %}
+      <div class="nani-card__cat">{{ category_label }}</div>
+    {% endif %}
+    <div class="nani-card__name">{{ p.title | default: 'Product name' }}</div>
+    {% if show_rating %}
+      <div class="nani-card__rating">★★★★★ <span class="nani-card__rating-count">(—)</span></div>
+    {% endif %}
+    <div class="nani-card__price">
+      {% if p != blank %}
+        <span class="nani-card__price-now">{{ p.price | money }}</span>
+        {% if show_sale %}
+          <span class="nani-card__price-was">{{ p.compare_at_price | money }}</span>
+        {% endif %}
+      {% else %}
+        <span class="nani-card__price-now">—</span>
+      {% endif %}
+    </div>
+  </div>
+</article>

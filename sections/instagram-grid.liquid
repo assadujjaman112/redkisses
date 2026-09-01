@@ -1,0 +1,354 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="ig-grid color-{{ s.color_scheme }}"
+  style="--ig-padding-block-start: {{ s.padding-block-start }}px; --ig-padding-block-end: {{ s.padding-block-end }}px;"
+>
+  <div class="ig-grid__inner">
+    <header class="ig-grid__head">
+      <div>
+        {% if s.eyebrow != blank %}
+          <div class="ig-grid__eyebrow">{{ s.eyebrow }}</div>
+        {% endif %}
+        {% if s.title != blank %}
+          <h2 class="ig-grid__title">{{ s.title }}</h2>
+        {% endif %}
+      </div>
+      {% if s.link_label != blank %}
+        <a class="ig-grid__link" href="{{ s.link_url | default: '#' }}" target="_blank" rel="noopener">
+          <span>{{ s.link_label }}</span>
+          <span aria-hidden="true"> →</span>
+        </a>
+      {% endif %}
+    </header>
+
+    <div class="ig-grid__tiles">
+      {% for block in section.blocks %}
+        {% liquid
+          assign b = block.settings
+          assign tile_i = forloop.index0 | modulo: 6
+          assign grad_classes = 'ig-tile--pink ig-tile--gold ig-tile--mauve ig-tile--rose ig-tile--blush ig-tile--cream' | split: ' '
+          assign cls = grad_classes[tile_i]
+        %}
+        <a class="ig-tile" href="{{ b.link | default: s.link_url | default: '#' }}" target="_blank" rel="noopener" {{ block.shopify_attributes }}>
+          {% if b.image != blank %}
+            {{ b.image | image_url: width: 600 | image_tag:
+              class: 'ig-tile__image',
+              widths: '240, 360, 480, 600',
+              sizes: '(min-width: 1100px) 16vw, 33vw',
+              loading: 'lazy',
+              alt: b.alt | default: 'Instagram post' }}
+          {% elsif b.image_url != blank %}
+            <img
+              class="ig-tile__image"
+              src="{{ b.image_url }}"
+              alt="{{ b.alt | default: 'Instagram post' }}"
+              loading="lazy"
+              decoding="async"
+              width="600"
+              height="600"
+            >
+          {% else %}
+            <div class="ig-tile__placeholder {{ cls }}" aria-hidden="true"></div>
+          {% endif %}
+          <div class="ig-tile__over">
+            <span aria-hidden="true">♡</span>
+            <span>{{ b.likes | default: '—' }} · Shop</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .ig-grid {
+    position: relative;
+  }
+
+  .ig-grid__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--ig-padding-block-start) 40px var(--ig-padding-block-end) 40px;
+  }
+
+  .ig-grid__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 36px;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .ig-grid__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 14px;
+    opacity: 0.85;
+  }
+
+  .ig-grid__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(34px, 4vw, 54px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0;
+    color: var(--color-foreground-heading);
+  }
+
+  .ig-grid__title em {
+    font-style: italic;
+    color: var(--color-primary);
+  }
+
+  .ig-grid__link {
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-foreground-heading);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 4px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .ig-grid__link:hover {
+    color: var(--color-primary);
+  }
+
+  .ig-grid__tiles {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .ig-tile {
+    aspect-ratio: 1;
+    position: relative;
+    overflow: hidden;
+    background: var(--color-background);
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .ig-tile__image,
+  .ig-tile__placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .ig-tile:hover .ig-tile__image,
+  .ig-tile:hover .ig-tile__placeholder {
+    transform: scale(1.06);
+  }
+
+  .ig-tile__placeholder {
+    background:
+      repeating-linear-gradient(135deg, rgb(26 18 8 / 0.06) 0 2px, transparent 2px 12px),
+      linear-gradient(165deg, #F7E1E4, #EFB7BE);
+  }
+
+  .ig-tile--pink .ig-tile__placeholder,
+  .ig-tile__placeholder.ig-tile--pink {
+    background:
+      repeating-linear-gradient(135deg, rgb(26 18 8 / 0.06) 0 2px, transparent 2px 12px),
+      linear-gradient(165deg, #F7E1E4, #EFB7BE);
+  }
+  .ig-tile__placeholder.ig-tile--gold {
+    background:
+      repeating-linear-gradient(135deg, rgb(26 18 8 / 0.06) 0 2px, transparent 2px 12px),
+      linear-gradient(165deg, #F0E3B8, #C9A227);
+  }
+  .ig-tile__placeholder.ig-tile--mauve {
+    background:
+      repeating-linear-gradient(135deg, rgb(26 18 8 / 0.06) 0 2px, transparent 2px 12px),
+      linear-gradient(165deg, #E0455F, #C8102E);
+  }
+  .ig-tile__placeholder.ig-tile--rose {
+    background:
+      repeating-linear-gradient(135deg, rgb(26 18 8 / 0.06) 0 2px, transparent 2px 12px),
+      linear-gradient(165deg, #EFB7BE, #E0455F);
+  }
+  .ig-tile__placeholder.ig-tile--blush {
+    background:
+      repeating-linear-gradient(135deg, rgb(26 18 8 / 0.06) 0 2px, transparent 2px 12px),
+      linear-gradient(165deg, #F7E1E4, #F0E3B8);
+  }
+  .ig-tile__placeholder.ig-tile--cream {
+    background:
+      repeating-linear-gradient(135deg, rgb(26 18 8 / 0.06) 0 2px, transparent 2px 12px),
+      linear-gradient(165deg, #FBF8F6, #EFB7BE);
+  }
+
+  .ig-tile__over {
+    position: absolute;
+    inset: 0;
+    background: rgb(26 18 8 / 0.55);
+    color: #FBF8F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    gap: 8px;
+  }
+
+  .ig-tile:hover .ig-tile__over {
+    opacity: 1;
+  }
+
+  @media screen and (max-width: 1100px) {
+    .ig-grid__tiles {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .ig-grid__inner {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+  }
+
+  @media screen and (max-width: 560px) {
+    .ig-grid__tiles {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Instagram grid",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["*"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "@redkisses"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "Tagged in <em>Redkisses.</em>"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "Follow on Instagram"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Instagram URL",
+      "default": "https://instagram.com/redkisses"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "blocks": [
+    {
+      "type": "ig_post",
+      "name": "Instagram post",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Post image (optional — uses gradient placeholder if empty)"
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Image URL (fallback)",
+          "info": "Used when no image is picked above."
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Image alt text"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Post link (defaults to Instagram URL if empty)"
+        },
+        {
+          "type": "text",
+          "id": "likes",
+          "label": "Likes count (hover label)",
+          "default": "412"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Instagram grid",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "ig_post", "settings": { "likes": "412" } },
+        { "type": "ig_post", "settings": { "likes": "289" } },
+        { "type": "ig_post", "settings": { "likes": "1.1K" } },
+        { "type": "ig_post", "settings": { "likes": "376" } },
+        { "type": "ig_post", "settings": { "likes": "822" } },
+        { "type": "ig_post", "settings": { "likes": "512" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

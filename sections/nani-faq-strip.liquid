@@ -1,0 +1,223 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-faqstrip color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-faqstrip__inner">
+    {% if s.eyebrow != blank %}
+      <div class="nani-faqstrip__eyebrow">{{ s.eyebrow }}</div>
+    {% endif %}
+    {% if s.title != blank %}
+      <h2 class="nani-faqstrip__title">{{ s.title }}</h2>
+    {% endif %}
+    {% if s.subcopy != blank %}
+      <p class="nani-faqstrip__sub">{{ s.subcopy }}</p>
+    {% endif %}
+
+    <div class="nani-faqstrip__grid">
+      {% for block in section.blocks %}
+        <article class="nani-faqstrip__card" {{ block.shopify_attributes }}>
+          <h4>{{ block.settings.question }}</h4>
+          <p>{{ block.settings.answer }}</p>
+        </article>
+      {% endfor %}
+    </div>
+
+    {% if s.link_label != blank %}
+      <div class="nani-faqstrip__cta">
+        <a href="{{ s.link_url | default: '#' }}" class="nani-faqstrip__link">{{ s.link_label }} →</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .nani-faqstrip {
+    position: relative;
+    background: #0D0A0B;
+    color: #FBF8F6;
+  }
+  .nani-faqstrip__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+  }
+  .nani-faqstrip__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #C9A227;
+    margin-bottom: 10px;
+    font-weight: 500;
+    text-align: center;
+  }
+  .nani-faqstrip__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(38px, 4vw, 48px);
+    margin: 0 0 10px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    text-align: center;
+    color: #FBF8F6;
+    line-height: 1.05;
+  }
+  .nani-faqstrip__title em {
+    font-style: italic;
+    color: #F0E3B8;
+  }
+  .nani-faqstrip__sub {
+    text-align: center;
+    color: rgba(253,246,240,0.7);
+    margin: 0 auto 40px;
+    max-width: 600px;
+    font-family: var(--font-body--family);
+  }
+
+  .nani-faqstrip__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .nani-faqstrip__card {
+    background: rgba(253,246,240,0.06);
+    border: 1px solid rgba(253,246,240,0.15);
+    padding: 24px;
+  }
+  .nani-faqstrip__card h4 {
+    font-family: var(--font-heading--family);
+    font-size: 20px;
+    margin: 0 0 10px;
+    font-weight: 500;
+    color: #C9A227;
+    line-height: 1.1;
+  }
+  .nani-faqstrip__card p {
+    font-family: var(--font-body--family);
+    font-size: 13.5px;
+    color: rgba(253,246,240,0.82);
+    margin: 0;
+    line-height: 1.6;
+  }
+  .nani-faqstrip__card a {
+    color: #C9A227;
+    text-decoration: underline;
+  }
+
+  .nani-faqstrip__cta {
+    text-align: center;
+    margin-top: 32px;
+  }
+  .nani-faqstrip__link {
+    color: #C9A227;
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border-bottom: 1px solid #C9A227;
+    padding-bottom: 4px;
+    text-decoration: none;
+  }
+
+  @media screen and (max-width: 1100px) {
+    .nani-faqstrip__grid { grid-template-columns: 1fr; }
+    .nani-faqstrip__inner { padding-left: 24px; padding-right: 24px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "FAQ strip",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["*"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Before you ask"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "Answered in <em>30 seconds.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "subcopy",
+      "label": "Subcopy",
+      "default": "Most questions we get have the same 3 answers. Check these first."
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Footer link label",
+      "default": "See full FAQ"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Footer link URL"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-5"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "FAQ",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "Where's my order?" },
+        { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>Check your email for a Shopify tracking link. Orders ship within 1 business day, delivered in 3–5.</p>" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "FAQ strip",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "faq", "settings": { "question": "Where's my order?", "answer": "<p>Check your email for a Shopify tracking link. Orders ship within 1 business day, delivered in 3–5. Still stuck? <a href=\"#\">Track here</a>.</p>" } },
+        { "type": "faq", "settings": { "question": "What's your return policy?", "answer": "<p>30 days, unopened/unworn, buyer pays return shipping. Opened lip gloss isn't returnable for hygiene. Full policy on shipping & returns.</p>" } },
+        { "type": "faq", "settings": { "question": "Do you do wholesale or bulk orders?", "answer": "<p>Yes — reach out through the contact form with \"Wholesale\" selected and we'll get back to you with pricing.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

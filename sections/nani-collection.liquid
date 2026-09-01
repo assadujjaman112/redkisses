@@ -1,0 +1,720 @@
+{% liquid
+  assign s = section.settings
+  assign products_per_page = s.products_per_page | default: 24
+
+  assign has_products = false
+  if collection != blank and collection.products_count > 0
+    assign has_products = true
+  endif
+
+  assign has_filters = false
+  if collection != blank and collection.filters.size > 0
+    assign has_filters = true
+  endif
+
+  assign active_filter_count = 0
+  if has_filters
+    for f in collection.filters
+      assign active_filter_count = active_filter_count | plus: f.active_values.size
+      if f.type == 'price_range' and f.min_value.value != null
+        assign active_filter_count = active_filter_count | plus: 1
+      endif
+    endfor
+  endif
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-col color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-col__layout">
+
+    {%- comment -%} FILTERS SIDEBAR {%- endcomment -%}
+    <aside class="nani-col__filters" aria-label="Filters">
+      {% if has_filters %}
+        <form class="nani-col__filters-form">
+          {% for filter in collection.filters %}
+            <details class="nani-col__fgroup" open>
+              <summary class="nani-col__fhead">
+                <span>{{ filter.label }}</span>
+                <span class="nani-col__chev" aria-hidden="true">▼</span>
+              </summary>
+              <div class="nani-col__fbody">
+                {% case filter.type %}
+                  {% when 'list', 'boolean' %}
+                    {% for v in filter.values %}
+                      <label class="nani-col__chk">
+                        <input type="checkbox"
+                          name="{{ v.param_name }}"
+                          value="{{ v.value }}"
+                          {% if v.active %}checked{% endif %}
+                          {% if v.count == 0 and v.active == false %}disabled{% endif %}>
+                        <span>{{ v.label }}</span>
+                        <span class="nani-col__chk-count">{{ v.count }}</span>
+                      </label>
+                    {% endfor %}
+                  {% when 'price_range' %}
+                    <div class="nani-col__range">
+                      <input type="number" name="{{ filter.min_value.param_name }}"
+                        value="{{ filter.min_value.value }}"
+                        placeholder="${{ filter.range_min | money_without_currency | round }}">
+                      <span>—</span>
+                      <input type="number" name="{{ filter.max_value.param_name }}"
+                        value="{{ filter.max_value.value }}"
+                        placeholder="${{ filter.range_max | money_without_currency | round }}">
+                    </div>
+                {% endcase %}
+              </div>
+            </details>
+          {% endfor %}
+          <noscript><button type="submit" class="nani-col__fsubmit">Apply filters</button></noscript>
+        </form>
+      {% else %}
+        {%- comment -%} Placeholder filter UI — shown until admin configures filters in Search & Discovery {%- endcomment -%}
+        <details class="nani-col__fgroup" open>
+          <summary class="nani-col__fhead"><span>Category</span><span class="nani-col__chev" aria-hidden="true">▼</span></summary>
+          <div class="nani-col__fbody">
+            <label class="nani-col__chk"><input type="checkbox"><span>Lip Gloss</span><span class="nani-col__chk-count">3</span></label>
+            <label class="nani-col__chk"><input type="checkbox"><span>Jewelry</span><span class="nani-col__chk-count">4</span></label>
+            <label class="nani-col__chk"><input type="checkbox"><span>Shades</span><span class="nani-col__chk-count">4</span></label>
+            <label class="nani-col__chk"><input type="checkbox"><span>Sets & Apparel</span><span class="nani-col__chk-count">3</span></label>
+            <label class="nani-col__chk"><input type="checkbox"><span>Gift Sets</span><span class="nani-col__chk-count">6</span></label>
+          </div>
+        </details>
+        <details class="nani-col__fgroup" open>
+          <summary class="nani-col__fhead"><span>Price</span><span class="nani-col__chev" aria-hidden="true">▼</span></summary>
+          <div class="nani-col__fbody">
+            <div class="nani-col__range">
+              <input type="number" placeholder="$0" disabled>
+              <span>—</span>
+              <input type="number" placeholder="$200" disabled>
+            </div>
+            <label class="nani-col__chk"><input type="checkbox"><span>Under $15</span><span class="nani-col__chk-count">—</span></label>
+            <label class="nani-col__chk"><input type="checkbox"><span>$15 – $30</span><span class="nani-col__chk-count">—</span></label>
+            <label class="nani-col__chk"><input type="checkbox"><span>$30 – $50</span><span class="nani-col__chk-count">—</span></label>
+            <label class="nani-col__chk"><input type="checkbox"><span>Over $50</span><span class="nani-col__chk-count">—</span></label>
+          </div>
+        </details>
+        <details class="nani-col__fgroup" open>
+          <summary class="nani-col__fhead"><span>Availability</span><span class="nani-col__chev" aria-hidden="true">▼</span></summary>
+          <div class="nani-col__fbody">
+            <label class="nani-col__chk"><input type="checkbox"><span>In stock</span><span class="nani-col__chk-count">—</span></label>
+            <label class="nani-col__chk"><input type="checkbox"><span>On sale</span><span class="nani-col__chk-count">—</span></label>
+          </div>
+        </details>
+        <p class="nani-col__fhint">Filters will populate automatically once products and filter rules are configured in admin.</p>
+      {% endif %}
+    </aside>
+
+    {%- comment -%} MAIN GRID {%- endcomment -%}
+    <div class="nani-col__main">
+      <div class="nani-col__toolbar">
+        <div class="nani-col__results">
+          {% if has_products %}
+            Showing <b>1–{{ products_per_page | at_most: collection.products_count }}</b> of <b>{{ collection.products_count }}</b> products
+          {% else %}
+            Sample preview · products populate automatically
+          {% endif %}
+        </div>
+        <div class="nani-col__tools">
+          {% if has_products and collection.sort_options.size > 0 %}
+            <form class="nani-col__sort" method="get">
+              <label for="SortBy-{{ section.id }}">Sort:</label>
+              <select id="SortBy-{{ section.id }}" name="sort_by" onchange="this.form.submit()">
+                {% for opt in collection.sort_options %}
+                  <option value="{{ opt.value }}" {% if opt.value == collection.sort_by or opt.value == collection.default_sort_by %}selected{% endif %}>
+                    {{ opt.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </form>
+          {% else %}
+            <div class="nani-col__sort nani-col__sort--placeholder">
+              <span>Sort:</span>
+              <b>Best sellers</b>
+              <span aria-hidden="true">▾</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if active_filter_count > 0 %}
+        <div class="nani-col__chips">
+          {% for filter in collection.filters %}
+            {% for v in filter.active_values %}
+              <a class="nani-col__chip" href="{{ v.url_to_remove }}">
+                <span>{{ v.label }}</span>
+                <span aria-hidden="true">×</span>
+              </a>
+            {% endfor %}
+            {% if filter.type == 'price_range' and filter.min_value.value != null %}
+              <a class="nani-col__chip" href="{{ filter.url_to_remove }}">
+                <span>{{ filter.min_value.value | money }} – {{ filter.max_value.value | money }}</span>
+                <span aria-hidden="true">×</span>
+              </a>
+            {% endif %}
+          {% endfor %}
+          <a class="nani-col__chip-clear" href="{{ collection.url }}">Clear all</a>
+        </div>
+      {% endif %}
+
+      <div class="nani-col__grid">
+        {% if has_products %}
+          {% paginate collection.products by products_per_page %}
+            {% for product in collection.products %}
+              {% liquid
+                assign pos = forloop.index0
+                assign show_ed = false
+                if s.show_editorial_tile and pos == 8
+                  assign show_ed = true
+                endif
+              %}
+              {% if show_ed %}
+                <div class="nani-col__ed">
+                  <div class="nani-col__ed-eyebrow">{{ s.editorial_eyebrow | default: 'Featured collection' }}</div>
+                  <h3 class="nani-col__ed-title">{{ s.editorial_title | default: 'The <em>Kiss Kit.</em>' }}</h3>
+                  <p class="nani-col__ed-copy">{{ s.editorial_copy | default: 'Three signature glosses — Hot Pink, Ruby Red, Nude Kiss — in one black gift box. One kit, one price.' }}</p>
+                  <a class="nani-col__ed-cta" href="{{ s.editorial_url | default: '#' }}">{{ s.editorial_cta | default: 'Shop gift sets' }} →</a>
+                </div>
+              {% endif %}
+              {% render 'nani-product-card', product: product, index: pos %}
+            {% endfor %}
+
+            {% if paginate.pages > 1 %}
+              <nav class="nani-col__pagination" aria-label="Pagination">
+                {% if paginate.previous %}
+                  <a class="nani-col__page nani-col__page--arrow" href="{{ paginate.previous.url }}">← Prev</a>
+                {% endif %}
+                {% for part in paginate.parts %}
+                  {% if part.is_link %}
+                    <a class="nani-col__page" href="{{ part.url }}">{{ part.title }}</a>
+                  {% elsif part.title == paginate.current_page %}
+                    <a class="nani-col__page nani-col__page--current" aria-current="page">{{ part.title }}</a>
+                  {% else %}
+                    <span class="nani-col__page-dots">{{ part.title }}</span>
+                  {% endif %}
+                {% endfor %}
+                {% if paginate.next %}
+                  <a class="nani-col__page nani-col__page--arrow" href="{{ paginate.next.url }}">Next →</a>
+                {% endif %}
+              </nav>
+            {% endif %}
+          {% endpaginate %}
+        {% else %}
+          {%- comment -%} Placeholder cards so layout previews cleanly before products exist {%- endcomment -%}
+          {% for i in (1..16) %}
+            {% liquid
+              assign pos = forloop.index0
+              assign show_ed = false
+              if s.show_editorial_tile and pos == 8
+                assign show_ed = true
+              endif
+            %}
+            {% if show_ed %}
+              <div class="nani-col__ed">
+                <div class="nani-col__ed-eyebrow">{{ s.editorial_eyebrow | default: 'Featured collection' }}</div>
+                <h3 class="nani-col__ed-title">{{ s.editorial_title | default: 'The <em>Kiss Kit.</em>' }}</h3>
+                <p class="nani-col__ed-copy">{{ s.editorial_copy | default: 'Three signature glosses — Hot Pink, Ruby Red, Nude Kiss — in one black gift box. One kit, one price.' }}</p>
+                <a class="nani-col__ed-cta" href="{{ s.editorial_url | default: '#' }}">{{ s.editorial_cta | default: 'Shop gift sets' }} →</a>
+              </div>
+            {% endif %}
+            {% render 'nani-product-card', index: pos %}
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      {% if has_products == false %}
+        <p class="nani-col__empty-note">
+          Sample cards shown above. Add products to this collection in admin and they'll appear here automatically.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .nani-col {
+    position: relative;
+  }
+  .nani-col__layout {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 48px;
+  }
+
+  /* FILTERS */
+  .nani-col__filters {
+    position: sticky;
+    top: 100px;
+    align-self: start;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    padding-right: 8px;
+    font-family: var(--font-body--family);
+  }
+  .nani-col__fgroup {
+    border-bottom: 1px solid var(--color-border, rgba(13,10,11,0.08));
+    padding: 18px 0;
+  }
+  .nani-col__fgroup:first-child { padding-top: 0; }
+  .nani-col__fhead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--color-foreground-heading);
+    list-style: none;
+    padding-bottom: 14px;
+  }
+  .nani-col__fhead::-webkit-details-marker { display: none; }
+  .nani-col__chev {
+    transition: transform 0.2s ease;
+    color: var(--color-primary);
+    font-size: 10px;
+  }
+  .nani-col__fgroup[open] .nani-col__chev { transform: rotate(0deg); }
+  .nani-col__fgroup:not([open]) .nani-col__chev { transform: rotate(-90deg); }
+  .nani-col__fbody {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .nani-col__chk {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    cursor: pointer;
+    padding: 2px 0;
+    color: var(--color-foreground);
+    transition: color 0.15s ease;
+  }
+  .nani-col__chk:hover { color: var(--color-primary); }
+  .nani-col__chk input {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--color-border, rgba(13,10,11,0.15));
+    background: var(--color-background);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    margin: 0;
+  }
+  .nani-col__chk input:checked {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+  .nani-col__chk input:checked::after {
+    content: "✓";
+    position: absolute;
+    inset: 0;
+    color: var(--color-background);
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nani-col__chk-count {
+    margin-left: auto;
+    color: var(--color-foreground);
+    opacity: 0.6;
+    font-size: 12px;
+  }
+  .nani-col__range {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 4px;
+  }
+  .nani-col__range input {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--color-border, rgba(13,10,11,0.15));
+    background: var(--color-background);
+    font-family: inherit;
+    font-size: 13px;
+    text-align: center;
+    color: var(--color-foreground);
+  }
+  .nani-col__fhint {
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--color-foreground);
+    opacity: 0.6;
+    margin-top: 20px;
+    padding: 14px;
+    background: var(--color-background-secondary, rgba(0,0,0,0.03));
+    border-left: 2px solid var(--color-primary);
+  }
+  .nani-col__fsubmit {
+    margin-top: 16px;
+    padding: 12px 18px;
+    background: var(--color-primary);
+    color: var(--color-background);
+    border: 0;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  /* MAIN */
+  .nani-col__main { min-width: 0; }
+  .nani-col__toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-border, rgba(13,10,11,0.08));
+  }
+  .nani-col__results {
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    opacity: 0.72;
+  }
+  .nani-col__results b {
+    color: var(--color-foreground-heading);
+    opacity: 1;
+    font-weight: 500;
+  }
+  .nani-col__sort {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    border: 1px solid var(--color-border, rgba(13,10,11,0.15));
+    background: var(--color-background);
+  }
+  .nani-col__sort select {
+    background: transparent;
+    border: 0;
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: var(--color-foreground-heading);
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 8px;
+  }
+  .nani-col__sort label {
+    color: var(--color-foreground);
+    opacity: 0.7;
+  }
+
+  /* CHIPS */
+  .nani-col__chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    align-items: center;
+  }
+  .nani-col__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--color-background-secondary, rgba(0,0,0,0.04));
+    border: 1px solid var(--color-border, rgba(13,10,11,0.1));
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+    text-decoration: none;
+    font-family: var(--font-body--family);
+  }
+  .nani-col__chip:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+  .nani-col__chip-clear {
+    color: var(--color-primary);
+    text-decoration: underline;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: var(--font-body--family);
+  }
+
+  /* GRID */
+  .nani-col__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px 20px;
+  }
+
+  /* EDITORIAL TILE */
+  .nani-col__ed {
+    grid-column: span 2;
+    background: #C8102E;
+    color: #FBF8F6;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+    overflow: hidden;
+    min-height: 400px;
+  }
+  .nani-col__ed::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.08) 0 2px, transparent 2px 14px),
+      linear-gradient(165deg, #E0455F, #C8102E);
+  }
+  .nani-col__ed > * { position: relative; z-index: 2; }
+  .nani-col__ed-eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #C9A227;
+    margin-bottom: 14px;
+  }
+  .nani-col__ed-title {
+    font-family: var(--font-heading--family);
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 1;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+  .nani-col__ed-title em {
+    font-style: italic;
+    color: #F0E3B8;
+  }
+  .nani-col__ed-copy {
+    font-family: var(--font-body--family);
+    color: rgba(253,246,240,0.8);
+    max-width: 360px;
+    margin: 0 0 20px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .nani-col__ed-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #C9A227;
+    color: #0D0A0B;
+    text-decoration: none;
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 600;
+    align-self: flex-start;
+    transition: background 0.2s ease;
+  }
+  .nani-col__ed-cta:hover { background: #F0E3B8; }
+
+  /* PAGINATION */
+  .nani-col__pagination {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 32px;
+    align-items: center;
+    font-family: var(--font-body--family);
+  }
+  .nani-col__page {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    border: 1px solid var(--color-border, rgba(13,10,11,0.15));
+    background: var(--color-background);
+    text-decoration: none;
+    color: var(--color-foreground-heading);
+    transition: all 0.2s ease;
+  }
+  .nani-col__page:hover { border-color: var(--color-foreground-heading); }
+  .nani-col__page--current {
+    background: var(--color-foreground-heading);
+    color: var(--color-background);
+    border-color: var(--color-foreground-heading);
+  }
+  .nani-col__page--arrow {
+    gap: 8px;
+    padding: 0 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 11px;
+  }
+  .nani-col__page-dots {
+    color: var(--color-foreground);
+    opacity: 0.5;
+    padding: 0 8px;
+  }
+
+  .nani-col__empty-note {
+    text-align: center;
+    font-family: var(--font-body--family);
+    font-size: 13px;
+    color: var(--color-foreground);
+    opacity: 0.55;
+    margin-top: 40px;
+    font-style: italic;
+  }
+
+  @media screen and (max-width: 1100px) {
+    .nani-col__layout {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      padding: var(--pbs) 24px var(--pbe) 24px;
+    }
+    .nani-col__filters {
+      position: static;
+      max-height: none;
+    }
+    .nani-col__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .nani-col__ed {
+      grid-column: span 2;
+      min-height: 300px;
+      padding: 32px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .nani-col__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px 12px;
+    }
+    .nani-col__ed {
+      grid-column: span 2;
+      min-height: 240px;
+      padding: 24px;
+    }
+    .nani-col__ed-title { font-size: 30px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Collection grid",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["collection", "search"]
+  },
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Editorial tile (injected at position 9)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_editorial_tile",
+      "label": "Show editorial tile",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "editorial_eyebrow",
+      "label": "Eyebrow",
+      "default": "Featured collection"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "editorial_title",
+      "label": "Title",
+      "default": "The <em>Kiss Kit.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "editorial_copy",
+      "label": "Copy",
+      "default": "Three signature glosses — Hot Pink, Ruby Red, Nude Kiss — in one black gift box. One kit, one price."
+    },
+    {
+      "type": "text",
+      "id": "editorial_cta",
+      "label": "CTA label",
+      "default": "Shop gift sets"
+    },
+    {
+      "type": "url",
+      "id": "editorial_url",
+      "label": "CTA link"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection grid",
+      "category": "Redkisses"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,664 @@
+{% liquid
+  assign s = section.settings
+  assign has_image = false
+  if s.image != blank
+    assign has_image = true
+  endif
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section
+  class="hero-split color-{{ s.color_scheme }}"
+  style="
+    --hero-min-height: {{ s.min_height }}px;
+    --hero-padding-block-start: {{ s.padding-block-start }}px;
+    --hero-padding-block-end: {{ s.padding-block-end }}px;
+    --hero-image-scheme-bg: rgb(var(--color-image-scheme-bg, {{ s.image_color_scheme.settings.background.rgb }}));
+  "
+>
+  <div class="hero-split__inner">
+
+    <div class="hero-split__copy">
+      {% if s.eyebrow != blank %}
+        <div class="hero-split__eyebrow">
+          <span class="hero-split__eyebrow-line" aria-hidden="true"></span>
+          <span>{{ s.eyebrow }}</span>
+        </div>
+      {% endif %}
+
+      {% if s.headline != blank %}
+        <h1 class="hero-split__title">{{ s.headline }}</h1>
+      {% endif %}
+
+      {% if s.subcopy != blank %}
+        <p class="hero-split__sub">{{ s.subcopy }}</p>
+      {% endif %}
+
+      {% if s.primary_cta_label != blank or s.secondary_cta_label != blank %}
+        <div class="hero-split__ctas">
+          {% if s.primary_cta_label != blank %}
+            <a class="hero-split__btn hero-split__btn--primary" href="{{ s.primary_cta_link | default: '#' }}">
+              <span>{{ s.primary_cta_label }}</span>
+              <svg class="hero-split__btn-arrow" viewBox="0 0 14 8" fill="none" aria-hidden="true">
+                <path d="M1 4h12M9 1l4 3-4 3" stroke="currentColor" stroke-width="1.2" fill="none"/>
+              </svg>
+            </a>
+          {% endif %}
+          {% if s.secondary_cta_label != blank %}
+            <a class="hero-split__btn hero-split__btn--ghost" href="{{ s.secondary_cta_link | default: '#' }}">
+              {{ s.secondary_cta_label }}
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% liquid
+        assign has_meta = false
+        if s.meta_1_value != blank or s.meta_2_value != blank or s.meta_3_value != blank
+          assign has_meta = true
+        endif
+      %}
+      {% if has_meta %}
+        <div class="hero-split__meta">
+          {% if s.meta_1_value != blank %}
+            <div class="hero-split__meta-item"><b>{{ s.meta_1_value }}</b> {{ s.meta_1_label }}</div>
+          {% endif %}
+          {% if s.meta_2_value != blank %}
+            <div class="hero-split__meta-item"><b>{{ s.meta_2_value }}</b> {{ s.meta_2_label }}</div>
+          {% endif %}
+          {% if s.meta_3_value != blank %}
+            <div class="hero-split__meta-item"><b>{{ s.meta_3_value }}</b> {{ s.meta_3_label }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="hero-split__visual color-{{ s.image_color_scheme }}">
+      {% if has_image %}
+        {{ s.image | image_url: width: 1600 | image_tag:
+          class: 'hero-split__image',
+          widths: '480, 720, 960, 1200, 1600, 2000',
+          sizes: '(min-width: 1100px) 50vw, 100vw',
+          loading: 'eager',
+          fetchpriority: 'high',
+          alt: s.image_alt | default: shop.name }}
+      {% elsif s.image_url != blank %}
+        <img
+          class="hero-split__image"
+          src="{{ s.image_url }}"
+          alt="{{ s.image_alt | default: shop.name }}"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          width="1200"
+          height="1400"
+        >
+      {% else %}
+        <div class="hero-split__placeholder" aria-hidden="true">
+          <span class="hero-split__placeholder-tag">[ drop-in hero image · 1200×1400 ]</span>
+        </div>
+      {% endif %}
+
+      {% if s.show_badge %}
+        <div class="hero-split__badge" aria-label="{{ s.badge_eyebrow }} — {{ s.badge_title }} — {{ s.badge_amount }}">
+          <span class="hero-split__badge-eyebrow">{{ s.badge_eyebrow }}</span>
+          <span class="hero-split__badge-title">{{ s.badge_title }}</span>
+          <span class="hero-split__badge-amount">{{ s.badge_amount }}</span>
+        </div>
+      {% endif %}
+
+      {% if s.show_ticker %}
+        <div class="hero-split__ticker">
+          <span class="hero-split__ticker-stars" aria-hidden="true">★★★★★</span>
+          <span>{{ s.ticker_text }}</span>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+
+{% stylesheet %}
+  .hero-split {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-split__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    min-height: var(--hero-min-height);
+  }
+
+  .hero-split__copy {
+    padding: var(--hero-padding-block-start) 64px var(--hero-padding-block-end) 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-split__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 28px;
+  }
+
+  .hero-split__eyebrow-line {
+    height: 1px;
+    width: 42px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  .hero-split__title {
+    font-family: var(--font-heading--family);
+    font-weight: 500;
+    font-size: clamp(52px, 6vw, 86px);
+    line-height: 0.96;
+    letter-spacing: -0.015em;
+    margin: 0 0 28px;
+    color: var(--color-foreground-heading);
+  }
+
+  .hero-split__title em {
+    font-style: italic;
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+
+  .hero-split__title strong {
+    color: var(--color-primary);
+    font-weight: inherit;
+  }
+
+  .hero-split__sub {
+    max-width: 440px;
+    font-family: var(--font-body--family);
+    font-size: 16px;
+    color: var(--color-foreground);
+    margin: 0 0 36px;
+    line-height: 1.55;
+  }
+
+  .hero-split__ctas {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .hero-split__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 28px;
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .hero-split__btn--primary {
+    background: var(--color-primary-button-background);
+    color: var(--color-primary-button-text);
+    border: 1px solid var(--color-primary-button-border);
+  }
+
+  .hero-split__btn--primary:hover {
+    background: var(--color-primary-button-hover-background);
+    color: var(--color-primary-button-hover-text);
+    border-color: var(--color-primary-button-hover-border);
+  }
+
+  .hero-split__btn--ghost {
+    background: transparent;
+    color: var(--color-foreground-heading);
+    border: 1px solid var(--color-foreground-heading);
+  }
+
+  .hero-split__btn--ghost:hover {
+    background: var(--color-foreground-heading);
+    color: var(--color-background);
+  }
+
+  .hero-split__btn-arrow {
+    width: 14px;
+    height: 8px;
+    flex-shrink: 0;
+  }
+
+  .hero-split__meta {
+    margin-top: 48px;
+    display: flex;
+    gap: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.2);
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    flex-wrap: wrap;
+  }
+
+  .hero-split__meta-item {
+    white-space: nowrap;
+  }
+
+  .hero-split__meta-item b {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .hero-split__visual {
+    position: relative;
+    overflow: hidden;
+    min-height: 400px;
+    background: var(--hero-image-scheme-bg, var(--color-background));
+  }
+
+  .hero-split__image,
+  .hero-split__placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-split__placeholder {
+    background:
+      repeating-linear-gradient(135deg, rgb(255 255 255 / 0.18) 0 2px, transparent 2px 14px),
+      linear-gradient(165deg, rgb(var(--color-foreground-heading-rgb) / 0.05), rgb(var(--color-primary-rgb) / 0.3) 60%, rgb(var(--color-primary-rgb) / 0.8) 130%);
+    border: 1px solid rgb(255 255 255 / 0.35);
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 32px;
+    color: var(--color-foreground-heading);
+    inset: 32px;
+    height: auto;
+    width: auto;
+  }
+
+  .hero-split__placeholder-tag {
+    font-family: ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: rgb(var(--color-foreground-heading-rgb) / 0.55);
+    color: var(--color-background);
+    padding: 8px 12px;
+    border: 1px solid rgb(255 255 255 / 0.35);
+  }
+
+  .hero-split__badge {
+    position: absolute;
+    top: 42px;
+    right: 42px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: var(--color-scheme-3-background, #F0E3B8);
+    color: var(--color-foreground-heading);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transform: rotate(-8deg);
+    border: 1px solid #C9A227;
+    box-shadow: 0 10px 30px rgb(125 26 58 / 0.25);
+    z-index: 2;
+    padding: 14px;
+  }
+
+  .hero-split__badge-eyebrow {
+    font-family: var(--font-body--family);
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 4px;
+  }
+
+  .hero-split__badge-title {
+    font-family: var(--font-heading--family);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--color-foreground-heading);
+    line-height: 1.1;
+  }
+
+  .hero-split__badge-amount {
+    font-family: var(--font-heading--family);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--color-primary);
+    letter-spacing: -0.02em;
+    margin-top: 4px;
+    line-height: 1;
+  }
+
+  .hero-split__ticker {
+    position: absolute;
+    left: 40px;
+    bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-foreground-heading);
+    z-index: 2;
+    background: rgb(var(--color-background-rgb) / 0.85);
+    padding: 8px 14px;
+    border-radius: 2px;
+  }
+
+  .hero-split__ticker-stars {
+    color: #C9A227;
+    letter-spacing: 0.08em;
+    font-size: 13px;
+  }
+
+  @media screen and (max-width: 1100px) {
+    .hero-split__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-split__copy {
+      padding: 60px 40px;
+    }
+
+    .hero-split__visual {
+      min-height: 480px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .hero-split__copy {
+      padding: 48px 28px;
+    }
+
+    .hero-split__title {
+      font-size: clamp(40px, 10vw, 60px);
+    }
+
+    .hero-split__sub {
+      font-size: 15px;
+    }
+
+    .hero-split__meta {
+      gap: 20px;
+      font-size: 10px;
+    }
+
+    .hero-split__badge {
+      top: 24px;
+      right: 24px;
+      width: 110px;
+      height: 110px;
+    }
+
+    .hero-split__badge-title {
+      font-size: 15px;
+    }
+
+    .hero-split__badge-amount {
+      font-size: 22px;
+    }
+
+    .hero-split__ticker {
+      left: 20px;
+      bottom: 20px;
+      font-size: 10px;
+    }
+
+    .hero-split__visual {
+      min-height: 360px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Hero (split)",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["index"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Copy"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Fall '26 · New Kiss Kit"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "headline",
+      "label": "Headline",
+      "info": "Wrap words in <em>italic</em> for accent color",
+      "default": "Jewelry & gloss. <em>Made to</em> <em>shine.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "subcopy",
+      "label": "Subcopy",
+      "default": "Rhinestone anklets, custom bracelets, high-shine gloss and statement shades. Hand-finished in Akron, Ohio and shipped to your door."
+    },
+    {
+      "type": "header",
+      "content": "Call-to-action buttons"
+    },
+    {
+      "type": "text",
+      "id": "primary_cta_label",
+      "label": "Primary button text",
+      "default": "Shop the collection"
+    },
+    {
+      "type": "url",
+      "id": "primary_cta_link",
+      "label": "Primary button link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_cta_label",
+      "label": "Secondary button text",
+      "default": "Bundle deals from $45.99"
+    },
+    {
+      "type": "url",
+      "id": "secondary_cta_link",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "header",
+      "content": "Stats row"
+    },
+    {
+      "type": "paragraph",
+      "content": "Leave value blank to hide an item."
+    },
+    {
+      "type": "text",
+      "id": "meta_1_value",
+      "label": "Stat 1 — value",
+      "default": "1,000+"
+    },
+    {
+      "type": "text",
+      "id": "meta_1_label",
+      "label": "Stat 1 — label",
+      "default": "happy customers"
+    },
+    {
+      "type": "text",
+      "id": "meta_2_value",
+      "label": "Stat 2 — value",
+      "default": "4.9★"
+    },
+    {
+      "type": "text",
+      "id": "meta_2_label",
+      "label": "Stat 2 — label",
+      "default": "average rating"
+    },
+    {
+      "type": "text",
+      "id": "meta_3_value",
+      "label": "Stat 3 — value",
+      "default": "Free"
+    },
+    {
+      "type": "text",
+      "id": "meta_3_label",
+      "label": "Stat 3 — label",
+      "default": "shipping over $50"
+    },
+    {
+      "type": "header",
+      "content": "Hero image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "image_url",
+      "label": "Image URL (fallback)",
+      "info": "Used when no image is picked above."
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image alt text",
+      "default": "Redkisses model with gold jewelry and red gloss"
+    },
+    {
+      "type": "header",
+      "content": "Product badge (circular overlay)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_eyebrow",
+      "label": "Badge eyebrow",
+      "default": "New Drop"
+    },
+    {
+      "type": "text",
+      "id": "badge_title",
+      "label": "Badge title",
+      "default": "The Kiss Kit"
+    },
+    {
+      "type": "text",
+      "id": "badge_amount",
+      "label": "Badge amount",
+      "default": "$30"
+    },
+    {
+      "type": "header",
+      "content": "Rating ticker (bottom-left overlay)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_ticker",
+      "label": "Show ticker",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "ticker_text",
+      "label": "Ticker text",
+      "default": "Rated 4.9 by 300+ reviews"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Copy-side color scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "color_scheme",
+      "id": "image_color_scheme",
+      "label": "Image-side color scheme",
+      "default": "scheme-4"
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "Min height",
+      "min": 400,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "default": 640
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 90
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero (split)",
+      "category": "Redkisses"
+    }
+  ]
+}
+{% endschema %}

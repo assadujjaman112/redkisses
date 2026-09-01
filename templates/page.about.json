@@ -1,0 +1,215 @@
+{
+  "sections": {
+    "nani_abhero": {
+      "type": "nani-about-hero",
+      "blocks": {
+        "s1": {
+          "type": "stat",
+          "settings": {
+            "value": "1,000+",
+            "label": "Happy customers",
+            "description": "Women and girls across the country trust us with their shine."
+          }
+        },
+        "s2": {
+          "type": "stat",
+          "settings": {
+            "value": "4.9 ★",
+            "label": "Avg. rating",
+            "description": "From 300+ verified reviews — and climbing."
+          }
+        },
+        "s3": {
+          "type": "stat",
+          "settings": {
+            "value": "40+",
+            "label": "Products in stock",
+            "description": "Lip gloss, jewelry, shades and sets. Curated, not cluttered."
+          }
+        }
+      },
+      "block_order": [
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "settings": {
+        "eyebrow": "Our story · est. 2023",
+        "headline": "Premium shouldn't mean <em>over-priced.</em>",
+        "subcopy": "Redkisses is an online jewelry and lip gloss shop built on a simple idea — stock the pieces we actually wear, at prices our friends can actually afford. No gate-keeping. No markup nonsense. Just real product for the everyday woman.",
+        "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-hero/public",
+        "image_alt": "Redkisses jewelry and lip gloss collection",
+        "color_scheme": "scheme-3",
+        "padding-block-start": 88,
+        "padding-block-end": 112
+      }
+    },
+    "nani_story": {
+      "type": "nani-story",
+      "settings": {
+        "eyebrow": "How we started",
+        "headline": "From <em>Akron</em> to your doorstep.",
+        "body_before": "<p>In 2023, Redkisses started making custom bracelets and lip gloss for friends right here in Akron, Ohio. She'd hand-mix pigments, string beads at the kitchen table, and post what was in stock on Instagram.</p><p>Within six months, the friends became strangers. Strangers became DMs asking for gloss restocks. DMs became orders. Orders became a brand. Redkisses officially launched as an LLC in late 2024 — still run out of Akron, still packed by hand, still obsessed with not over-charging.</p>",
+        "pullquote": "Shine on a budget isn't a slogan. It's the whole reason the business exists.",
+        "body_after": "<p>Today we stock over 40 products across lip gloss, jewelry, shades and sets. Every piece is personally tested before it gets listed — if it doesn't pass the shine test, it doesn't make the cut. Every order is hand-packed. Every DM gets a real reply. That's the whole model.</p><p>We're not trying to be a mall counter. We're not trying to be Amazon. We're trying to be the shop your friend would recommend to you. That's enough.</p>",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 96,
+        "padding-block-end": 96
+      }
+    },
+    "nani_founder": {
+      "type": "editorial",
+      "settings": {
+        "eyebrow": "Meet the founder",
+        "headline": "Hey — it's <em>Redkisses.</em>",
+        "body": "<p>I started making custom bracelets and glosses for friends right here in Akron, Ohio. Friends became customers, customers became a brand. The name comes from the very first thing I ever made and sold — a red lip gloss with a little too much shine.</p><p>Every gift set you order, I pack. Every DM on Instagram, I answer. Every new gloss and piece goes on me first before it goes on the shop. If something doesn't work, I'll be the first to tell you.</p><p>Thanks for shopping small. It means everything.</p>",
+        "signature_name": "Redkisses",
+        "signature_role": "Founder & Owner · Akron, Ohio",
+        "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-founder/public",
+        "image_alt": "Redkisses — Founder & Owner",
+        "show_stats": false,
+        "color_scheme": "scheme-2"
+      }
+    },
+    "nani_values": {
+      "type": "nani-values",
+      "blocks": {
+        "v1": {
+          "type": "value",
+          "settings": {
+            "title": "Honest pricing",
+            "copy": "We mark up less. Always. If we can't beat a competitor on price, we don't sell it."
+          }
+        },
+        "v2": {
+          "type": "value",
+          "settings": {
+            "title": "Tested first",
+            "copy": "Every gloss and piece is tried before it's listed. If it doesn't shine, it's out."
+          }
+        },
+        "v3": {
+          "type": "value",
+          "settings": {
+            "title": "Real service",
+            "copy": "Real person replies to every DM, usually within an hour. No chatbots here."
+          }
+        },
+        "v4": {
+          "type": "value",
+          "settings": {
+            "title": "Small-batch care",
+            "copy": "Every order is hand-packed in Akron with a note, tissue, and thank-you."
+          }
+        }
+      },
+      "block_order": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ],
+      "settings": {
+        "eyebrow": "What we stand for",
+        "title": "Four <em>rules.</em> That's it.",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 96,
+        "padding-block-end": 96
+      }
+    },
+    "nani_tl": {
+      "type": "nani-timeline",
+      "blocks": {
+        "m1": {
+          "type": "milestone",
+          "settings": {
+            "year": "2023",
+            "label": "Spring",
+            "copy": "Redkisses starts making custom bracelets and gloss for friends on Instagram."
+          }
+        },
+        "m2": {
+          "type": "milestone",
+          "settings": {
+            "year": "2024",
+            "label": "Summer",
+            "copy": "First 100 orders shipped. Redkisses LLC officially formed."
+          }
+        },
+        "m3": {
+          "type": "milestone",
+          "settings": {
+            "year": "2025",
+            "label": "Winter",
+            "copy": "The Kiss Kit launches. Becomes our #1 SKU in 3 weeks."
+          }
+        },
+        "m4": {
+          "type": "milestone",
+          "settings": {
+            "year": "2026",
+            "label": "Now",
+            "copy": "1,000+ customers. 40+ products. National shipping."
+          }
+        }
+      },
+      "block_order": [
+        "m1",
+        "m2",
+        "m3",
+        "m4"
+      ],
+      "settings": {
+        "eyebrow": "The journey",
+        "title": "From <em>idea</em> to everyday shine.",
+        "color_scheme": "scheme-5",
+        "padding-block-start": 96,
+        "padding-block-end": 96
+      }
+    },
+    "nani_cta": {
+      "type": "nani-cta-card",
+      "blocks": {
+        "c1": {
+          "type": "cta",
+          "settings": {
+            "label": "Shop the collection",
+            "url": "/collections/all",
+            "style": "primary",
+            "arrow": true
+          }
+        },
+        "c2": {
+          "type": "cta",
+          "settings": {
+            "label": "Browse gift sets",
+            "url": "/collections/gift-sets",
+            "style": "ghost",
+            "arrow": false
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2"
+      ],
+      "settings": {
+        "eyebrow": "Shop the whole thing",
+        "title": "Ready to <em>shine?</em>",
+        "subcopy": "Join 1,000+ happy customers who've made Redkisses their go-to. Free shipping over $50, ships in 1–2 days from Akron.",
+        "outer_color_scheme": "scheme-1",
+        "card_color_scheme": "scheme-3",
+        "padding-block-start": 96,
+        "padding-block-end": 96
+      }
+    }
+  },
+  "order": [
+    "nani_abhero",
+    "nani_story",
+    "nani_founder",
+    "nani_values",
+    "nani_tl",
+    "nani_cta"
+  ]
+}

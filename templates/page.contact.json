@@ -1,0 +1,56 @@
+{
+  "sections": {
+    "nani_contact": {
+      "type": "nani-contact",
+      "blocks": {
+        "c_ig": { "type": "channel", "settings": { "type": "instagram", "title": "Instagram", "value": "@redkisses", "description": "Fastest way to reach us · Usually replies within 1 hour", "url": "https://instagram.com/redkisses" } },
+        "c_email": { "type": "channel", "settings": { "type": "email", "title": "Email", "value": "sunsarae37@gmail.com", "description": "Best for order issues, wholesale, partnerships · Response within 24hr" } },
+        "c_phone": { "type": "channel", "settings": { "type": "phone", "title": "Phone / text", "value": "(330) 689-8922", "description": "Call or text · Mon–Sat 9am–5pm ET" } },
+        "c_loc": { "type": "channel", "settings": { "type": "location", "title": "Location", "value": "Akron, Ohio", "description": "By appointment · Ships nationwide" } }
+      },
+      "block_order": ["c_ig", "c_email", "c_phone", "c_loc"],
+      "settings": {
+        "show_crumb": true,
+        "crumb_label": "Contact",
+        "eyebrow": "Get in touch",
+        "title": "Slide into our <em>DMs.</em>",
+        "subcopy": "Questions about a product? Order update? Custom bracelet inquiry? Redkisses reads and replies to everything — usually within a couple hours.",
+        "show_hours": true,
+        "hours_title": "Support hours (Eastern Time)",
+        "hours_rows": "Monday – Saturday | 9:00 am – 5:00 pm\nSunday | Closed · DMs monitored",
+        "form_eyebrow": "Contact form",
+        "form_title": "Or drop us a <em>line.</em>",
+        "form_sub": "We'll get back to you within 24 hours — usually sooner. Required fields marked with ★.",
+        "show_topics": true,
+        "topics_list": "Order question, Shipping, Returns, Custom bracelet, Wholesale, Other",
+        "show_newsletter_optin": true,
+        "newsletter_label": "Sign me up for the newsletter — 15% off my first order",
+        "fineprint": "<p>By submitting this form you agree to our <a href=\"/policies/privacy-policy\">Privacy Policy</a>. We'll never share your info or spam you.</p>",
+        "submit_label": "Send message",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 40,
+        "padding-block-end": 96
+      }
+    },
+    "nani_faq_strip": {
+      "type": "nani-faq-strip",
+      "blocks": {
+        "f1": { "type": "faq", "settings": { "question": "Where's my order?", "answer": "<p>Check your email for a Shopify tracking link. Orders ship within 1 business day, delivered in 3–5. Still stuck? <a href=\"/pages/shipping#tracking-your-order\">Track here</a>.</p>" } },
+        "f2": { "type": "faq", "settings": { "question": "What's your return policy?", "answer": "<p>30 days, unopened/unused, buyer pays return shipping. Opened lip gloss, pierced earrings and custom bracelets aren't returnable for hygiene and personalization reasons. Full policy on <a href=\"/pages/shipping\">shipping & returns</a>.</p>" } },
+        "f3": { "type": "faq", "settings": { "question": "Do you do wholesale?", "answer": "<p>Yes — for boutiques and retailers only. Use the form above with \"Wholesale\" selected and include your business name.</p>" } }
+      },
+      "block_order": ["f1", "f2", "f3"],
+      "settings": {
+        "eyebrow": "Before you ask",
+        "title": "Answered in <em>30 seconds.</em>",
+        "subcopy": "Most questions we get have the same 3 answers. Check these first.",
+        "link_label": "See full FAQ",
+        "link_url": "/pages/shipping#faq",
+        "color_scheme": "scheme-5",
+        "padding-block-start": 72,
+        "padding-block-end": 72
+      }
+    }
+  },
+  "order": ["nani_contact", "nani_faq_strip"]
+}

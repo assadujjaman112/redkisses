@@ -1,0 +1,205 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-tl color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-tl__inner">
+    <div class="nani-tl__head">
+      {% if s.eyebrow != blank %}
+        <div class="nani-tl__eyebrow">{{ s.eyebrow }}</div>
+      {% endif %}
+      {% if s.title != blank %}
+        <h2 class="nani-tl__title">{{ s.title }}</h2>
+      {% endif %}
+    </div>
+
+    <div class="nani-tl__row">
+      {% for block in section.blocks %}
+        <div class="nani-tl__item" {{ block.shopify_attributes }}>
+          <div class="nani-tl__dot" aria-hidden="true"></div>
+          <div class="nani-tl__year">{{ block.settings.year }}</div>
+          <div class="nani-tl__label">{{ block.settings.label }}</div>
+          <p>{{ block.settings.copy }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .nani-tl {
+    position: relative;
+    background: #0D0A0B;
+    color: #FBF8F6;
+  }
+  .nani-tl__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+  }
+  .nani-tl__head {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .nani-tl__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #C9A227;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .nani-tl__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(44px, 4.5vw, 56px);
+    margin: 0;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: #FBF8F6;
+  }
+  .nani-tl__title em { font-style: italic; color: #F0E3B8; }
+
+  .nani-tl__row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+  }
+  .nani-tl__row::before {
+    content: "";
+    position: absolute;
+    top: 40px;
+    left: 12%;
+    right: 12%;
+    height: 1px;
+    background: rgba(253,246,240,0.18);
+  }
+  .nani-tl__item {
+    text-align: center;
+    position: relative;
+    padding: 0 16px;
+  }
+  .nani-tl__dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #C9A227;
+    margin: 0 auto 28px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 0 0 6px #0D0A0B;
+  }
+  .nani-tl__year {
+    font-family: var(--font-heading--family);
+    font-size: 38px;
+    color: #C9A227;
+    line-height: 1;
+    font-weight: 500;
+  }
+  .nani-tl__label {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(253,246,240,0.6);
+    margin: 6px 0 14px;
+  }
+  .nani-tl__item p {
+    font-family: var(--font-body--family);
+    font-size: 13.5px;
+    color: rgba(253,246,240,0.78);
+    max-width: 220px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  @media screen and (max-width: 1100px) {
+    .nani-tl__row { grid-template-columns: 1fr; gap: 36px; }
+    .nani-tl__row::before { display: none; }
+    .nani-tl__inner { padding-left: 24px; padding-right: 24px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Timeline",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["page", "index"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The journey"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "From <em>idea</em> to everyday icon."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-5"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "blocks": [
+    {
+      "type": "milestone",
+      "name": "Milestone",
+      "settings": [
+        { "type": "text", "id": "year", "label": "Year", "default": "2021" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Spring" },
+        { "type": "text", "id": "copy", "label": "Copy", "default": "First custom bracelets made for friends in Akron." }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Timeline",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "milestone", "settings": { "year": "2021", "label": "Spring", "copy": "First custom bracelets made for friends in Akron." } },
+        { "type": "milestone", "settings": { "year": "2022", "label": "Summer", "copy": "Redkisses Signature Gloss launches — sells out twice." } },
+        { "type": "milestone", "settings": { "year": "2024", "label": "Winter", "copy": "Shades and matching sets join the lineup." } },
+        { "type": "milestone", "settings": { "year": "2026", "label": "Now", "copy": "1,000+ customers. Shipping nationwide." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

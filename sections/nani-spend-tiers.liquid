@@ -1,0 +1,253 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-tiers color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-tiers__inner">
+    <header class="nani-tiers__head">
+      {% if s.eyebrow != blank %}
+        <div class="nani-tiers__eyebrow">{{ s.eyebrow }}</div>
+      {% endif %}
+      {% if s.title != blank %}
+        <h2 class="nani-tiers__title">{{ s.title }}</h2>
+      {% endif %}
+    </header>
+
+    <div class="nani-tiers__row">
+      {% for block in section.blocks %}
+        <div class="nani-tiers__tier{% if block.settings.featured %} nani-tiers__tier--featured{% endif %}" {{ block.shopify_attributes }}>
+          {% if block.settings.eyebrow != blank %}
+            <div class="nani-tiers__tier-eyebrow">{{ block.settings.eyebrow }}</div>
+          {% endif %}
+          <h3 class="nani-tiers__tier-name">{{ block.settings.name }}</h3>
+          <div class="nani-tiers__tier-label">{{ block.settings.spend_label | default: 'Spend' }}</div>
+          <div class="nani-tiers__tier-amount">{{ block.settings.amount }}</div>
+          {% if block.settings.perks != blank %}
+            <ul class="nani-tiers__perks">
+              {% assign perk_list = block.settings.perks | newline_to_br | split: '<br />' %}
+              {% for perk in perk_list %}
+                {% if perk != blank %}
+                  <li><span class="nani-tiers__tick" aria-hidden="true">✓</span>{{ perk | strip }}</li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .nani-tiers {
+    position: relative;
+  }
+  .nani-tiers__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+  }
+  .nani-tiers__head {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .nani-tiers__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+  .nani-tiers__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(40px, 4vw, 54px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin: 0;
+    color: var(--color-foreground-heading);
+  }
+  .nani-tiers__title em {
+    font-style: italic;
+    color: var(--color-primary);
+  }
+
+  .nani-tiers__row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .nani-tiers__tier {
+    padding: 36px 32px;
+    background: var(--color-background-secondary, rgba(13,10,11,0.03));
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    text-align: center;
+  }
+  .nani-tiers__tier--featured {
+    background: var(--color-primary);
+    color: var(--color-background);
+    border-color: var(--color-primary);
+    transform: translateY(-8px);
+  }
+  .nani-tiers__tier-eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .nani-tiers__tier--featured .nani-tiers__tier-eyebrow { color: #C9A227; }
+  .nani-tiers__tier-name {
+    font-family: var(--font-heading--family);
+    font-size: 36px;
+    margin: 0 0 10px;
+    font-weight: 500;
+    color: var(--color-foreground-heading);
+    letter-spacing: -0.01em;
+  }
+  .nani-tiers__tier--featured .nani-tiers__tier-name { color: var(--color-background); }
+  .nani-tiers__tier-label {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    color: var(--color-foreground);
+  }
+  .nani-tiers__tier--featured .nani-tiers__tier-label { color: rgba(253,246,240,0.75); opacity: 1; }
+  .nani-tiers__tier-amount {
+    font-family: var(--font-heading--family);
+    font-size: 54px;
+    line-height: 1;
+    color: var(--color-primary);
+    font-weight: 500;
+    margin: 16px 0 8px;
+  }
+  .nani-tiers__tier--featured .nani-tiers__tier-amount { color: #F0E3B8; }
+
+  .nani-tiers__perks {
+    list-style: none;
+    padding: 0;
+    margin: 22px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: var(--font-body--family);
+    font-size: 13.5px;
+    text-align: left;
+  }
+  .nani-tiers__perks li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    color: var(--color-foreground);
+  }
+  .nani-tiers__tier--featured .nani-tiers__perks li {
+    border-color: rgba(253,246,240,0.14);
+    color: rgba(253,246,240,0.95);
+  }
+  .nani-tiers__perks li:last-child { border-bottom: 0; }
+  .nani-tiers__tick {
+    color: var(--color-primary);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .nani-tiers__tier--featured .nani-tiers__tick { color: #C9A227; }
+
+  @media screen and (max-width: 1100px) {
+    .nani-tiers__row { grid-template-columns: 1fr; }
+    .nani-tiers__tier--featured { transform: none; }
+    .nani-tiers__inner { padding-left: 24px; padding-right: 24px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Spend tiers",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["collection", "page", "index"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Stack the savings"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "The more you spend, <em>the more you save.</em>"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tier",
+      "name": "Tier",
+      "settings": [
+        { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Tier 1" },
+        { "type": "text", "id": "name", "label": "Name", "default": "Starter" },
+        { "type": "text", "id": "spend_label", "label": "Spend label", "default": "Spend" },
+        { "type": "text", "id": "amount", "label": "Amount", "default": "$30+" },
+        { "type": "textarea", "id": "perks", "label": "Perks (one per line)", "default": "5% off auto-applied\nFree Redkisses lip gloss sample\nBranded thank-you card" },
+        { "type": "checkbox", "id": "featured", "label": "Featured (dark background)", "default": false }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Spend tiers",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "tier", "settings": { "eyebrow": "Tier 1", "name": "Starter", "amount": "$30+", "perks": "5% off auto-applied\nFree Redkisses lip gloss sample\nBranded thank-you card" } },
+        { "type": "tier", "settings": { "eyebrow": "Tier 2 · Most popular", "name": "Glam", "amount": "$60+", "perks": "10% off auto-applied\nFree shipping anywhere in US\nFull-size lip gloss ($18 value)\nBranded gift box + tissue", "featured": true } },
+        { "type": "tier", "settings": { "eyebrow": "Tier 3", "name": "VIP", "amount": "$100+", "perks": "15% off auto-applied\nPriority 2-day shipping\nFree jewelry piece ($14 value)\nHandwritten thank-you note" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

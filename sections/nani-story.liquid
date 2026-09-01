@@ -1,0 +1,189 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-story color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-story__inner">
+    <header class="nani-story__head">
+      {% if s.eyebrow != blank %}
+        <div class="nani-story__eyebrow">{{ s.eyebrow }}</div>
+      {% endif %}
+      {% if s.headline != blank %}
+        <h2 class="nani-story__title">{{ s.headline }}</h2>
+      {% endif %}
+    </header>
+
+    <div class="nani-story__copy">
+      {% if s.body_before != blank %}{{ s.body_before }}{% endif %}
+
+      {% if s.pullquote != blank %}
+        <blockquote class="nani-story__pullquote">{{ s.pullquote }}</blockquote>
+      {% endif %}
+
+      {% if s.body_after != blank %}{{ s.body_after }}{% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .nani-story {
+    position: relative;
+  }
+  .nani-story__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+  }
+  .nani-story__head {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .nani-story__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+  .nani-story__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(44px, 5vw, 60px);
+    font-weight: 500;
+    line-height: 1;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: var(--color-foreground-heading);
+  }
+  .nani-story__title em { font-style: italic; color: var(--color-primary); }
+
+  .nani-story__copy {
+    font-family: var(--font-body--family);
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--color-foreground);
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .nani-story__copy p { margin: 0 0 22px; }
+  .nani-story__copy > p:first-of-type::first-letter {
+    font-family: var(--font-heading--family);
+    font-size: 72px;
+    float: left;
+    line-height: 0.85;
+    margin: 6px 10px 0 0;
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+
+  .nani-story__pullquote {
+    font-family: var(--font-heading--family);
+    font-style: italic;
+    font-size: clamp(28px, 3vw, 36px);
+    line-height: 1.25;
+    color: var(--color-primary);
+    text-align: center;
+    margin: 56px 0;
+    padding: 40px 0;
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .nani-story__pullquote::before {
+    content: "\201C";
+    display: block;
+    font-size: 60px;
+    color: #C9A227;
+    line-height: 0;
+    margin-bottom: 28px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .nani-story__inner { padding-left: 24px; padding-right: 24px; }
+    .nani-story__copy { font-size: 16px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Story longform",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["page", "index"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "How we started"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "headline",
+      "label": "Headline",
+      "default": "From the <em>bedroom</em> to your doorstep."
+    },
+    {
+      "type": "richtext",
+      "id": "body_before",
+      "label": "Body (before pullquote)",
+      "default": "<p>In 2021, Redkisses started as a handful of custom bracelets made for friends around Akron — beading them at the kitchen table between shifts, posting what was made on Instagram. Requests kept coming, so the table became a workspace and the workspace became a business.</p><p>The next year, a signature lip gloss joined the lineup and sold out twice in its first month. Shades and matching sets followed. Redkisses is still run out of Akron, still hand-packed one order at a time, still obsessed with getting the little things right.</p>"
+    },
+    {
+      "type": "text",
+      "id": "pullquote",
+      "label": "Pullquote",
+      "default": "Honest pricing isn't a slogan. It's the whole reason the business exists."
+    },
+    {
+      "type": "richtext",
+      "id": "body_after",
+      "label": "Body (after pullquote)",
+      "default": "<p>Today Redkisses stocks lip gloss, jewelry, anklets, shades and matching sets — every piece checked before it gets listed. Every order is hand-packed in a gift-ready box. Every DM gets a real reply. That's the whole model.</p><p>We're not trying to be a department store. We're trying to be the go-to for the everyday woman and girl who wants to shine without overspending. That's enough.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "presets": [
+    {
+      "name": "Story",
+      "category": "Redkisses"
+    }
+  ]
+}
+{% endschema %}

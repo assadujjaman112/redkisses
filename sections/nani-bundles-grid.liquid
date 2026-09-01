@@ -1,0 +1,487 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-bgrid color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-bgrid__inner">
+    <header class="nani-bgrid__head">
+      <div>
+        {% if s.eyebrow != blank %}
+          <div class="nani-bgrid__eyebrow">{{ s.eyebrow }}</div>
+        {% endif %}
+        {% if s.title != blank %}
+          <h2 class="nani-bgrid__title">{{ s.title }}</h2>
+        {% endif %}
+      </div>
+      {% if s.show_sort %}
+        <div class="nani-bgrid__sort">
+          <span>Sort:</span>
+          <b>{{ s.sort_label | default: 'Best sellers' }}</b>
+          <span aria-hidden="true">▾</span>
+        </div>
+      {% endif %}
+    </header>
+
+    <div class="nani-bgrid__cards">
+      {% for block in section.blocks %}
+        {% liquid
+          assign b = block.settings
+          assign grad_idx = forloop.index0 | modulo: 6
+          assign grads = 'pink gold plum champagne wine dusk' | split: ' '
+          assign grad_class = grads[grad_idx]
+          assign card_link = b.link
+          if card_link == blank and b.product != blank
+            assign card_link = b.product.url
+          endif
+          if card_link == blank
+            assign card_link = '#'
+          endif
+          assign card_price = b.price
+          if card_price == blank and b.product != blank
+            assign card_price = b.product.price | money
+          endif
+          assign card_compare = b.compare_price
+          if card_compare == blank and b.product != blank and b.product.compare_at_price > b.product.price
+            assign card_compare = b.product.compare_at_price | money
+          endif
+        %}
+        <article class="nani-bgrid__card" {{ block.shopify_attributes }}>
+          <a class="nani-bgrid__card-img nani-bgrid__card-img--{{ grad_class }}" href="{{ card_link }}">
+            {% if b.image != blank %}
+              {{ b.image | image_url: width: 800 | image_tag:
+                class: 'nani-bgrid__card-image',
+                widths: '320, 480, 640, 800',
+                sizes: '(min-width: 1100px) 30vw, 90vw',
+                loading: 'lazy',
+                alt: b.name }}
+            {% elsif b.image_url != blank %}
+              <img
+                class="nani-bgrid__card-image"
+                src="{{ b.image_url }}"
+                alt="{{ b.name }}"
+                loading="lazy"
+                decoding="async"
+                width="800"
+                height="600"
+              >
+            {% endif %}
+            {% if b.badge_label != blank %}
+              <span class="nani-bgrid__card-badge">{{ b.badge_label }}</span>
+            {% endif %}
+            {% if b.save_label != blank %}
+              <span class="nani-bgrid__card-save">{{ b.save_label }}</span>
+            {% endif %}
+          </a>
+          <div class="nani-bgrid__card-body">
+            {% if b.category != blank %}
+              <div class="nani-bgrid__card-cat">{{ b.category }}</div>
+            {% endif %}
+            <h3 class="nani-bgrid__card-name">{{ b.name | default: 'Bundle kit' }}</h3>
+            {% if b.description != blank %}
+              <p class="nani-bgrid__card-desc">{{ b.description }}</p>
+            {% endif %}
+            {% if b.pills != blank %}
+              <div class="nani-bgrid__card-pills">
+                {% assign pill_list = b.pills | split: ',' %}
+                {% for pill in pill_list %}
+                  <span class="nani-bgrid__card-pill">{{ pill | strip }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="nani-bgrid__card-foot">
+            <div class="nani-bgrid__card-price">
+              {% if card_price != blank %}
+                <span class="nani-bgrid__card-now">{{ card_price }}</span>
+              {% endif %}
+              {% if card_compare != blank %}
+                <span class="nani-bgrid__card-was">{{ card_compare }}</span>
+              {% endif %}
+            </div>
+            <a class="nani-bgrid__card-add" href="{{ card_link }}">{{ b.cta_label | default: 'Add +' }}</a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .nani-bgrid {
+    position: relative;
+  }
+  .nani-bgrid__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+  }
+  .nani-bgrid__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .nani-bgrid__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .nani-bgrid__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(38px, 4vw, 54px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0;
+    color: var(--color-foreground-heading);
+  }
+  .nani-bgrid__title em { font-style: italic; color: var(--color-primary); }
+  .nani-bgrid__sort {
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.15);
+    background: var(--color-background);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-foreground);
+  }
+  .nani-bgrid__sort b { color: var(--color-foreground-heading); }
+
+  .nani-bgrid__cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .nani-bgrid__card {
+    background: var(--color-background);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .nani-bgrid__card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(13,10,11,0.08);
+  }
+  .nani-bgrid__card-img {
+    aspect-ratio: 4 / 3;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: block;
+  }
+  .nani-bgrid__card-img--pink { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.04) 0 2px, transparent 2px 14px), linear-gradient(165deg, #F7E1E4, #E0455F); }
+  .nani-bgrid__card-img--gold { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.04) 0 2px, transparent 2px 14px), linear-gradient(165deg, #F0E3B8, #C9A227); }
+  .nani-bgrid__card-img--plum { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.04) 0 2px, transparent 2px 14px), linear-gradient(165deg, #EFB7BE, #C8102E); }
+  .nani-bgrid__card-img--champagne { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.04) 0 2px, transparent 2px 14px), linear-gradient(165deg, #FBF8F6, #F0E3B8); }
+  .nani-bgrid__card-img--wine { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.04) 0 2px, transparent 2px 14px), linear-gradient(165deg, #F7E1E4, #C8102E); }
+  .nani-bgrid__card-img--dusk { background: repeating-linear-gradient(135deg, rgba(13,10,11,0.04) 0 2px, transparent 2px 14px), linear-gradient(165deg, #E0455F, #0D0A0B); }
+  .nani-bgrid__card-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .nani-bgrid__card-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: var(--color-primary);
+    color: var(--color-background);
+    padding: 5px 10px;
+    font-family: var(--font-body--family);
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    z-index: 2;
+    font-weight: 500;
+  }
+  .nani-bgrid__card-save {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: #C9A227;
+    color: #0D0A0B;
+    padding: 5px 10px;
+    font-family: var(--font-body--family);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    z-index: 2;
+    font-weight: 600;
+  }
+
+  .nani-bgrid__card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+  .nani-bgrid__card-cat {
+    font-family: var(--font-body--family);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+  }
+  .nani-bgrid__card-name {
+    font-family: var(--font-heading--family);
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.1;
+    margin: 0;
+    color: var(--color-foreground-heading);
+  }
+  .nani-bgrid__card-desc {
+    font-family: var(--font-body--family);
+    color: var(--color-foreground);
+    opacity: 0.85;
+    font-size: 13.5px;
+    margin: 0;
+    flex: 1;
+    line-height: 1.5;
+  }
+  .nani-bgrid__card-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: auto;
+  }
+  .nani-bgrid__card-pill {
+    font-family: var(--font-body--family);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    background: var(--color-background-secondary, rgba(13,10,11,0.04));
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.1);
+    color: var(--color-foreground);
+  }
+
+  .nani-bgrid__card-foot {
+    padding: 18px 24px;
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--color-background-secondary, rgba(13,10,11,0.03));
+  }
+  .nani-bgrid__card-price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .nani-bgrid__card-now {
+    font-family: var(--font-heading--family);
+    font-size: 26px;
+    color: var(--color-primary);
+    font-weight: 500;
+    line-height: 1;
+  }
+  .nani-bgrid__card-was {
+    color: rgb(var(--color-foreground-rgb) / 0.45);
+    text-decoration: line-through;
+    font-size: 13px;
+  }
+  .nani-bgrid__card-add {
+    background: var(--color-foreground-heading);
+    color: var(--color-background);
+    padding: 10px 14px;
+    font-family: var(--font-body--family);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s ease;
+    font-weight: 500;
+  }
+  .nani-bgrid__card-add:hover { background: var(--color-primary); }
+
+  @media screen and (max-width: 1100px) {
+    .nani-bgrid__cards { grid-template-columns: repeat(2, 1fr); }
+    .nani-bgrid__inner { padding-left: 24px; padding-right: 24px; }
+  }
+  @media screen and (max-width: 749px) {
+    .nani-bgrid__cards { grid-template-columns: 1fr; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Bundles grid",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["collection", "page", "index"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "All bundle deals"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "Six <em>kits.</em> One checkout."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "Show sort dropdown",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "sort_label",
+      "label": "Sort label",
+      "default": "Best sellers"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bundle",
+      "name": "Bundle card",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Linked product (optional — auto-fills price and link)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image (optional — gradient placeholder if empty)"
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Image URL (fallback)",
+          "info": "Used when no image is picked above."
+        },
+        {
+          "type": "text",
+          "id": "badge_label",
+          "label": "Badge (top-left)",
+          "default": "Best seller"
+        },
+        {
+          "type": "text",
+          "id": "save_label",
+          "label": "Save badge (top-right)",
+          "default": "Save 17%"
+        },
+        {
+          "type": "text",
+          "id": "category",
+          "label": "Category line",
+          "default": "Beauty · 3 items"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Bundle name",
+          "default": "The Kiss Kit"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Three signature glosses — Hot Pink, Ruby Red, Nude Kiss — in one black gift box."
+        },
+        {
+          "type": "text",
+          "id": "pills",
+          "label": "Pills (comma-separated)",
+          "default": "Hot Pink, Ruby Red, Nude Kiss"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Price (overrides linked product)",
+          "default": "$30"
+        },
+        {
+          "type": "text",
+          "id": "compare_price",
+          "label": "Compare-at price (overrides linked product)",
+          "default": "$36"
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "CTA label",
+          "default": "Add +"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Override link (defaults to linked product)"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Bundles grid",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "bundle", "settings": { "badge_label": "Best seller", "save_label": "Save 17%", "category": "Beauty · 3 items", "name": "The Kiss Kit", "description": "Three signature glosses — Hot Pink, Ruby Red, Nude Kiss — in one black gift box.", "pills": "Hot Pink, Ruby Red, Nude Kiss", "price": "$30", "compare_price": "$36" } },
+        { "type": "bundle", "settings": { "badge_label": "New", "save_label": "Save 24%", "category": "Mixed · 3 items", "name": "Glam Starter", "description": "One gloss, one rhinestone anklet, one custom name bracelet. The starter stack.", "pills": "Gloss, Anklet, Bracelet", "price": "$29", "compare_price": "$38" } },
+        { "type": "bundle", "settings": { "badge_label": "Shades", "save_label": "Save 14%", "category": "Mixed · 2 items", "name": "Shade & Shine", "description": "Your pick of shades plus one signature gloss.", "pills": "Shades, + Gloss", "price": "$25", "compare_price": "$29" } },
+        { "type": "bundle", "settings": { "badge_label": "Jewelry", "save_label": "Save 26%", "category": "Jewelry · 3 items", "name": "Icy Stack", "description": "Rhinestone anklet, custom bracelet and layered gold necklace.", "pills": "Anklet, Bracelet, Necklace", "price": "$28", "compare_price": "$38" } },
+        { "type": "bundle", "settings": { "badge_label": "Premium", "save_label": "Save 14%", "category": "Mixed · 3 items", "name": "Night Out Set", "description": "Purple chain 2-piece, black chain shades and Ruby Red gloss.", "pills": "2-piece, Shades, Gloss", "price": "$49", "compare_price": "$57" } },
+        { "type": "bundle", "settings": { "badge_label": "Gift", "save_label": "Save 22%", "category": "Mixed · 5 items", "name": "Redkisses Gift Box", "description": "Gloss, bracelet, anklet, satin pouch and a handwritten card. Ready to give.", "pills": "Gift-ready, Card included", "price": "$39", "compare_price": "$50" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

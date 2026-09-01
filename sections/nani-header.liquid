@@ -1,0 +1,438 @@
+{% liquid
+  assign s = section.settings
+  assign menu = linklists[s.menu]
+  assign logo_text = s.logo_text | default: "Redkisses"
+  assign logo_sub = s.logo_sub | default: 'Jewelry & Beauty'
+%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap">
+
+<header class="nani-hdr color-{{ s.color_scheme }}" data-sticky="{{ s.sticky }}">
+  <div class="nani-hdr__inner">
+    {%- comment -%} LEFT — nav {%- endcomment -%}
+    <nav class="nani-hdr__nav" aria-label="Primary">
+      {% if menu.links.size > 0 %}
+        {% for link in menu.links %}
+          <a href="{{ link.url }}" class="nani-hdr__link{% if link.active %} nani-hdr__link--active{% endif %}">{{ link.title }}</a>
+        {% endfor %}
+      {% else %}
+        <a href="{{ routes.root_url }}" class="nani-hdr__link">Home</a>
+        <a href="{{ routes.collections_url }}/all" class="nani-hdr__link">Shop</a>
+      {% endif %}
+    </nav>
+
+    {%- comment -%} MOBILE — hamburger {%- endcomment -%}
+    <button class="nani-hdr__burger" type="button" aria-label="Open menu" data-menu-open>
+      <span></span><span></span><span></span>
+    </button>
+
+    {%- comment -%} CENTER — logo lockup {%- endcomment -%}
+    <a href="{{ routes.root_url }}" class="nani-hdr__logo" aria-label="{{ shop.name }}">
+      {% if s.logo_image != blank %}
+        {{ s.logo_image | image_url: width: 240 | image_tag:
+          class: 'nani-hdr__logo-img',
+          widths: '120, 180, 240',
+          loading: 'eager',
+          alt: shop.name }}
+      {% else %}
+        <span class="nani-hdr__logo-row" aria-hidden="true">
+          <svg class="nani-hdr__crown" width="18" height="12" viewBox="0 0 16 10" fill="none">
+            <path d="M1 9L2 3L5 6L8 1L11 6L14 3L15 9H1Z" stroke="#C9A227" stroke-width="1.2" fill="#C9A227" fill-opacity="0.28"/>
+          </svg>
+          <span class="nani-hdr__logo-script">{{ logo_text }}</span>
+          <svg class="nani-hdr__crown" width="18" height="12" viewBox="0 0 16 10" fill="none">
+            <path d="M1 9L2 3L5 6L8 1L11 6L14 3L15 9H1Z" stroke="#C9A227" stroke-width="1.2" fill="#C9A227" fill-opacity="0.28"/>
+          </svg>
+        </span>
+        {% if logo_sub != blank %}
+          <span class="nani-hdr__logo-sub">{{ logo_sub }}</span>
+        {% endif %}
+      {% endif %}
+    </a>
+
+    {%- comment -%} RIGHT — icons {%- endcomment -%}
+    <div class="nani-hdr__right">
+      {% if s.show_search %}
+        <a href="{{ routes.search_url }}" class="nani-hdr__icon" aria-label="Search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20L17 17"/></svg>
+        </a>
+      {% endif %}
+      {% if s.show_account %}
+        <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" class="nani-hdr__icon" aria-label="Account">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+        </a>
+      {% endif %}
+      <a href="{{ routes.cart_url }}" class="nani-hdr__icon nani-hdr__cart" aria-label="Cart" data-cart-link>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1.5 11.5a2 2 0 0 1-2 1.5h-5a2 2 0 0 1-2-1.5L6 7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>
+        {% if s.show_cart_label %}<span class="nani-hdr__cart-label">Bag</span>{% endif %}
+        <span class="nani-hdr__cart-count" data-cart-count>{{ cart.item_count | default: 0 }}</span>
+      </a>
+    </div>
+  </div>
+
+  {%- comment -%} MOBILE DRAWER {%- endcomment -%}
+  <div class="nani-hdr__drawer" data-menu-drawer hidden>
+    <div class="nani-hdr__drawer-head">
+      <span class="nani-hdr__logo-script">{{ logo_text }}</span>
+      <button type="button" class="nani-hdr__drawer-close" data-menu-close aria-label="Close menu">×</button>
+    </div>
+    <nav class="nani-hdr__drawer-nav" aria-label="Mobile">
+      {% for link in menu.links %}
+        <a href="{{ link.url }}">{{ link.title }}</a>
+      {% endfor %}
+    </nav>
+    <div class="nani-hdr__drawer-foot">
+      <a href="{{ routes.search_url }}">Search</a>
+      <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}">Account</a>
+    </div>
+  </div>
+  <div class="nani-hdr__drawer-veil" data-menu-close hidden></div>
+</header>
+
+<script>
+(function(){
+  const openBtn = document.querySelector('[data-menu-open]');
+  const drawer = document.querySelector('[data-menu-drawer]');
+  const veil = document.querySelector('.nani-hdr__drawer-veil');
+  const close = () => {
+    drawer?.setAttribute('hidden','');
+    veil?.setAttribute('hidden','');
+    document.body.style.overflow = '';
+  };
+  const open = () => {
+    drawer?.removeAttribute('hidden');
+    veil?.removeAttribute('hidden');
+    document.body.style.overflow = 'hidden';
+  };
+  openBtn?.addEventListener('click', open);
+  document.querySelectorAll('[data-menu-close]').forEach(el => el.addEventListener('click', close));
+})();
+</script>
+
+{% stylesheet %}
+  .nani-hdr {
+    background: var(--color-background);
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    font-family: var(--font-body--family);
+    position: relative;
+    z-index: 40;
+  }
+  .nani-hdr[data-sticky="true"] {
+    position: sticky;
+    top: 0;
+  }
+  .nani-hdr__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 18px 40px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 32px;
+  }
+
+  /* NAV */
+  .nani-hdr__nav {
+    display: flex;
+    gap: 28px;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .nani-hdr__link {
+    padding: 6px 0;
+    color: var(--color-foreground-heading);
+    text-decoration: none;
+    transition: color 0.15s ease;
+    position: relative;
+  }
+  .nani-hdr__link:hover,
+  .nani-hdr__link--active {
+    color: var(--color-primary);
+  }
+  .nani-hdr__link--active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1px;
+    background: var(--color-primary);
+  }
+
+  /* LOGO */
+  .nani-hdr__logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+    gap: 3px;
+    text-decoration: none;
+    color: var(--color-foreground-heading);
+    justify-self: center;
+  }
+  .nani-hdr__logo-img {
+    height: 48px;
+    width: auto;
+  }
+  .nani-hdr__logo-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nani-hdr__crown {
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .nani-hdr__logo-script {
+    font-family: 'Dancing Script', var(--font-heading--family), serif;
+    font-weight: 700;
+    font-size: 34px;
+    color: var(--color-foreground-heading);
+    line-height: 0.9;
+  }
+  .nani-hdr__logo-sub {
+    font-family: var(--font-heading--family), serif;
+    font-size: 11px;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: #C9A227;
+    font-weight: 600;
+    padding-left: 0.42em;
+  }
+
+  /* RIGHT */
+  .nani-hdr__right {
+    display: flex;
+    justify-content: flex-end;
+    gap: 22px;
+    align-items: center;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .nani-hdr__icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    color: var(--color-foreground-heading);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .nani-hdr__icon:hover { color: var(--color-primary); }
+  .nani-hdr__icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.4;
+    flex-shrink: 0;
+  }
+  .nani-hdr__cart { position: relative; }
+  .nani-hdr__cart-label { font-weight: 500; }
+  .nani-hdr__cart-count {
+    background: var(--color-primary);
+    color: var(--color-background);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0;
+    border-radius: 999px;
+    padding: 2px 7px;
+    min-width: 22px;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  /* BURGER */
+  .nani-hdr__burger {
+    display: none;
+    background: transparent;
+    border: 0;
+    padding: 6px;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 4px;
+    justify-self: start;
+  }
+  .nani-hdr__burger span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--color-foreground-heading);
+  }
+
+  /* DRAWER */
+  .nani-hdr__drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 320px;
+    max-width: 85vw;
+    background: var(--color-background);
+    z-index: 90;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 20px 0 60px rgba(13,10,11,0.2);
+  }
+  .nani-hdr__drawer[hidden] { display: none; }
+  .nani-hdr__drawer-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+  }
+  .nani-hdr__drawer-close {
+    font-size: 26px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    color: var(--color-foreground);
+    line-height: 1;
+  }
+  .nani-hdr__drawer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .nani-hdr__drawer-nav a {
+    padding: 14px 0;
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--color-foreground-heading);
+    text-decoration: none;
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.06);
+  }
+  .nani-hdr__drawer-nav a:hover { color: var(--color-primary); }
+  .nani-hdr__drawer-foot {
+    margin-top: auto;
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding-top: 16px;
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+  }
+  .nani-hdr__drawer-foot a {
+    color: var(--color-foreground);
+    text-decoration: none;
+  }
+  .nani-hdr__drawer-veil {
+    position: fixed;
+    inset: 0;
+    background: rgba(13,10,11,0.55);
+    z-index: 89;
+  }
+  .nani-hdr__drawer-veil[hidden] { display: none; }
+
+  @media screen and (max-width: 1100px) {
+    .nani-hdr__inner {
+      grid-template-columns: auto 1fr auto;
+      padding: 16px 24px;
+      gap: 16px;
+    }
+    .nani-hdr__nav { display: none; }
+    .nani-hdr__burger { display: flex; }
+    .nani-hdr__cart-label { display: none; }
+    .nani-hdr__logo-script { font-size: 28px; }
+    .nani-hdr__logo-sub { font-size: 10px; letter-spacing: 0.36em; }
+    .nani-hdr__right { gap: 14px; }
+  }
+
+  @media screen and (max-width: 560px) {
+    .nani-hdr__logo-script { font-size: 24px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Nani header",
+  "class": "section-header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Navigation menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky",
+      "label": "Sticky header",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_image",
+      "label": "Logo image (optional — uses text lockup if empty)"
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo text (script)",
+      "default": "Redkisses"
+    },
+    {
+      "type": "text",
+      "id": "logo_sub",
+      "label": "Logo sub (caps)",
+      "default": "Jewelry & Beauty"
+    },
+    {
+      "type": "header",
+      "content": "Icons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Show account icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart_label",
+      "label": "Show \"Bag\" label next to cart",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "presets": [
+    {
+      "name": "Nani header",
+      "category": "Redkisses"
+    }
+  ]
+}
+{% endschema %}

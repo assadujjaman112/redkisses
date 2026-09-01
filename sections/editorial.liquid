@@ -1,0 +1,411 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="editorial color-{{ s.color_scheme }}">
+  <div class="editorial__inner">
+
+    <div class="editorial__copy">
+      {% if s.eyebrow != blank %}
+        <div class="editorial__eyebrow">{{ s.eyebrow }}</div>
+      {% endif %}
+
+      {% if s.headline != blank %}
+        <h2 class="editorial__title">{{ s.headline }}</h2>
+      {% endif %}
+
+      {% if s.body != blank %}
+        <div class="editorial__body">{{ s.body }}</div>
+      {% endif %}
+
+      {% if s.signature_name != blank %}
+        <div class="editorial__sig">
+          <div class="editorial__sig-name">{{ s.signature_name }}</div>
+          {% if s.signature_role != blank %}
+            <div class="editorial__sig-role">{{ s.signature_role }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="editorial__visual">
+      {% if s.image != blank %}
+        {{ s.image | image_url: width: 1200 | image_tag:
+          class: 'editorial__image',
+          widths: '480, 720, 960, 1200',
+          sizes: '(min-width: 1100px) 50vw, 100vw',
+          loading: 'lazy',
+          alt: s.image_alt | default: s.signature_name }}
+      {% elsif s.image_url != blank %}
+        <img
+          class="editorial__image"
+          src="{{ s.image_url }}"
+          alt="{{ s.image_alt | default: s.signature_name }}"
+          loading="lazy"
+          decoding="async"
+          width="1000"
+          height="1200"
+        >
+      {% else %}
+        <div class="editorial__placeholder" aria-hidden="true">
+          <span class="editorial__placeholder-tag">[ drop-in portrait · 1000×1200 ]</span>
+        </div>
+      {% endif %}
+
+      {% if s.show_stats %}
+        <div class="editorial__stats">
+          {% if s.stat_1_value != blank %}
+            <div class="editorial__stat">
+              <div class="editorial__stat-num">{{ s.stat_1_value }}</div>
+              <div class="editorial__stat-label">{{ s.stat_1_label }}</div>
+            </div>
+          {% endif %}
+          {% if s.stat_2_value != blank %}
+            <div class="editorial__stat">
+              <div class="editorial__stat-num">{{ s.stat_2_value }}</div>
+              <div class="editorial__stat-label">{{ s.stat_2_label }}</div>
+            </div>
+          {% endif %}
+          {% if s.stat_3_value != blank %}
+            <div class="editorial__stat">
+              <div class="editorial__stat-num">{{ s.stat_3_value }}</div>
+              <div class="editorial__stat-label">{{ s.stat_3_label }}</div>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+
+{% stylesheet %}
+  .editorial {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .editorial__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    min-height: 560px;
+  }
+
+  .editorial__copy {
+    padding: 100px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .editorial__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 22px;
+  }
+
+  .editorial__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(36px, 4.5vw, 56px);
+    line-height: 1;
+    font-weight: 500;
+    margin: 0 0 28px;
+    letter-spacing: -0.02em;
+    color: var(--color-foreground-heading);
+  }
+
+  .editorial__title em {
+    font-style: italic;
+    color: var(--color-primary);
+  }
+
+  .editorial__body {
+    max-width: 460px;
+    font-family: var(--font-body--family);
+    font-size: 15px;
+    color: var(--color-foreground);
+    line-height: 1.6;
+  }
+
+  .editorial__body p {
+    margin: 0 0 16px;
+  }
+
+  .editorial__body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .editorial__sig {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .editorial__sig-name {
+    font-family: var(--font-heading--family);
+    font-style: italic;
+    font-size: 32px;
+    color: var(--color-primary);
+    line-height: 0.9;
+    font-weight: 500;
+  }
+
+  .editorial__sig-role {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    line-height: 1.5;
+  }
+
+  .editorial__visual {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .editorial__image,
+  .editorial__placeholder {
+    position: absolute;
+    inset: 40px 40px 40px 0;
+    width: auto;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .editorial__placeholder {
+    background:
+      repeating-linear-gradient(135deg, rgb(26 18 8 / 0.06) 0 2px, transparent 2px 14px),
+      linear-gradient(180deg, #EFB7BE, #E0455F);
+    display: flex;
+    align-items: flex-end;
+    padding: 32px;
+  }
+
+  .editorial__placeholder-tag {
+    font-family: ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: rgb(26 18 8 / 0.5);
+    color: #FBF8F6;
+    padding: 8px 12px;
+    border: 1px solid rgb(255 255 255 / 0.35);
+  }
+
+  .editorial__stats {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    background: #FBF8F6;
+    color: #0D0A0B;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 220px;
+    border: 1px solid rgb(26 18 8 / 0.06);
+    box-shadow: 0 10px 30px rgb(26 18 8 / 0.08);
+    z-index: 2;
+  }
+
+  .editorial__stat-num {
+    color: #C8102E;
+  }
+
+  .editorial__stat-label {
+    color: #3b2e23;
+  }
+
+  .editorial__stat-num {
+    font-family: var(--font-heading--family);
+    font-size: 36px;
+    line-height: 1;
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+
+  .editorial__stat-label {
+    font-family: var(--font-body--family);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    margin-top: 4px;
+  }
+
+  @media screen and (max-width: 1100px) {
+    .editorial__inner {
+      grid-template-columns: 1fr;
+    }
+    .editorial__copy {
+      padding: 72px 40px;
+    }
+    .editorial__visual {
+      min-height: 480px;
+    }
+    .editorial__image,
+    .editorial__placeholder {
+      inset: 0 40px 40px 40px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .editorial__copy {
+      padding: 56px 24px;
+    }
+    .editorial__image,
+    .editorial__placeholder {
+      inset: 0 20px 20px 20px;
+    }
+    .editorial__stats {
+      top: 20px;
+      right: 20px;
+      padding: 18px 20px;
+      min-width: 160px;
+    }
+    .editorial__stat-num {
+      font-size: 26px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Editorial / About",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["*"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Copy"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Meet the founder"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "headline",
+      "label": "Headline",
+      "info": "Wrap words in <em>italic</em> for accent",
+      "default": "Hey — it's <em>Redkisses.</em>"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Body",
+      "default": "<p>Redkisses started small — custom bracelets and glosses made for friends in Akron, Ohio. It grew into jewelry, shades and gift sets, but the rule never changed: good pieces, honest prices, no gate-keeping.</p><p>Every order is packed by hand, every gloss and piece is tested first, and every DM gets answered. That's the whole brand.</p>"
+    },
+    {
+      "type": "text",
+      "id": "signature_name",
+      "label": "Signature name",
+      "default": "Redkisses"
+    },
+    {
+      "type": "text",
+      "id": "signature_role",
+      "label": "Signature role",
+      "default": "Founder & Owner · Akron, Ohio"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Portrait image"
+    },
+    {
+      "type": "text",
+      "id": "image_url",
+      "label": "Image URL (fallback)",
+      "info": "Used when no image is picked above."
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image alt text",
+      "default": "Redkisses — Founder"
+    },
+    {
+      "type": "header",
+      "content": "Stats card (top-right overlay)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stats",
+      "label": "Show stats card",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "stat_1_value",
+      "label": "Stat 1 — value",
+      "default": "1,000+"
+    },
+    {
+      "type": "text",
+      "id": "stat_1_label",
+      "label": "Stat 1 — label",
+      "default": "Happy customers"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_value",
+      "label": "Stat 2 — value",
+      "default": "20+"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_label",
+      "label": "Stat 2 — label",
+      "default": "Products in stock"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_value",
+      "label": "Stat 3 — value",
+      "default": "48hr"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_label",
+      "label": "Stat 3 — label",
+      "default": "Avg. fulfillment"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-2"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Editorial / About",
+      "category": "Redkisses"
+    }
+  ]
+}
+{% endschema %}

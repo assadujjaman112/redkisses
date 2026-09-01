@@ -1,0 +1,684 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-contact color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  {% if s.show_crumb %}
+    <nav class="nani-contact__crumb" aria-label="Breadcrumb">
+      <a href="{{ routes.root_url }}">Home</a>
+      <span class="sep">/</span>
+      <span class="here">{{ s.crumb_label | default: 'Contact' }}</span>
+    </nav>
+  {% endif %}
+
+  <div class="nani-contact__layout">
+    {%- comment -%} LEFT: CHANNELS + HOURS {%- endcomment -%}
+    <div class="nani-contact__left">
+      {% if s.eyebrow != blank %}
+        <div class="nani-contact__eyebrow">{{ s.eyebrow }}</div>
+      {% endif %}
+      {% if s.title != blank %}
+        <h1 class="nani-contact__title">{{ s.title }}</h1>
+      {% endif %}
+      {% if s.subcopy != blank %}
+        <p class="nani-contact__sub">{{ s.subcopy }}</p>
+      {% endif %}
+
+      <div class="nani-contact__channels">
+        {% for block in section.blocks %}
+          {% if block.type == 'channel' %}
+            {% assign b = block.settings %}
+            {% assign href = b.url %}
+            {% if b.type == 'email' and b.value != blank %}
+              {% assign href = 'mailto:' | append: b.value %}
+            {% elsif b.type == 'phone' and b.value != blank %}
+              {% assign tel_num = b.value | replace: ' ', '' | replace: '-', '' | replace: '(', '' | replace: ')', '' %}
+              {% assign href = 'tel:' | append: tel_num %}
+            {% endif %}
+            {% assign is_link = true %}
+            {% if href == blank %}{% assign is_link = false %}{% endif %}
+
+            <{% if is_link %}a href="{{ href }}"{% else %}div{% endif %} class="nani-contact__chan{% if is_link == false %} nani-contact__chan--static{% endif %}" {% if b.type == 'instagram' or b.type == 'url' %}target="_blank" rel="noopener"{% endif %} {{ block.shopify_attributes }}>
+              <span class="nani-contact__chan-ico" aria-hidden="true">
+                {% case b.type %}
+                  {% when 'instagram' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor" stroke="none"/></svg>
+                  {% when 'email' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>
+                  {% when 'phone' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 4h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>
+                  {% when 'location' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/></svg>
+                {% endcase %}
+              </span>
+              <div class="nani-contact__chan-body">
+                <h3>{{ b.title }}</h3>
+                {% if b.value != blank %}
+                  <div class="nani-contact__chan-val">{{ b.value }}</div>
+                {% endif %}
+                {% if b.description != blank %}
+                  <p>{{ b.description }}</p>
+                {% endif %}
+              </div>
+              {% if is_link %}<span class="nani-contact__chan-arrow" aria-hidden="true">→</span>{% endif %}
+            </{% if is_link %}a{% else %}div{% endif %}>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      {% if s.show_hours %}
+        <div class="nani-contact__hours">
+          <h4>{{ s.hours_title | default: 'Support hours (Central Time)' }}</h4>
+          {% assign rows = s.hours_rows | newline_to_br | split: '<br />' %}
+          {% for row in rows %}
+            {% if row != blank %}
+              {% assign parts = row | split: '|' %}
+              <div class="nani-contact__hours-row">
+                <span>{{ parts[0] | strip }}</span>
+                <b>{{ parts[1] | strip }}</b>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {%- comment -%} RIGHT: FORM {%- endcomment -%}
+    <div class="nani-contact__form-card">
+      <div class="nani-contact__eyebrow">{{ s.form_eyebrow | default: 'Contact form' }}</div>
+      <h2 class="nani-contact__form-title">{{ s.form_title | default: 'Or drop us a <em>line.</em>' }}</h2>
+      {% if s.form_sub != blank %}
+        <p class="nani-contact__form-sub">{{ s.form_sub }}</p>
+      {% endif %}
+
+      {% form 'contact', class: 'nani-contact__form', id: 'nani-contact-form' %}
+        {% if form.posted_successfully? %}
+          <div class="nani-contact__success">✓ &nbsp; Message sent — we'll reply soon.</div>
+        {% endif %}
+        {% if form.errors %}
+          <div class="nani-contact__errors">
+            {{ form.errors | default_errors }}
+          </div>
+        {% endif %}
+
+        {% if s.show_topics %}
+          <div class="nani-contact__field">
+            <label>What's it about? ★</label>
+            <div class="nani-contact__topics">
+              {% assign topics = s.topics_list | split: ',' %}
+              {% for t in topics %}
+                {% assign topic = t | strip %}
+                <label class="nani-contact__topic{% if forloop.first %} nani-contact__topic--on{% endif %}">
+                  <input type="radio" name="contact[topic]" value="{{ topic }}" {% if forloop.first %}checked{% endif %}>
+                  <span>{{ topic }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="nani-contact__row">
+          <div class="nani-contact__field">
+            <label for="nc-fname">First name ★</label>
+            <input id="nc-fname" type="text" name="contact[first_name]" required placeholder="Brianna">
+          </div>
+          <div class="nani-contact__field">
+            <label for="nc-lname">Last name ★</label>
+            <input id="nc-lname" type="text" name="contact[last_name]" required placeholder="Carter">
+          </div>
+        </div>
+
+        <div class="nani-contact__row">
+          <div class="nani-contact__field">
+            <label for="nc-email">Email ★</label>
+            <input id="nc-email" type="email" name="contact[email]" required placeholder="you@email.com">
+          </div>
+          <div class="nani-contact__field">
+            <label for="nc-order">Order # (optional)</label>
+            <input id="nc-order" type="text" name="contact[order_number]" placeholder="#RK-12345">
+          </div>
+        </div>
+
+        <div class="nani-contact__field">
+          <label for="nc-subject">Subject ★</label>
+          <input id="nc-subject" type="text" name="contact[subject]" required placeholder="Short summary of your question">
+        </div>
+
+        <div class="nani-contact__field">
+          <label for="nc-body">Message ★</label>
+          <textarea id="nc-body" name="contact[body]" required placeholder="Tell us what's up…"></textarea>
+        </div>
+
+        {% if s.show_newsletter_optin %}
+          <label class="nani-contact__optin">
+            <input type="checkbox" name="contact[newsletter]" value="yes" checked>
+            <span>{{ s.newsletter_label | default: 'Sign me up for the newsletter — 15% off my first order' }}</span>
+          </label>
+        {% endif %}
+
+        {% if s.fineprint != blank %}
+          <div class="nani-contact__fineprint">{{ s.fineprint }}</div>
+        {% endif %}
+
+        <button class="nani-contact__submit" type="submit">
+          {{ s.submit_label | default: 'Send message' }} <span aria-hidden="true">→</span>
+        </button>
+      {% endform %}
+    </div>
+  </div>
+</section>
+
+<script>
+  (function(){
+    document.querySelectorAll('.nani-contact__topic').forEach((t) => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('.nani-contact__topic').forEach(o => o.classList.remove('nani-contact__topic--on'));
+        t.classList.add('nani-contact__topic--on');
+      });
+    });
+  })();
+</script>
+
+{% stylesheet %}
+  .nani-contact { position: relative; font-family: var(--font-body--family); }
+  .nani-contact__crumb {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 20px 40px 0;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    opacity: 0.7;
+  }
+  .nani-contact__crumb a { color: inherit; text-decoration: none; }
+  .nani-contact__crumb a:hover { color: var(--color-primary); }
+  .nani-contact__crumb .sep { margin: 0 8px; color: var(--color-primary); }
+  .nani-contact__crumb .here { color: var(--color-foreground-heading); font-weight: 500; }
+
+  .nani-contact__layout {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 80px;
+  }
+  .nani-contact__eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .nani-contact__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(48px, 5vw, 72px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 0.95;
+    margin: 0 0 20px;
+    color: var(--color-foreground-heading);
+  }
+  .nani-contact__title em { font-style: italic; color: var(--color-primary); }
+  .nani-contact__sub {
+    color: var(--color-foreground);
+    opacity: 0.88;
+    max-width: 420px;
+    margin: 0 0 40px;
+    font-size: 15.5px;
+    line-height: 1.65;
+  }
+
+  /* CHANNELS */
+  .nani-contact__channels {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+  .nani-contact__chan {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    background: var(--color-background-secondary, rgba(13,10,11,0.03));
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    align-items: flex-start;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+  }
+  .nani-contact__chan:hover {
+    border-color: var(--color-primary);
+    transform: translateX(2px);
+  }
+  .nani-contact__chan--static { cursor: default; }
+  .nani-contact__chan--static:hover { transform: none; }
+  .nani-contact__chan-ico {
+    width: 22px;
+    height: 22px;
+    color: var(--color-primary);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .nani-contact__chan-ico svg { width: 100%; height: 100%; }
+  .nani-contact__chan-body { flex: 1; min-width: 0; }
+  .nani-contact__chan-body h3 {
+    font-family: var(--font-heading--family);
+    font-size: 22px;
+    margin: 0 0 4px;
+    font-weight: 500;
+    color: var(--color-foreground-heading);
+  }
+  .nani-contact__chan-val {
+    font-size: 15px;
+    color: var(--color-foreground-heading);
+    font-weight: 500;
+    margin-bottom: 4px;
+    word-break: break-word;
+  }
+  .nani-contact__chan-body p {
+    font-size: 12.5px;
+    color: var(--color-foreground);
+    opacity: 0.72;
+    margin: 0;
+    line-height: 1.5;
+  }
+  .nani-contact__chan-arrow {
+    font-size: 18px;
+    color: var(--color-primary);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  /* HOURS */
+  .nani-contact__hours {
+    padding: 24px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.12);
+    background: var(--color-background);
+  }
+  .nani-contact__hours h4 {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+  .nani-contact__hours-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13.5px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.06);
+    color: var(--color-foreground);
+  }
+  .nani-contact__hours-row:last-child { border: 0; }
+  .nani-contact__hours-row b {
+    color: var(--color-foreground-heading);
+    font-weight: 500;
+  }
+
+  /* FORM CARD */
+  .nani-contact__form-card {
+    background: var(--color-background-secondary, rgba(13,10,11,0.03));
+    padding: 48px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+  }
+  .nani-contact__form-title {
+    font-family: var(--font-heading--family);
+    font-size: 42px;
+    margin: 0 0 8px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.015em;
+    color: var(--color-foreground-heading);
+  }
+  .nani-contact__form-title em { font-style: italic; color: var(--color-primary); }
+  .nani-contact__form-sub {
+    font-size: 13.5px;
+    color: var(--color-foreground);
+    opacity: 0.85;
+    margin: 0 0 30px;
+  }
+
+  .nani-contact__success {
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    background: rgba(74,159,96,0.1);
+    border-left: 3px solid #4a9f60;
+    color: #2f6c47;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .nani-contact__errors {
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    background: rgba(200,16,46,0.08);
+    border-left: 3px solid var(--color-primary);
+    color: var(--color-primary);
+    font-size: 14px;
+  }
+
+  .nani-contact__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .nani-contact__field {
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+  }
+  .nani-contact__field label {
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--color-foreground-heading);
+  }
+  .nani-contact__field input,
+  .nani-contact__field textarea {
+    padding: 14px 16px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.15);
+    background: var(--color-background);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.15s ease;
+    color: var(--color-foreground-heading);
+  }
+  .nani-contact__field input:focus,
+  .nani-contact__field textarea:focus {
+    border-color: var(--color-primary);
+  }
+  .nani-contact__field textarea {
+    min-height: 140px;
+    resize: vertical;
+    font-family: inherit;
+  }
+
+  /* TOPICS */
+  .nani-contact__topics {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .nani-contact__topic {
+    padding: 8px 14px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.15);
+    background: var(--color-background);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--color-foreground-heading);
+    position: relative;
+  }
+  .nani-contact__topic input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .nani-contact__topic:hover { border-color: var(--color-foreground-heading); }
+  .nani-contact__topic--on {
+    background: var(--color-primary);
+    color: var(--color-background);
+    border-color: var(--color-primary);
+  }
+
+  .nani-contact__optin {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    color: var(--color-foreground);
+  }
+  .nani-contact__optin input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+  }
+
+  .nani-contact__fineprint {
+    font-size: 11.5px;
+    color: var(--color-foreground);
+    opacity: 0.7;
+    margin: 16px 0 20px;
+    line-height: 1.5;
+  }
+  .nani-contact__fineprint a {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .nani-contact__submit {
+    background: var(--color-primary);
+    color: var(--color-background);
+    padding: 16px 28px;
+    font-size: 12px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-weight: 500;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: background 0.2s ease;
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .nani-contact__submit:hover { background: var(--color-foreground-heading); }
+
+  @media screen and (max-width: 1100px) {
+    .nani-contact__layout {
+      grid-template-columns: 1fr;
+      padding: var(--pbs) 24px var(--pbe) 24px;
+      gap: 40px;
+    }
+    .nani-contact__form-card { padding: 28px; }
+    .nani-contact__row { grid-template-columns: 1fr; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Contact (channels + form)",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["page"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_crumb",
+      "label": "Show breadcrumb",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "crumb_label",
+      "label": "Breadcrumb last label",
+      "default": "Contact"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Get in touch"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "Slide into our <em>DMs.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "subcopy",
+      "label": "Subcopy",
+      "default": "Questions about a product? Order update? Wholesale inquiry? We read and reply to everything — usually within a couple hours."
+    },
+    {
+      "type": "header",
+      "content": "Hours"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hours",
+      "label": "Show hours card",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "hours_title",
+      "label": "Hours title",
+      "default": "Support hours (Central Time)"
+    },
+    {
+      "type": "textarea",
+      "id": "hours_rows",
+      "label": "Hours rows (Label | Value, one per line)",
+      "default": "Monday – Friday | 9:00 am – 6:00 pm\nSaturday | 10:00 am – 2:00 pm\nSunday | Closed · DMs monitored"
+    },
+    {
+      "type": "header",
+      "content": "Form"
+    },
+    {
+      "type": "text",
+      "id": "form_eyebrow",
+      "label": "Form eyebrow",
+      "default": "Contact form"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "form_title",
+      "label": "Form title",
+      "default": "Or drop us a <em>line.</em>"
+    },
+    {
+      "type": "text",
+      "id": "form_sub",
+      "label": "Form subcopy",
+      "default": "We'll get back to you within 24 hours — usually sooner. Required fields marked with ★."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_topics",
+      "label": "Show topic picker",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "topics_list",
+      "label": "Topics (comma-separated)",
+      "default": "Order question, Shipping, Returns, Product info, Wholesale, Other"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter_optin",
+      "label": "Show newsletter opt-in",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_label",
+      "label": "Newsletter opt-in label",
+      "default": "Sign me up for the newsletter — 15% off my first order"
+    },
+    {
+      "type": "richtext",
+      "id": "fineprint",
+      "label": "Fineprint (HTML allowed)",
+      "default": "<p>By submitting this form you agree to our Privacy Policy. We'll never share your info or spam you.</p>"
+    },
+    {
+      "type": "text",
+      "id": "submit_label",
+      "label": "Submit button label",
+      "default": "Send message"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 20,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "blocks": [
+    {
+      "type": "channel",
+      "name": "Contact channel",
+      "settings": [
+        {
+          "type": "select",
+          "id": "type",
+          "label": "Type",
+          "options": [
+            { "value": "instagram", "label": "Instagram" },
+            { "value": "email", "label": "Email" },
+            { "value": "phone", "label": "Phone / Text" },
+            { "value": "location", "label": "Location (static)" },
+            { "value": "url", "label": "Custom URL" }
+          ],
+          "default": "instagram"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Instagram" },
+        { "type": "text", "id": "value", "label": "Value (email, phone, or handle)", "default": "@redkisses" },
+        { "type": "text", "id": "description", "label": "Sub description", "default": "Fastest way to reach us · Usually replies within 1 hour" },
+        { "type": "url", "id": "url", "label": "URL (required for instagram / custom)" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Contact",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "channel", "settings": { "type": "instagram", "title": "Instagram", "value": "@redkisses", "description": "Fastest way to reach us · Usually replies within 1 hour", "url": "https://instagram.com/redkisses" } },
+        { "type": "channel", "settings": { "type": "email", "title": "Email", "value": "sunsarae37@gmail.com", "description": "Best for order issues, wholesale, partnerships · Response within 24hr" } },
+        { "type": "channel", "settings": { "type": "phone", "title": "Phone / text", "value": "(330) 689-8922", "description": "Call or text · Mon–Fri 9am–6pm CT" } },
+        { "type": "channel", "settings": { "type": "location", "title": "Ship-from address", "value": "Akron, Ohio", "description": "Online-only · No physical storefront · Ships nationwide" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,89 @@
+{
+  "sections": {
+    "nani_bhero": {
+      "type": "nani-bundles-hero",
+      "blocks": {
+        "s1": { "type": "stat", "settings": { "value": "6", "label": "Kits available" } },
+        "s2": { "type": "stat", "settings": { "value": "25%", "label": "Avg. savings" } },
+        "s3": { "type": "stat", "settings": { "value": "500+", "label": "Kits shipped" } },
+        "s4": { "type": "stat", "settings": { "value": "4.9★", "label": "Avg. rating" } }
+      },
+      "block_order": ["s1", "s2", "s3", "s4"],
+      "settings": {
+        "eyebrow": "Save up to 25% · 6 kits made in Akron",
+        "headline": "One box. Everything to <em>shine.</em>",
+        "subcopy": "Our gift sets take the guesswork out of shopping. Each one's hand-packed in Akron, priced below what the individual items would cost, and shipped free.",
+        "color_scheme": "scheme-5",
+        "padding-block-start": 88,
+        "padding-block-end": 100
+      }
+    },
+    "nani_feat_slay": {
+      "type": "bundle-feature",
+      "blocks": {
+        "li1": { "type": "list_item", "settings": { "text": "3× Signature Lip Gloss" } },
+        "li2": { "type": "list_item", "settings": { "text": "Hot Pink · Ruby Red · Nude Kiss" } },
+        "li3": { "type": "list_item", "settings": { "text": "High-shine, non-sticky formula" } },
+        "li4": { "type": "list_item", "settings": { "text": "Gold crystal cap, black gift box" } },
+        "li5": { "type": "list_item", "settings": { "text": "Free shipping included" } },
+        "li6": { "type": "list_item", "settings": { "text": "Handwritten thank-you card" } }
+      },
+      "block_order": ["li1", "li2", "li3", "li4", "li5", "li6"],
+      "settings": {
+        "eyebrow": "The Kiss Kit",
+        "headline": "Everything you need to <em>shine.</em>",
+        "description": "Three signature lip glosses in Hot Pink, Ruby Red and Nude Kiss — high-shine, non-sticky, gift-boxed and ready to give. One checkout, one box, zero stress.",
+        "price": "$30",
+        "compare_price": "$36",
+        "save_text": "Save 17%",
+        "primary_cta_label": "Add kit to bag",
+        "primary_cta_link": "/collections/gift-sets",
+        "secondary_cta_label": "See what's inside",
+        "secondary_cta_link": "/collections/gift-sets",
+        "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-giftset_feature/public",
+        "image_alt": "The Kiss Kit — three signature lip glosses",
+        "show_seal": true,
+        "seal_text": "★ Best Seller · Ships in 1–2 days",
+        "color_scheme": "scheme-1"
+      }
+    },
+    "nani_bgrid": {
+      "type": "nani-bundles-grid",
+      "blocks": {
+        "b1": { "type": "bundle", "settings": { "badge_label": "Best seller", "save_label": "Save 17%", "category": "Beauty · 3 items", "name": "The Kiss Kit", "description": "Three signature lip glosses, gift-boxed. Our #1 gift set.", "pills": "Hot Pink, Ruby Red, Nude Kiss", "price": "$30", "compare_price": "$36", "link": "/collections/gift-sets", "cta_label": "Add +", "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-giftset_feature/public" } },
+        "b2": { "type": "bundle", "settings": { "badge_label": "New", "save_label": "Save 24%", "category": "Beauty & Jewelry · 3 items", "name": "Glam Starter", "description": "One signature gloss, a rhinestone anklet and a custom name bracelet. The everyday shine set.", "pills": "Gloss, Anklet, Bracelet", "price": "$29", "compare_price": "$38", "link": "/collections/gift-sets", "cta_label": "Add +", "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-gs2/public" } },
+        "b3": { "type": "bundle", "settings": { "badge_label": "", "save_label": "Save 14%", "category": "Eyewear · 2 items", "name": "Shade & Shine", "description": "Your choice of shades paired with one signature lip gloss. Sun's out, gloss out.", "pills": "Shades, Gloss", "price": "$25", "compare_price": "$29", "link": "/collections/gift-sets", "cta_label": "Add +", "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-gs3/public" } },
+        "b4": { "type": "bundle", "settings": { "badge_label": "Jewelry", "save_label": "Save 26%", "category": "Jewelry · 3 items", "name": "Icy Stack", "description": "Gold chain anklet, custom name bracelet and layered gold necklace. Stack it all.", "pills": "Anklet, Bracelet, Necklace", "price": "$28", "compare_price": "$38", "link": "/collections/gift-sets", "cta_label": "Add +", "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-gs4/public" } },
+        "b5": { "type": "bundle", "settings": { "badge_label": "Premium", "save_label": "Save 14%", "category": "Sets & Apparel · 3 items", "name": "Night Out Set", "description": "Purple chain 2-piece set, black chain shades and a ruby red gloss. Ready to go out.", "pills": "2-Piece Set, Shades, Gloss", "price": "$49", "compare_price": "$57", "link": "/collections/gift-sets", "cta_label": "Add +", "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-gs5/public" } },
+        "b6": { "type": "bundle", "settings": { "badge_label": "Gift", "save_label": "Save 22%", "category": "Mixed · 5 items", "name": "Redkisses Gift Box", "description": "Signature gloss, custom bracelet, rhinestone anklet, satin pouch and a handwritten card.", "pills": "Gloss, Bracelet, Anklet", "price": "$39", "compare_price": "$50", "link": "/collections/gift-sets", "cta_label": "Add +", "image_url": "https://imagedelivery.net/o4mWYROcO-l6Q05X-a5wtg/redkisses-demo-gs6/public" } }
+      },
+      "block_order": ["b1", "b2", "b3", "b4", "b5", "b6"],
+      "settings": {
+        "eyebrow": "All gift sets",
+        "title": "Six <em>kits.</em> One checkout.",
+        "show_sort": true,
+        "sort_label": "Best sellers",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 96,
+        "padding-block-end": 40
+      }
+    },
+    "nani_tiers": {
+      "type": "nani-spend-tiers",
+      "blocks": {
+        "t1": { "type": "tier", "settings": { "eyebrow": "Tier 1", "name": "Starter", "amount": "$30+", "perks": "5% off auto-applied\nFree mini gloss sample\nThank-you card" } },
+        "t2": { "type": "tier", "settings": { "eyebrow": "Tier 2 · Most popular", "name": "Glam", "amount": "$60+", "perks": "10% off auto-applied\nFree shipping anywhere in US\nFull-size gloss ($12 value)\nGift box + tissue", "featured": true } },
+        "t3": { "type": "tier", "settings": { "eyebrow": "Tier 3", "name": "VIP", "amount": "$100+", "perks": "15% off auto-applied\nPriority shipping\nFree anklet ($12 value)\nHandwritten note from Redkisses" } }
+      },
+      "block_order": ["t1", "t2", "t3"],
+      "settings": {
+        "eyebrow": "Stack the savings",
+        "title": "The more you spend, <em>the more you save.</em>",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 96,
+        "padding-block-end": 96
+      }
+    }
+  },
+  "order": ["nani_bhero", "nani_feat_slay", "nani_bgrid", "nani_tiers"]
+}

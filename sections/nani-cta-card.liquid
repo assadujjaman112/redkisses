@@ -1,0 +1,212 @@
+{% liquid
+  assign s = section.settings
+  assign cta_blocks = section.blocks | where: 'type', 'cta'
+%}
+
+<div class="section-background color-{{ s.outer_color_scheme }}"></div>
+<section class="nani-ctacard color-{{ s.outer_color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-ctacard__inner">
+    <div class="nani-ctacard__card color-{{ s.card_color_scheme }}">
+      {% if s.eyebrow != blank %}
+        <div class="nani-ctacard__eyebrow">{{ s.eyebrow }}</div>
+      {% endif %}
+      {% if s.title != blank %}
+        <h2 class="nani-ctacard__title">{{ s.title }}</h2>
+      {% endif %}
+      {% if s.subcopy != blank %}
+        <p class="nani-ctacard__sub">{{ s.subcopy }}</p>
+      {% endif %}
+      {% if cta_blocks.size > 0 %}
+        <div class="nani-ctacard__ctas">
+          {% for block in cta_blocks %}
+            {% assign b = block.settings %}
+            <a href="{{ b.url | default: '#' }}" class="nani-ctacard__cta nani-ctacard__cta--{{ b.style }}" {{ block.shopify_attributes }}>
+              {{ b.label }}
+              {% if b.arrow %} <span aria-hidden="true">→</span>{% endif %}
+            </a>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .nani-ctacard { position: relative; }
+  .nani-ctacard__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+  }
+  .nani-ctacard__card {
+    padding: 80px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+  .nani-ctacard__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+  .nani-ctacard__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(48px, 6vw, 64px);
+    margin: 0 0 18px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--color-foreground-heading);
+  }
+  .nani-ctacard__title em { font-style: italic; color: var(--color-primary); }
+  .nani-ctacard__sub {
+    max-width: 480px;
+    margin: 0 auto 28px;
+    color: var(--color-foreground);
+    opacity: 0.9;
+    font-family: var(--font-body--family);
+  }
+  .nani-ctacard__ctas {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .nani-ctacard__cta {
+    padding: 14px 24px;
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  .nani-ctacard__cta--primary {
+    background: var(--color-primary);
+    color: var(--color-background);
+    border: 1px solid var(--color-primary);
+  }
+  .nani-ctacard__cta--primary:hover { opacity: 0.9; }
+  .nani-ctacard__cta--ghost {
+    background: transparent;
+    color: var(--color-foreground-heading);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.2);
+  }
+  .nani-ctacard__cta--ghost:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+  @media screen and (max-width: 749px) {
+    .nani-ctacard__inner { padding-left: 24px; padding-right: 24px; }
+    .nani-ctacard__card { padding: 48px 24px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "CTA card",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["*"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Shop the whole thing"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "Ready to <em>shine?</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "subcopy",
+      "label": "Subcopy",
+      "default": "Join 1,000+ customers who've made Redkisses their go-to. Free shipping over $50, ships in 1–2 days from Akron."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "outer_color_scheme",
+      "label": "Outer (background) color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "card_color_scheme",
+      "label": "Card color scheme",
+      "default": "scheme-3"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "blocks": [
+    {
+      "type": "cta",
+      "name": "CTA",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Shop the collection" },
+        { "type": "url", "id": "url", "label": "URL" },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            { "value": "primary", "label": "Primary (filled)" },
+            { "value": "ghost", "label": "Ghost (outline)" }
+          ],
+          "default": "primary"
+        },
+        { "type": "checkbox", "id": "arrow", "label": "Show arrow", "default": true }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "presets": [
+    {
+      "name": "CTA card",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "cta", "settings": { "label": "Shop the collection", "style": "primary", "arrow": true } },
+        { "type": "cta", "settings": { "label": "Browse bundle deals", "style": "ghost", "arrow": false } }
+      ]
+    }
+  ]
+}
+{% endschema %}

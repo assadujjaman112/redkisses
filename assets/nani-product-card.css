@@ -1,0 +1,190 @@
+.nani-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+
+.nani-card__link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.nani-card__img {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: var(--color-background);
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-foreground-rgb) / 0.06);
+}
+
+.nani-card__image,
+.nani-card__placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.nani-card:hover .nani-card__image,
+.nani-card:hover .nani-card__placeholder {
+  transform: scale(1.04);
+}
+
+.nani-card__placeholder--pink {
+  background:
+    repeating-linear-gradient(135deg, rgb(var(--color-foreground-rgb) / 0.04) 0 2px, transparent 2px 14px),
+    linear-gradient(165deg, #F7E1E4, #EFB7BE);
+}
+.nani-card__placeholder--gold {
+  background:
+    repeating-linear-gradient(135deg, rgb(var(--color-foreground-rgb) / 0.04) 0 2px, transparent 2px 14px),
+    linear-gradient(165deg, #FBF8F6, #F0E3B8);
+}
+.nani-card__placeholder--mauve {
+  background:
+    repeating-linear-gradient(135deg, rgb(var(--color-foreground-rgb) / 0.04) 0 2px, transparent 2px 14px),
+    linear-gradient(165deg, #F7E1E4, #E0455F);
+}
+.nani-card__placeholder--plum {
+  background:
+    repeating-linear-gradient(135deg, rgb(var(--color-foreground-rgb) / 0.04) 0 2px, transparent 2px 14px),
+    linear-gradient(165deg, #F0E3B8, #C9A227);
+}
+
+.nani-card__badges {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 2;
+}
+
+.nani-card__badge {
+  font-family: var(--font-body--family);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+  font-weight: 500;
+  color: #FBF8F6;
+}
+
+.nani-card__badge--sale {
+  background: #C8102E;
+}
+
+.nani-card__wish {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.nani-card__wish:hover {
+  background: #C8102E;
+  color: #FBF8F6;
+  border-color: #C8102E;
+}
+
+.nani-card__quickadd {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  background: #0D0A0B;
+  color: #FBF8F6;
+  padding: 12px;
+  text-align: center;
+  font-family: var(--font-body--family);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.nani-card:hover .nani-card__quickadd {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.nani-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nani-card__cat {
+  font-family: var(--font-body--family);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #E0455F;
+}
+
+.nani-card__name {
+  font-family: var(--font-heading--family);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--color-foreground-heading);
+}
+
+.nani-card__rating {
+  font-family: var(--font-body--family);
+  font-size: 11px;
+  color: #C9A227;
+  letter-spacing: 0.04em;
+}
+
+.nani-card__rating-count {
+  color: rgb(var(--color-foreground-rgb) / 0.55);
+  letter-spacing: 0.08em;
+}
+
+.nani-card__price {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.nani-card__price-now {
+  font-family: var(--font-body--family);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-primary);
+}
+
+.nani-card__price-was {
+  color: rgb(var(--color-foreground-rgb) / 0.45);
+  text-decoration: line-through;
+  font-size: 13px;
+}
+
+@media screen and (max-width: 749px) {
+  .nani-card__name {
+    font-size: 16px;
+  }
+}

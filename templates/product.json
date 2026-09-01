@@ -1,0 +1,84 @@
+{
+  "sections": {
+    "nani_pdp": {
+      "type": "nani-product",
+      "blocks": {
+        "trust_ship": { "type": "trust", "settings": { "icon": "shipping", "title": "Free shipping $50+", "description": "Ships in 1–2 days" } },
+        "trust_ret": { "type": "trust", "settings": { "icon": "returns", "title": "30-day returns", "description": "Unworn & unopened" } },
+        "trust_sec": { "type": "trust", "settings": { "icon": "secure", "title": "Secure checkout", "description": "SSL encrypted" } },
+        "acc_det": { "type": "accordion", "settings": { "title": "Details", "open_by_default": true, "body": "<p>High-shine, non-sticky lip gloss formula, or hypoallergenic nickel-free plating on every piece of jewelry. Adjustable clasps for a comfortable, custom fit. Made in small batches, hand-finished before it ships.</p>" } },
+        "acc_box": { "type": "accordion", "settings": { "title": "What's in the box", "body": "<ul><li>1× item</li><li>Redkisses black gift box</li><li>Care card</li></ul>" } },
+        "acc_care": { "type": "accordion", "settings": { "title": "Care instructions", "body": "<p>Jewelry: keep dry, store in the pouch when not worn, avoid perfume and lotion contact. Lip gloss: keep cool, avoid direct sunlight, close cap tightly after each use.</p>" } },
+        "acc_ship": { "type": "accordion", "settings": { "title": "Shipping & returns", "body": "<p>Ships in 1–2 days from Akron, OH. Free shipping on orders over $50. 30-day returns on unworn, unopened items.</p>" } }
+      },
+      "block_order": ["trust_ship", "trust_ret", "trust_sec", "acc_det", "acc_box", "acc_care", "acc_ship"],
+      "settings": {
+        "show_crumb": true,
+        "rating_value": "4.9",
+        "rating_count": "300+",
+        "show_zoom_cta": true,
+        "show_placeholder_badges": true,
+        "show_installments": true,
+        "show_stock_row": true,
+        "show_buy_now": true,
+        "color_scheme": "scheme-1",
+        "padding-block-start": 28,
+        "padding-block-end": 40
+      }
+    },
+    "nani_pdetails": {
+      "type": "nani-product-details",
+      "settings": {
+        "eyebrow": "Why it's different",
+        "headline": "Made to <em>shine.</em>",
+        "body": "<p>Every piece is small-batch and hand-finished — nothing mass-produced, nothing rushed. Our lip gloss formula is high-shine, not sticky, so it actually feels good to wear all day. Our jewelry is nickel-free and made to hold up to everyday life, not just a night out.</p><p>Redkisses personally checks every batch before it hits the shop. If it doesn't shine, it doesn't get listed.</p>",
+        "spec_rows": "Finish | High-shine\nFormula | Non-sticky, vitamin E\nSize | 6 ml\nPlating | 18k gold tone, nickel-free\nClasp | Adjustable lobster\nMade in | Akron, Ohio\nGift ready | Yes — black box + card",
+        "color_scheme": "scheme-2",
+        "padding-block-start": 72,
+        "padding-block-end": 72
+      }
+    },
+    "nani_previews": {
+      "type": "nani-product-reviews",
+      "blocks": {
+        "r1": { "type": "review", "settings": { "heading": "Literally flawless gloss", "date": "Apr 8, 2026", "quote": "Got the Hot Pink and the pigment is unreal — not sticky at all, and the shine lasts for hours. Redkisses texted me back about a shade match within minutes — that level of service is unreal.", "reviewer_name": "Brianna K.", "variant_label": "Signature Lip Gloss · Hot Pink", "verified": true } },
+        "r2": { "type": "review", "settings": { "heading": "My anklet still sparkles", "date": "Mar 29, 2026", "quote": "I'm three months into wearing this anklet daily — showered, slept, everything in it. Still catching light exactly like day one. Easily worth double what I paid.", "reviewer_name": "Jasmine T.", "variant_label": "Rhinestone Anklet", "verified": true } },
+        "r3": { "type": "review", "settings": { "heading": "Packaging was so cute", "date": "Mar 17, 2026", "quote": "The gift box alone made me feel like I spent $200 even though I didn't. My custom bracelet is exactly what I asked for, down to the clasp.", "reviewer_name": "Alexis R.", "variant_label": "Custom Name Bracelet", "verified": true } },
+        "r4": { "type": "review", "settings": { "stars": "★★★★☆", "heading": "Great but took a minute to ship", "date": "Mar 2, 2026", "quote": "Took 3 days to arrive instead of 2 but the shades are top notch, great tint and fit. Would absolutely reorder.", "reviewer_name": "Monique D.", "variant_label": "Honey Bronze Shades", "verified": true } }
+      },
+      "block_order": ["r1", "r2", "r3", "r4"],
+      "settings": {
+        "eyebrow": "Customer reviews",
+        "title": "What <em>everyone</em> is saying.",
+        "show_write_button": true,
+        "rating_value": "4.9",
+        "rating_count": "300+",
+        "show_load_more": true,
+        "load_more_label": "Load more reviews →",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 80,
+        "padding-block-end": 80
+      }
+    },
+    "nani_related": {
+      "type": "featured-products",
+      "settings": {
+        "eyebrow": "Complete the look",
+        "title": "You might <em>also love.</em>",
+        "link_label": "Shop all",
+        "link_url": "/collections/all",
+        "collection": "all",
+        "max_products": 4,
+        "columns": 4,
+        "show_category": true,
+        "show_rating": true,
+        "show_wishlist": true,
+        "show_quick_add": true,
+        "color_scheme": "scheme-1",
+        "padding-block-start": 40,
+        "padding-block-end": 96
+      }
+    }
+  },
+  "order": ["nani_pdp", "nani_pdetails", "nani_previews", "nani_related"]
+}

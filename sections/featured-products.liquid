@@ -1,0 +1,481 @@
+{% liquid
+  assign s = section.settings
+  assign col = s.collection
+  if col == blank
+    assign col = collections.all
+  endif
+  assign products = col.products | slice: 0, s.max_products
+  assign product_count = products.size
+  assign placeholder_count = 0
+  if product_count < s.max_products
+    assign placeholder_count = s.max_products | minus: product_count
+  endif
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section
+  class="featured-products color-{{ s.color_scheme }}"
+  style="
+    --fp-padding-block-start: {{ s.padding-block-start }}px;
+    --fp-padding-block-end: {{ s.padding-block-end }}px;
+    --fp-columns: {{ s.columns }};
+  "
+>
+  <div class="featured-products__inner">
+    <header class="featured-products__head">
+      <div>
+        {% if s.eyebrow != blank %}
+          <div class="featured-products__eyebrow">{{ s.eyebrow }}</div>
+        {% endif %}
+        {% if s.title != blank %}
+          <h2 class="featured-products__title">{{ s.title }}</h2>
+        {% endif %}
+      </div>
+      {% if s.link_label != blank %}
+        <a class="featured-products__link" href="{{ s.link_url | default: col.url | default: '#' }}">
+          <span>{{ s.link_label }}</span>
+          <span aria-hidden="true"> →</span>
+        </a>
+      {% endif %}
+    </header>
+
+    <div class="featured-products__grid">
+      {% for p in products %}
+        {% render 'nani-product-card',
+          product: p,
+          show_rating: s.show_rating,
+          show_wishlist: s.show_wishlist,
+          show_quick_add: s.show_quick_add,
+          show_category: s.show_category,
+          index: forloop.index0 %}
+      {% endfor %}
+
+      {% for i in (1..placeholder_count) %}
+        {% render 'nani-product-card',
+          product: null,
+          show_rating: s.show_rating,
+          show_wishlist: s.show_wishlist,
+          show_quick_add: s.show_quick_add,
+          show_category: s.show_category,
+          index: i %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .featured-products {
+    position: relative;
+  }
+
+  .featured-products__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--fp-padding-block-start) 40px var(--fp-padding-block-end) 40px;
+  }
+
+  .featured-products__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 48px;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .featured-products__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 14px;
+    opacity: 0.85;
+  }
+
+  .featured-products__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(34px, 4vw, 54px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0;
+    color: var(--color-foreground-heading);
+  }
+
+  .featured-products__title em {
+    font-style: italic;
+    color: var(--color-primary);
+  }
+
+  .featured-products__link {
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-foreground-heading);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 4px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .featured-products__link:hover {
+    color: var(--color-primary);
+  }
+
+  .featured-products__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--fp-columns, 4), 1fr);
+    gap: 28px 22px;
+  }
+
+  /* ---- Card styles (shared with snippet) ---- */
+  .nani-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .nani-card__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .nani-card__img {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    background: var(--color-background);
+    overflow: hidden;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.06);
+  }
+
+  .nani-card__image,
+  .nani-card__placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .nani-card:hover .nani-card__image,
+  .nani-card:hover .nani-card__placeholder {
+    transform: scale(1.04);
+  }
+
+  .nani-card__placeholder--pink {
+    background:
+      repeating-linear-gradient(135deg, rgb(var(--color-foreground-rgb) / 0.04) 0 2px, transparent 2px 14px),
+      linear-gradient(165deg, #F7E1E4, #EFB7BE);
+  }
+  .nani-card__placeholder--gold {
+    background:
+      repeating-linear-gradient(135deg, rgb(var(--color-foreground-rgb) / 0.04) 0 2px, transparent 2px 14px),
+      linear-gradient(165deg, #FBF8F6, #F0E3B8);
+  }
+  .nani-card__placeholder--mauve {
+    background:
+      repeating-linear-gradient(135deg, rgb(var(--color-foreground-rgb) / 0.04) 0 2px, transparent 2px 14px),
+      linear-gradient(165deg, #F7E1E4, #E0455F);
+  }
+  .nani-card__placeholder--plum {
+    background:
+      repeating-linear-gradient(135deg, rgb(var(--color-foreground-rgb) / 0.04) 0 2px, transparent 2px 14px),
+      linear-gradient(165deg, #F0E3B8, #C9A227);
+  }
+
+  .nani-card__badges {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 2;
+  }
+
+  .nani-card__badge {
+    font-family: var(--font-body--family);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 5px 9px;
+    font-weight: 500;
+    color: #FBF8F6;
+  }
+
+  .nani-card__badge--sale {
+    background: #C8102E;
+  }
+
+  .nani-card__wish {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .nani-card__wish:hover {
+    background: #C8102E;
+    color: #FBF8F6;
+    border-color: #C8102E;
+  }
+
+  .nani-card__quickadd {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    background: #0D0A0B;
+    color: #FBF8F6;
+    padding: 12px;
+    text-align: center;
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .nani-card:hover .nani-card__quickadd {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .nani-card__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nani-card__cat {
+    font-family: var(--font-body--family);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #E0455F;
+  }
+
+  .nani-card__name {
+    font-family: var(--font-heading--family);
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--color-foreground-heading);
+  }
+
+  .nani-card__rating {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    color: #C9A227;
+    letter-spacing: 0.04em;
+  }
+
+  .nani-card__rating-count {
+    color: rgb(var(--color-foreground-rgb) / 0.55);
+    letter-spacing: 0.08em;
+  }
+
+  .nani-card__price {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .nani-card__price-now {
+    font-family: var(--font-body--family);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--color-primary);
+  }
+
+  .nani-card__price-was {
+    color: rgb(var(--color-foreground-rgb) / 0.45);
+    text-decoration: line-through;
+    font-size: 13px;
+  }
+
+  @media screen and (max-width: 1100px) {
+    .featured-products__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .featured-products__inner {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .featured-products__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px 12px;
+    }
+    .nani-card__name {
+      font-size: 16px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Featured products",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["*"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Best sellers · This week"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "Flying <em>off the shelf.</em>"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Header link label",
+      "default": "Shop all best sellers"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Header link URL (defaults to collection URL if blank)"
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Number of products",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Card features"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_category",
+      "label": "Show category label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show rating line",
+      "default": true,
+      "info": "Placeholder stars until a reviews app is installed"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist",
+      "label": "Show wishlist heart",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_add",
+      "label": "Show quick-add on hover",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured products",
+      "category": "Redkisses",
+      "settings": {
+        "eyebrow": "Best sellers · This week",
+        "title": "Flying <em>off the shelf.</em>",
+        "max_products": 4,
+        "columns": 4
+      }
+    }
+  ]
+}
+{% endschema %}

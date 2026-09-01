@@ -1,0 +1,399 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section
+  class="cat-grid color-{{ s.color_scheme }}"
+  style="
+    --cat-padding-block-start: {{ s.padding-block-start }}px;
+    --cat-padding-block-end: {{ s.padding-block-end }}px;
+  "
+>
+  <div class="cat-grid__inner">
+    <header class="cat-grid__head">
+      <div class="cat-grid__headline">
+        {% if s.eyebrow != blank %}
+          <div class="cat-grid__eyebrow">{{ s.eyebrow }}</div>
+        {% endif %}
+        {% if s.title != blank %}
+          <h2 class="cat-grid__title">{{ s.title }}</h2>
+        {% endif %}
+        {% if s.subcopy != blank %}
+          <p class="cat-grid__sub">{{ s.subcopy }}</p>
+        {% endif %}
+      </div>
+      {% if s.link_label != blank %}
+        <a class="cat-grid__link" href="{{ s.link_url | default: '#' }}">
+          <span>{{ s.link_label }}</span>
+          <span aria-hidden="true" class="cat-grid__link-arrow">→</span>
+        </a>
+      {% endif %}
+    </header>
+
+    <div class="cat-grid__tiles">
+      {% for block in section.blocks %}
+        {% liquid
+          assign b = block.settings
+          assign tile_index = forloop.index | prepend: '0' | slice: -2, 2
+        %}
+        <a
+          class="cat-tile"
+          href="{{ b.link | default: '#' }}"
+          style="
+            --cat-tile-grad-from: {{ b.gradient_from | default: '#F7E1E4' }};
+            --cat-tile-grad-to: {{ b.gradient_to | default: '#EFB7BE' }};
+          "
+          {{ block.shopify_attributes }}
+        >
+          {% if b.image != blank %}
+            {{ b.image | image_url: width: 600 | image_tag:
+              class: 'cat-tile__image',
+              widths: '240, 360, 480, 600, 800',
+              sizes: '(min-width: 1100px) 16vw, (min-width: 750px) 33vw, 50vw',
+              loading: 'lazy',
+              alt: b.name | default: 'Category' }}
+            <div class="cat-tile__overlay" aria-hidden="true"></div>
+          {% elsif b.image_url != blank %}
+            <img
+              class="cat-tile__image"
+              src="{{ b.image_url }}"
+              alt="{{ b.name | default: 'Category' }}"
+              loading="lazy"
+              decoding="async"
+              width="600"
+              height="800"
+            >
+            <div class="cat-tile__overlay" aria-hidden="true"></div>
+          {% else %}
+            <div class="cat-tile__placeholder" aria-hidden="true"></div>
+          {% endif %}
+          <div class="cat-tile__content">
+            <div class="cat-tile__num">{{ tile_index }}</div>
+            <div class="cat-tile__name">{{ b.name }}</div>
+            {% if b.count_text != blank %}
+              <div class="cat-tile__count">· {{ b.count_text }}</div>
+            {% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .cat-grid {
+    position: relative;
+  }
+
+  .cat-grid__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--cat-padding-block-start) 40px var(--cat-padding-block-end) 40px;
+  }
+
+  .cat-grid__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 48px;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .cat-grid__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 14px;
+    opacity: 0.8;
+  }
+
+  .cat-grid__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(34px, 4vw, 54px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0;
+    color: var(--color-foreground-heading);
+  }
+
+  .cat-grid__title em {
+    font-style: italic;
+    color: var(--color-primary);
+  }
+
+  .cat-grid__sub {
+    max-width: 420px;
+    font-family: var(--font-body--family);
+    font-size: 15px;
+    color: var(--color-foreground);
+    margin: 10px 0 0;
+    line-height: 1.55;
+  }
+
+  .cat-grid__link {
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-foreground-heading);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 4px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .cat-grid__link:hover {
+    color: var(--color-primary);
+  }
+
+  .cat-grid__tiles {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+  }
+
+  .cat-tile {
+    aspect-ratio: 3 / 4;
+    background: var(--color-background);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.06);
+    transition: transform 0.3s ease;
+    text-decoration: none;
+    color: var(--color-foreground-heading);
+  }
+
+  .cat-tile:hover {
+    transform: translateY(-4px);
+  }
+
+  .cat-tile__placeholder,
+  .cat-tile__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cat-tile__placeholder {
+    background:
+      repeating-linear-gradient(135deg, rgb(var(--color-foreground-rgb) / 0.04) 0 2px, transparent 2px 12px),
+      linear-gradient(180deg, var(--cat-tile-grad-from), var(--cat-tile-grad-to));
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.06);
+  }
+
+  .cat-tile__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(13 10 11 / 0) 40%, rgb(13 10 11 / 0.75) 100%);
+    z-index: 1;
+  }
+
+  .cat-tile__content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .cat-tile__num {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: rgb(var(--color-foreground-rgb) / 0.6);
+    margin-bottom: 6px;
+  }
+
+  .cat-tile__name {
+    font-family: var(--font-heading--family);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.1;
+  }
+
+  .cat-tile__count {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-top: 4px;
+    color: var(--color-foreground);
+  }
+
+  @media screen and (max-width: 1100px) {
+    .cat-grid__inner {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    .cat-grid__tiles {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .cat-grid__tiles {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .cat-tile__name {
+      font-size: 18px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Category grid",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["index", "list-collections"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Shop by category"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "info": "Wrap words in <em>italic</em> for accent color",
+      "default": "Find your <em>thing.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "subcopy",
+      "label": "Subcopy",
+      "default": "Six categories, one-stop shop. From high-shine gloss to icy anklets — filter, scroll, checkout."
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Header link label",
+      "default": "View all products"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Header link URL"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Section color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category tile",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Category name",
+          "default": "Lip Gloss"
+        },
+        {
+          "type": "text",
+          "id": "count_text",
+          "label": "Count text",
+          "default": "48 items"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image (optional — uses gradient if empty)"
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Image URL (fallback)",
+          "info": "Used when no image is picked above."
+        },
+        {
+          "type": "header",
+          "content": "Gradient placeholder colors (used when no image)"
+        },
+        {
+          "type": "color",
+          "id": "gradient_from",
+          "label": "Gradient top",
+          "default": "#F7E1E4"
+        },
+        {
+          "type": "color",
+          "id": "gradient_to",
+          "label": "Gradient bottom",
+          "default": "#EFB7BE"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Category grid",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "category", "settings": { "name": "Lip Gloss", "count_text": "3 items", "gradient_from": "#F7E1E4", "gradient_to": "#EFB7BE" } },
+        { "type": "category", "settings": { "name": "Jewelry", "count_text": "4 items", "gradient_from": "#F0E3B8", "gradient_to": "#C9A227" } },
+        { "type": "category", "settings": { "name": "Anklets", "count_text": "2 items", "gradient_from": "#FBF8F6", "gradient_to": "#E0455F" } },
+        { "type": "category", "settings": { "name": "Shades", "count_text": "4 items", "gradient_from": "#F7E1E4", "gradient_to": "#C8102E" } },
+        { "type": "category", "settings": { "name": "Sets & Apparel", "count_text": "3 items", "gradient_from": "#EFB7BE", "gradient_to": "#E0455F" } },
+        { "type": "category", "settings": { "name": "Gift Sets", "count_text": "6 kits", "gradient_from": "#F0E3B8", "gradient_to": "#C8102E" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,301 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-404 color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-404__inner">
+    <div class="nani-404__big" aria-hidden="true">{{ s.big_text | default: '404' }}</div>
+    {% if s.eyebrow != blank %}
+      <div class="nani-404__eyebrow">{{ s.eyebrow }}</div>
+    {% endif %}
+    {% if s.headline != blank %}
+      <h1 class="nani-404__title">{{ s.headline }}</h1>
+    {% endif %}
+    {% if s.subcopy != blank %}
+      <p class="nani-404__sub">{{ s.subcopy }}</p>
+    {% endif %}
+
+    <div class="nani-404__ctas">
+      <a href="{{ s.primary_cta_url | default: '/collections/all' }}" class="nani-404__cta nani-404__cta--primary">
+        {{ s.primary_cta_label | default: 'Shop the collection' }} <span aria-hidden="true">→</span>
+      </a>
+      <a href="{{ s.secondary_cta_url | default: '/' }}" class="nani-404__cta nani-404__cta--ghost">
+        {{ s.secondary_cta_label | default: 'Back to home' }}
+      </a>
+    </div>
+
+    {% if section.blocks.size > 0 %}
+      <div class="nani-404__quicklinks">
+        <div class="nani-404__ql-label">{{ s.quicklinks_label | default: 'Or try one of these:' }}</div>
+        <div class="nani-404__ql-row">
+          {% for block in section.blocks %}
+            <a href="{{ block.settings.url | default: '#' }}" class="nani-404__ql" {{ block.shopify_attributes }}>
+              {{ block.settings.label }}
+              {% if block.settings.count_text != blank %}
+                <span class="nani-404__ql-count">· {{ block.settings.count_text }}</span>
+              {% endif %}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .nani-404 { position: relative; }
+  .nani-404__inner {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+    text-align: center;
+    position: relative;
+  }
+  .nani-404__big {
+    font-family: var(--font-heading--family);
+    font-style: italic;
+    font-size: clamp(140px, 22vw, 260px);
+    color: var(--color-primary);
+    opacity: 0.12;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-weight: 500;
+    margin-bottom: -40px;
+    user-select: none;
+  }
+  .nani-404__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 16px;
+    font-weight: 500;
+    position: relative;
+    z-index: 2;
+  }
+  .nani-404__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(44px, 6vw, 72px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0 0 20px;
+    color: var(--color-foreground-heading);
+    position: relative;
+    z-index: 2;
+  }
+  .nani-404__title em { font-style: italic; color: var(--color-primary); }
+  .nani-404__sub {
+    max-width: 540px;
+    margin: 0 auto 36px;
+    font-family: var(--font-body--family);
+    color: var(--color-foreground);
+    opacity: 0.88;
+    font-size: 15.5px;
+    line-height: 1.65;
+    position: relative;
+    z-index: 2;
+  }
+
+  .nani-404__ctas {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+    position: relative;
+    z-index: 2;
+  }
+  .nani-404__cta {
+    padding: 14px 24px;
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  .nani-404__cta--primary {
+    background: var(--color-primary);
+    color: var(--color-background);
+  }
+  .nani-404__cta--primary:hover { opacity: 0.9; }
+  .nani-404__cta--ghost {
+    background: transparent;
+    color: var(--color-foreground-heading);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.2);
+  }
+  .nani-404__cta--ghost:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+  .nani-404__quicklinks {
+    padding-top: 32px;
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+  }
+  .nani-404__ql-label {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    opacity: 0.6;
+    margin-bottom: 14px;
+  }
+  .nani-404__ql-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .nani-404__ql {
+    padding: 10px 16px;
+    background: var(--color-background-secondary, rgba(13,10,11,0.04));
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    color: var(--color-foreground-heading);
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .nani-404__ql:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+  .nani-404__ql-count {
+    opacity: 0.55;
+    margin-left: 4px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .nani-404__inner { padding-left: 24px; padding-right: 24px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "404",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["404"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "big_text",
+      "label": "Big background text",
+      "default": "404"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Oops · Page not found"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "headline",
+      "label": "Headline",
+      "default": "This page <em>got ghosted.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "subcopy",
+      "label": "Subcopy",
+      "default": "The page you're looking for moved, was renamed, or maybe never existed. Let's get you back to the good stuff."
+    },
+    {
+      "type": "text",
+      "id": "primary_cta_label",
+      "label": "Primary CTA label",
+      "default": "Shop the collection"
+    },
+    {
+      "type": "url",
+      "id": "primary_cta_url",
+      "label": "Primary CTA URL"
+    },
+    {
+      "type": "text",
+      "id": "secondary_cta_label",
+      "label": "Secondary CTA label",
+      "default": "Back to home"
+    },
+    {
+      "type": "url",
+      "id": "secondary_cta_url",
+      "label": "Secondary CTA URL"
+    },
+    {
+      "type": "text",
+      "id": "quicklinks_label",
+      "label": "Quicklinks row label",
+      "default": "Or try one of these:"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 120
+    }
+  ],
+  "blocks": [
+    {
+      "type": "quicklink",
+      "name": "Quick link",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Lip Gloss" },
+        { "type": "text", "id": "count_text", "label": "Count text (optional)" },
+        { "type": "url", "id": "url", "label": "URL" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "404",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "quicklink", "settings": { "label": "Lip Gloss", "count_text": "3" } },
+        { "type": "quicklink", "settings": { "label": "Jewelry", "count_text": "4" } },
+        { "type": "quicklink", "settings": { "label": "Gift Sets", "count_text": "6" } },
+        { "type": "quicklink", "settings": { "label": "About", "count_text": "" } },
+        { "type": "quicklink", "settings": { "label": "Contact", "count_text": "" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

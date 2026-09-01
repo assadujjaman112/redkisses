@@ -1,0 +1,68 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "Footer",
+  "sections": {
+    "nani_footer": {
+      "type": "nani-footer",
+      "blocks": {
+        "col_shop": {
+          "type": "link_column",
+          "settings": {
+            "title": "Shop",
+            "menu": "shop-menu"
+          }
+        },
+        "col_support": {
+          "type": "link_column",
+          "settings": {
+            "title": "Support",
+            "menu": "support-menu"
+          }
+        },
+        "col_brand": {
+          "type": "link_column",
+          "settings": {
+            "title": "Brand",
+            "menu": "brand-menu"
+          }
+        },
+        "col_contact": {
+          "type": "contact_column",
+          "settings": {
+            "title": "Contact",
+            "email": "sunsarae37@gmail.com",
+            "phone": "(330) 689-8922",
+            "address": "Akron, OH",
+            "hours": "Mon–Sat · 9am–5pm ET"
+          }
+        }
+      },
+      "block_order": ["col_shop", "col_support", "col_brand", "col_contact"],
+      "settings": {
+        "tagline": "Jewelry, lip gloss and shades for the everyday woman and girl. Made with love in Akron, Ohio, shipped nationwide.",
+        "instagram_url": "https://instagram.com/redkisses",
+        "tiktok_url": "https://tiktok.com/@redkisses",
+        "youtube_url": "",
+        "pinterest_url": "",
+        "snapchat_url": "",
+        "copyright_name": "Redkisses",
+        "copyright_suffix": "All rights reserved",
+        "show_payments": true,
+        "payments": "Visa, Mastercard, Amex, Shop Pay, Apple Pay, PayPal",
+        "color_scheme": "scheme-5"
+      }
+    }
+  },
+  "order": [
+    "nani_footer"
+  ]
+}

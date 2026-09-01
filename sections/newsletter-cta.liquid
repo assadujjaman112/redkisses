@@ -1,0 +1,261 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="news-cta color-{{ s.color_scheme }}"
+  style="--news-padding-block-start: {{ s.padding-block-start }}px; --news-padding-block-end: {{ s.padding-block-end }}px;"
+>
+  <div class="news-cta__inner">
+    {% if s.eyebrow != blank %}
+      <div class="news-cta__eyebrow">{{ s.eyebrow }}</div>
+    {% endif %}
+    {% if s.title != blank %}
+      <h2 class="news-cta__title">{{ s.title }}</h2>
+    {% endif %}
+    {% if s.subcopy != blank %}
+      <p class="news-cta__sub">{{ s.subcopy }}</p>
+    {% endif %}
+
+    {%- form 'customer', class: 'news-cta__form' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <input
+        type="email"
+        name="contact[email]"
+        placeholder="{{ s.placeholder | default: 'your@email.com' }}"
+        aria-label="Email address"
+        required
+      />
+      <button type="submit">{{ s.button_label | default: 'Join' }}</button>
+      {%- if form.posted_successfully? -%}
+        <p class="news-cta__success" role="status">{{ s.success_message | default: "You're in ✦" }}</p>
+      {%- endif -%}
+      {%- if form.errors -%}
+        <p class="news-cta__error" role="alert">{{ form.errors | default_errors }}</p>
+      {%- endif -%}
+    {%- endform -%}
+
+    {% if s.fine_print != blank %}
+      <div class="news-cta__fine">{{ s.fine_print }}</div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .news-cta {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .news-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at right, rgb(200 168 75 / 0.2), transparent 60%);
+    pointer-events: none;
+  }
+
+  .news-cta__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: var(--news-padding-block-start) 40px var(--news-padding-block-end) 40px;
+    text-align: center;
+    position: relative;
+  }
+
+  .news-cta__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #C9A227;
+    margin-bottom: 22px;
+  }
+
+  .news-cta__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(38px, 4.5vw, 60px);
+    line-height: 1;
+    font-weight: 500;
+    margin: 0 0 18px;
+    letter-spacing: -0.02em;
+    color: var(--color-foreground-heading);
+  }
+
+  .news-cta__title em {
+    font-style: italic;
+    color: #F0E3B8;
+  }
+
+  .news-cta__sub {
+    max-width: 520px;
+    margin: 0 auto 36px;
+    font-family: var(--font-body--family);
+    font-size: 15px;
+    color: rgb(var(--color-foreground-rgb) / 0.78);
+    line-height: 1.55;
+  }
+
+  .news-cta__form {
+    display: flex;
+    gap: 0;
+    max-width: 520px;
+    margin: 0 auto;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.3);
+    background: rgb(var(--color-background-rgb) / 0.06);
+  }
+
+  .news-cta__form input[type=email] {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    padding: 18px 22px;
+    color: var(--color-foreground);
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    outline: none;
+    min-width: 0;
+  }
+
+  .news-cta__form input[type=email]::placeholder {
+    color: rgb(var(--color-foreground-rgb) / 0.5);
+  }
+
+  .news-cta__form button {
+    background: #C9A227;
+    color: #0D0A0B;
+    padding: 18px 28px;
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-weight: 600;
+    border: 0;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .news-cta__form button:hover {
+    background: #F0E3B8;
+  }
+
+  .news-cta__fine {
+    font-family: var(--font-body--family);
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgb(var(--color-foreground-rgb) / 0.5);
+    margin-top: 22px;
+  }
+
+  .news-cta__success,
+  .news-cta__error {
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    margin: 14px 0 0;
+    width: 100%;
+    flex-basis: 100%;
+  }
+
+  .news-cta__success {
+    color: #F0E3B8;
+  }
+
+  .news-cta__error {
+    color: #F7E1E4;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["*"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Join the list"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "First to know. First to <em>save.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "subcopy",
+      "label": "Subcopy",
+      "default": "Early access to drops, subscriber-only gift codes, and the occasional shade tutorial. No spam — promise."
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Email input placeholder",
+      "default": "your@email.com"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Submit button label",
+      "default": "Join"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "You're in ✦"
+    },
+    {
+      "type": "text",
+      "id": "fine_print",
+      "label": "Fine print below form",
+      "default": "15% off your first order · Unsubscribe anytime"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-6"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter",
+      "category": "Redkisses"
+    }
+  ]
+}
+{% endschema %}

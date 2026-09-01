@@ -1,0 +1,581 @@
+{% liquid
+  assign s = section.settings
+  assign doc_title = s.doc_title_override
+  if doc_title == blank
+    assign doc_title = page.title | default: 'Policy'
+  endif
+  assign doc_body = page.content
+  assign current_url = request.path
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-policy color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  {% if s.show_crumb %}
+    <nav class="nani-policy__crumb" aria-label="Breadcrumb">
+      <a href="{{ routes.root_url }}">Home</a>
+      <span class="sep">/</span>
+      <a href="#">Legal</a>
+      <span class="sep">/</span>
+      <span class="here">{{ doc_title }}</span>
+    </nav>
+  {% endif %}
+
+  <div class="nani-policy__layout">
+    {%- comment -%} LEFT SIDEBAR {%- endcomment -%}
+    <aside class="nani-policy__nav">
+      <h5>Legal documents</h5>
+      <div class="nani-policy__docs">
+        {% for block in section.blocks %}
+          {% if block.type == 'doc' %}
+            {% liquid
+              assign b = block.settings
+              assign doc_href = b.url
+              assign is_active = false
+              if current_url == doc_href
+                assign is_active = true
+              endif
+            %}
+            <a href="{{ doc_href }}" class="nani-policy__doc{% if is_active %} nani-policy__doc--on{% endif %}" {{ block.shopify_attributes }}>
+              <span>{{ b.title }}</span>
+              <span class="nani-policy__doc-num">{{ b.number | default: forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="nani-policy__toc">
+        <h6>On this page</h6>
+        <div id="nani-policy-toc"></div>
+      </div>
+
+      {% if s.show_help_card %}
+        <div class="nani-policy__help">
+          <div class="nani-policy__help-title">{{ s.help_title | default: 'Questions?' }}</div>
+          <p>{{ s.help_copy | default: "Our legal docs are in plain English — but if anything's unclear, reach out." }}</p>
+          <a href="{{ s.help_url | default: '/pages/contact' }}">{{ s.help_cta | default: 'Contact us →' }}</a>
+        </div>
+      {% endif %}
+    </aside>
+
+    {%- comment -%} MAIN BODY {%- endcomment -%}
+    <main class="nani-policy__body" id="nani-policy-body">
+      {% if s.eyebrow != blank %}
+        <div class="nani-policy__eyebrow">{{ s.eyebrow }}</div>
+      {% endif %}
+
+      <h1 class="nani-policy__title">{{ doc_title }}</h1>
+
+      <div class="nani-policy__meta">
+        {% if s.effective_date != blank %}
+          <span>Effective <b>{{ s.effective_date }}</b></span>
+        {% endif %}
+        {% if s.updated_date != blank %}
+          <span>Last updated <b>{{ s.updated_date }}</b></span>
+        {% endif %}
+        <button class="nani-policy__print" type="button" onclick="window.print()">⎙ Print / save PDF</button>
+      </div>
+
+      {% if s.intro != blank %}
+        <div class="nani-policy__intro">{{ s.intro }}</div>
+      {% endif %}
+
+      <div class="nani-policy__content">
+        {% if doc_body != blank %}
+          {{ doc_body }}
+        {% else %}
+          <p><em>Policy content will appear here once added to this page in Shopify Admin → Online Store → Pages.</em></p>
+        {% endif %}
+      </div>
+
+      <div class="nani-policy__foot">
+        <div>
+          <div class="nani-policy__foot-t">{{ s.foot_title | default: 'Need something in writing?' }}</div>
+          <div class="nani-policy__foot-s">{{ s.foot_sub | default: 'Hit print above to save a PDF copy of any policy.' }}</div>
+        </div>
+        <a href="{{ s.foot_cta_url | default: '/pages/contact' }}" class="nani-policy__foot-cta">{{ s.foot_cta_label | default: 'Contact support →' }}</a>
+      </div>
+    </main>
+  </div>
+</section>
+
+<script>
+(function(){
+  const body = document.getElementById('nani-policy-body');
+  const tocEl = document.getElementById('nani-policy-toc');
+  if (!body || !tocEl) return;
+  const h2s = body.querySelectorAll('.nani-policy__content h2');
+  tocEl.innerHTML = [...h2s].map((h, i) => {
+    if (!h.id) h.id = 'sec-' + (i+1);
+    return `<a href="#${h.id}">${h.textContent.trim()}</a>`;
+  }).join('');
+  tocEl.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const t = document.querySelector(a.getAttribute('href'));
+      if (t) window.scrollTo({ top: t.offsetTop - 80, behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+
+{% stylesheet %}
+  .nani-policy { position: relative; font-family: var(--font-body--family); }
+  .nani-policy__crumb {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 20px 40px 0;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    opacity: 0.7;
+  }
+  .nani-policy__crumb a { color: inherit; text-decoration: none; }
+  .nani-policy__crumb a:hover { color: var(--color-primary); }
+  .nani-policy__crumb .sep { margin: 0 8px; color: var(--color-primary); }
+  .nani-policy__crumb .here { color: var(--color-foreground-heading); font-weight: 500; }
+
+  .nani-policy__layout {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 72px;
+  }
+
+  /* NAV */
+  .nani-policy__nav {
+    position: sticky;
+    top: 100px;
+    align-self: start;
+  }
+  .nani-policy__nav h5 {
+    font-size: 10.5px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin: 0 0 16px;
+    font-weight: 600;
+  }
+  .nani-policy__docs {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 32px;
+  }
+  .nani-policy__doc {
+    padding: 14px 18px;
+    background: var(--color-background-secondary, rgba(13,10,11,0.03));
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.15s ease;
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--color-foreground-heading);
+  }
+  .nani-policy__doc:hover { border-color: var(--color-primary); }
+  .nani-policy__doc-num {
+    font-family: var(--font-heading--family);
+    font-size: 20px;
+    opacity: 0.4;
+    font-weight: 500;
+  }
+  .nani-policy__doc--on {
+    background: var(--color-foreground-heading);
+    color: var(--color-background);
+    border-color: var(--color-foreground-heading);
+  }
+  .nani-policy__doc--on .nani-policy__doc-num {
+    color: #C9A227;
+    opacity: 1;
+  }
+
+  .nani-policy__toc h6 {
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin: 0 0 12px;
+    color: var(--color-primary);
+    opacity: 0.75;
+    font-weight: 600;
+  }
+  .nani-policy__toc a {
+    display: block;
+    font-size: 12.5px;
+    padding: 7px 0 7px 14px;
+    color: var(--color-foreground);
+    border-left: 1px solid rgb(var(--color-foreground-rgb) / 0.1);
+    transition: all 0.15s ease;
+    text-decoration: none;
+  }
+  .nani-policy__toc a:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .nani-policy__help {
+    margin-top: 28px;
+    padding: 18px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    background: var(--color-background-secondary, rgba(13,10,11,0.03));
+  }
+  .nani-policy__help-title {
+    font-family: var(--font-heading--family);
+    font-size: 18px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--color-foreground-heading);
+  }
+  .nani-policy__help p {
+    font-size: 12.5px;
+    color: var(--color-foreground);
+    opacity: 0.75;
+    margin: 0 0 10px;
+    line-height: 1.5;
+  }
+  .nani-policy__help a {
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    border-bottom: 1px solid var(--color-primary);
+    padding-bottom: 2px;
+    text-decoration: none;
+  }
+
+  /* BODY */
+  .nani-policy__body { min-width: 0; }
+  .nani-policy__eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+  .nani-policy__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(42px, 5vw, 64px);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin: 0 0 10px;
+    color: var(--color-foreground-heading);
+  }
+  .nani-policy__title em { font-style: italic; color: var(--color-primary); }
+
+  .nani-policy__meta {
+    display: flex;
+    gap: 24px;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    opacity: 0.7;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .nani-policy__meta b {
+    color: var(--color-foreground-heading);
+    opacity: 1;
+  }
+  .nani-policy__print {
+    padding: 10px 16px;
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.15);
+    background: var(--color-background);
+    color: var(--color-foreground-heading);
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    cursor: pointer;
+    font-family: inherit;
+    margin-left: auto;
+  }
+  .nani-policy__print:hover {
+    background: var(--color-foreground-heading);
+    color: var(--color-background);
+    border-color: var(--color-foreground-heading);
+  }
+
+  .nani-policy__intro {
+    font-size: 15.5px;
+    color: var(--color-foreground);
+    max-width: 680px;
+    margin: 0 0 40px;
+    line-height: 1.7;
+    padding: 20px 24px;
+    background: var(--color-background-secondary, rgba(13,10,11,0.03));
+    border-left: 3px solid var(--color-primary);
+  }
+  .nani-policy__intro p { margin: 0; }
+
+  .nani-policy__content h2 {
+    font-family: var(--font-heading--family);
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin: 40px 0 14px;
+    padding-top: 24px;
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    color: var(--color-foreground-heading);
+  }
+  .nani-policy__content h2:first-of-type { padding-top: 0; border-top: 0; margin-top: 0; }
+  .nani-policy__content h3 {
+    font-family: var(--font-heading--family);
+    font-size: 22px;
+    font-weight: 500;
+    margin: 24px 0 8px;
+    color: var(--color-foreground-heading);
+  }
+  .nani-policy__content p {
+    font-size: 14.5px;
+    color: var(--color-foreground);
+    max-width: 720px;
+    line-height: 1.75;
+    margin: 0 0 14px;
+  }
+  .nani-policy__content ul,
+  .nani-policy__content ol {
+    padding-left: 22px;
+    max-width: 720px;
+    margin: 10px 0;
+  }
+  .nani-policy__content li {
+    font-size: 14.5px;
+    color: var(--color-foreground);
+    line-height: 1.7;
+    padding: 4px 0;
+  }
+  .nani-policy__content a {
+    color: var(--color-primary);
+    border-bottom: 1px solid var(--color-primary);
+    text-decoration: none;
+  }
+
+  .nani-policy__foot {
+    margin-top: 56px;
+    padding: 28px;
+    background: var(--color-foreground-heading);
+    color: var(--color-background);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .nani-policy__foot-t {
+    font-family: var(--font-heading--family);
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0 0 4px;
+    color: var(--color-background);
+  }
+  .nani-policy__foot-s {
+    font-size: 12.5px;
+    color: rgba(253,246,240,0.7);
+  }
+  .nani-policy__foot-cta {
+    padding: 12px 20px;
+    background: #C9A227;
+    color: #0D0A0B;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.15s ease;
+  }
+  .nani-policy__foot-cta:hover { background: #F0E3B8; }
+
+  @media screen and (max-width: 1100px) {
+    .nani-policy__layout {
+      grid-template-columns: 1fr;
+      padding: var(--pbs) 24px var(--pbe) 24px;
+      gap: 32px;
+    }
+    .nani-policy__nav { position: static; }
+  }
+
+  @media print {
+    .nani-policy__nav,
+    .nani-policy__foot,
+    .nani-policy__print { display: none; }
+    .nani-policy__layout { grid-template-columns: 1fr; padding: 0; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Policy page",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["page"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_crumb",
+      "label": "Show breadcrumb",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Legal"
+    },
+    {
+      "type": "text",
+      "id": "doc_title_override",
+      "label": "Title override (leave blank to use page title)"
+    },
+    {
+      "type": "text",
+      "id": "effective_date",
+      "label": "Effective date",
+      "default": "April 1, 2026"
+    },
+    {
+      "type": "text",
+      "id": "updated_date",
+      "label": "Last updated date",
+      "default": "April 15, 2026"
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "Intro (plain-English summary shown before the full policy body)"
+    },
+    {
+      "type": "header",
+      "content": "Sidebar help card"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_help_card",
+      "label": "Show help card",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "help_title",
+      "label": "Title",
+      "default": "Questions?"
+    },
+    {
+      "type": "text",
+      "id": "help_copy",
+      "label": "Copy",
+      "default": "Our legal docs are in plain English — but if anything's unclear, reach out."
+    },
+    {
+      "type": "text",
+      "id": "help_cta",
+      "label": "CTA label",
+      "default": "Contact us →"
+    },
+    {
+      "type": "url",
+      "id": "help_url",
+      "label": "CTA link"
+    },
+    {
+      "type": "header",
+      "content": "Footer card"
+    },
+    {
+      "type": "text",
+      "id": "foot_title",
+      "label": "Title",
+      "default": "Need something in writing?"
+    },
+    {
+      "type": "text",
+      "id": "foot_sub",
+      "label": "Sub",
+      "default": "Hit print above to save a PDF copy of any policy."
+    },
+    {
+      "type": "text",
+      "id": "foot_cta_label",
+      "label": "CTA label",
+      "default": "Contact support →"
+    },
+    {
+      "type": "url",
+      "id": "foot_cta_url",
+      "label": "CTA link"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 20,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "blocks": [
+    {
+      "type": "doc",
+      "name": "Doc link",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Privacy Policy" },
+        { "type": "url", "id": "url", "label": "URL" },
+        { "type": "text", "id": "number", "label": "Number label", "default": "01" }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "Policy page",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "doc", "settings": { "title": "Privacy Policy", "number": "01" } },
+        { "type": "doc", "settings": { "title": "Terms of Service", "number": "02" } },
+        { "type": "doc", "settings": { "title": "Refund Policy", "number": "03" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

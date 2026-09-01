@@ -1,0 +1,256 @@
+{% liquid
+  assign s = section.settings
+  assign col = collection
+
+  assign banner_title = s.title | default: col.title
+  assign banner_subcopy = s.subcopy
+  if banner_subcopy == blank
+    assign banner_subcopy = col.description
+  endif
+
+  assign eyebrow_text = s.eyebrow
+  if eyebrow_text == blank and col != blank
+    assign eyebrow_text = 'All categories · ' | append: col.products_count | append: ' products'
+  endif
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-colbanner color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-colbanner__inner">
+    <div class="nani-colbanner__main">
+      {% if s.show_crumb %}
+        <nav class="nani-colbanner__crumb" aria-label="Breadcrumb">
+          <a href="{{ routes.root_url }}">Home</a>
+          <span class="sep">/</span>
+          <span class="here">{{ s.crumb_label | default: 'Shop' }}</span>
+        </nav>
+      {% endif %}
+      {% if eyebrow_text != blank %}
+        <div class="nani-colbanner__eyebrow">{{ eyebrow_text }}</div>
+      {% endif %}
+      {% if banner_title != blank %}
+        <h1 class="nani-colbanner__title">{{ banner_title }}</h1>
+      {% endif %}
+      {% if banner_subcopy != blank %}
+        <p class="nani-colbanner__sub">{{ banner_subcopy }}</p>
+      {% endif %}
+    </div>
+    {% if s.show_rating %}
+      <aside class="nani-colbanner__stat">
+        <div class="nani-colbanner__stat-num">{{ s.rating_value | default: '★ 4.9' }}</div>
+        <div class="nani-colbanner__stat-lbl">{{ s.rating_label | default: 'from 300+ reviews' }}</div>
+      </aside>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .nani-colbanner {
+    position: relative;
+  }
+  .nani-colbanner__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .nani-colbanner__main {
+    max-width: 640px;
+  }
+  .nani-colbanner__crumb {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    opacity: 0.72;
+    margin-bottom: 14px;
+  }
+  .nani-colbanner__crumb a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .nani-colbanner__crumb a:hover {
+    color: var(--color-primary);
+  }
+  .nani-colbanner__crumb .sep {
+    margin: 0 8px;
+    color: var(--color-primary);
+  }
+  .nani-colbanner__crumb .here {
+    color: var(--color-foreground-heading);
+    font-weight: 500;
+  }
+  .nani-colbanner__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .nani-colbanner__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(42px, 6vw, 72px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0 0 18px;
+    color: var(--color-foreground-heading);
+  }
+  .nani-colbanner__title em {
+    font-style: italic;
+    color: var(--color-primary);
+  }
+  .nani-colbanner__sub {
+    font-family: var(--font-body--family);
+    font-size: 15.5px;
+    color: var(--color-foreground);
+    opacity: 0.82;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 520px;
+  }
+  .nani-colbanner__stat {
+    text-align: right;
+  }
+  .nani-colbanner__stat-num {
+    font-family: var(--font-heading--family);
+    font-size: 36px;
+    font-weight: 500;
+    color: var(--color-primary);
+    line-height: 1;
+  }
+  .nani-colbanner__stat-lbl {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    opacity: 0.7;
+    margin-top: 6px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .nani-colbanner__inner {
+      padding-left: 24px;
+      padding-right: 24px;
+      align-items: flex-start;
+    }
+    .nani-colbanner__stat {
+      text-align: left;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Collection banner",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["collection", "list-collections", "search", "page"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Copy"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_crumb",
+      "label": "Show breadcrumb",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "crumb_label",
+      "label": "Breadcrumb last label",
+      "default": "Shop"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow (leave blank to auto-fill from collection count)"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title (leave blank to use collection title)",
+      "default": "Shop <em>everything.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "subcopy",
+      "label": "Subcopy (leave blank to use collection description)",
+      "default": "From high-shine gloss to icy anklets. Filter, sort, add to bag — the whole Redkisses collection in one place."
+    },
+    {
+      "type": "header",
+      "content": "Rating stat"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show rating stat",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "rating_value",
+      "label": "Rating value",
+      "default": "★ 4.9"
+    },
+    {
+      "type": "text",
+      "id": "rating_label",
+      "label": "Rating label",
+      "default": "from 300+ reviews"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 20,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 20,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection banner",
+      "category": "Redkisses"
+    }
+  ]
+}
+{% endschema %}

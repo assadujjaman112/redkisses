@@ -1,0 +1,30 @@
+{
+  "sections": {
+    "nani_404": {
+      "type": "nani-404",
+      "blocks": {
+        "q1": { "type": "quicklink", "settings": { "label": "Lip Gloss", "count_text": "3", "url": "/collections/lip-gloss" } },
+        "q2": { "type": "quicklink", "settings": { "label": "Jewelry", "count_text": "4", "url": "/collections/jewelry" } },
+        "q3": { "type": "quicklink", "settings": { "label": "Gift Sets", "count_text": "6", "url": "/collections/gift-sets" } },
+        "q4": { "type": "quicklink", "settings": { "label": "About", "url": "/pages/about" } },
+        "q5": { "type": "quicklink", "settings": { "label": "Contact", "url": "/pages/contact" } }
+      },
+      "block_order": ["q1", "q2", "q3", "q4", "q5"],
+      "settings": {
+        "big_text": "404",
+        "eyebrow": "Oops · Page not found",
+        "headline": "This page <em>got ghosted.</em>",
+        "subcopy": "The page you're looking for moved, was renamed, or maybe never existed. Let's get you back to the good stuff.",
+        "primary_cta_label": "Shop the collection",
+        "primary_cta_url": "/collections/all",
+        "secondary_cta_label": "Back to home",
+        "secondary_cta_url": "/",
+        "quicklinks_label": "Or try one of these:",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 96,
+        "padding-block-end": 120
+      }
+    }
+  },
+  "order": ["nani_404"]
+}

@@ -1,0 +1,188 @@
+{% liquid
+  assign s = section.settings
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-values color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-values__inner">
+    <header class="nani-values__head">
+      {% if s.eyebrow != blank %}
+        <div class="nani-values__eyebrow">{{ s.eyebrow }}</div>
+      {% endif %}
+      {% if s.title != blank %}
+        <h2 class="nani-values__title">{{ s.title }}</h2>
+      {% endif %}
+    </header>
+    <div class="nani-values__grid">
+      {% for block in section.blocks %}
+        {% assign num_str = forloop.index | prepend: '0' | slice: -2, 2 %}
+        <article class="nani-values__card" {{ block.shopify_attributes }}>
+          <span class="nani-values__num" aria-hidden="true">{{ block.settings.number | default: num_str }}</span>
+          <h3>{{ block.settings.title }}</h3>
+          <p>{{ block.settings.copy }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .nani-values { position: relative; }
+  .nani-values__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+  }
+  .nani-values__head {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .nani-values__eyebrow {
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+  .nani-values__title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(42px, 4vw, 54px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin: 0;
+    color: var(--color-foreground-heading);
+  }
+  .nani-values__title em { font-style: italic; color: var(--color-primary); }
+
+  .nani-values__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .nani-values__card {
+    padding: 32px 28px;
+    background: var(--color-background-secondary, rgba(13,10,11,0.03));
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    position: relative;
+  }
+  .nani-values__num {
+    font-family: var(--font-heading--family);
+    font-style: italic;
+    font-size: 54px;
+    color: #C9A227;
+    line-height: 1;
+    opacity: 0.4;
+    position: absolute;
+    top: 16px;
+    right: 22px;
+    font-weight: 500;
+  }
+  .nani-values__card h3 {
+    font-family: var(--font-heading--family);
+    font-size: 26px;
+    font-weight: 500;
+    margin: 0 0 10px;
+    line-height: 1.1;
+    color: var(--color-foreground-heading);
+  }
+  .nani-values__card p {
+    font-family: var(--font-body--family);
+    font-size: 13.5px;
+    color: var(--color-foreground);
+    opacity: 0.88;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  @media screen and (max-width: 1100px) {
+    .nani-values__grid { grid-template-columns: 1fr 1fr; }
+    .nani-values__inner { padding-left: 24px; padding-right: 24px; }
+  }
+  @media screen and (max-width: 560px) {
+    .nani-values__grid { grid-template-columns: 1fr; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Values grid",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["page", "index"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "What we stand for"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "Four <em>rules.</em> That's it."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "blocks": [
+    {
+      "type": "value",
+      "name": "Value",
+      "settings": [
+        { "type": "text", "id": "number", "label": "Number (overrides auto)" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Honest pricing" },
+        { "type": "text", "id": "copy", "label": "Copy", "default": "We mark up less. Always. If we can't beat a competitor on price, we don't sell it." }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Values",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "value", "settings": { "title": "Honest pricing", "copy": "We mark up less. Always. If we can't beat a competitor on price, we don't sell it." } },
+        { "type": "value", "settings": { "title": "Made by hand", "copy": "Every piece is checked before it's listed. If it doesn't shine, it's out." } },
+        { "type": "value", "settings": { "title": "Real service", "copy": "Real person replies to every DM, usually within an hour. No chatbots here." } },
+        { "type": "value", "settings": { "title": "Gift-ready packaging", "copy": "Every order is hand-packed in Akron with a note, tissue, and thank-you." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

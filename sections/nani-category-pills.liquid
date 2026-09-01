@@ -1,0 +1,212 @@
+{% liquid
+  assign s = section.settings
+  assign active_handle = ''
+  if template.name == 'collection' and collection != blank
+    assign active_handle = collection.handle
+  endif
+%}
+
+<div class="section-background color-{{ s.color_scheme }}"></div>
+<section class="nani-pills color-{{ s.color_scheme }}"
+  style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+>
+  <div class="nani-pills__inner">
+    {% for block in section.blocks %}
+      {% liquid
+        assign b = block.settings
+        assign pill_handle = b.collection
+        assign is_active = false
+        if pill_handle != blank and pill_handle == active_handle
+          assign is_active = true
+        endif
+        if b.force_active
+          assign is_active = true
+        endif
+
+        assign pill_href = '#'
+        if b.url != blank
+          assign pill_href = b.url
+        elsif b.collection != blank
+          assign pill_href = routes.collections_url | append: '/' | append: b.collection
+        endif
+
+        assign label = b.label
+        assign count_text = b.count_text
+        if count_text != blank
+          assign label = label | append: ' · ' | append: count_text
+        endif
+      %}
+      <a class="nani-pill{% if is_active %} nani-pill--active{% endif %}{% if b.featured %} nani-pill--featured{% endif %}"
+         href="{{ pill_href }}"
+         {{ block.shopify_attributes }}>
+        {% if b.icon != blank %}<span class="nani-pill__icon" aria-hidden="true">{{ b.icon }}</span>{% endif %}
+        <span>{{ label }}</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .nani-pills {
+    position: relative;
+  }
+  .nani-pills__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--pbs) 40px var(--pbe) 40px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .nani-pill {
+    padding: 10px 18px;
+    background: var(--color-background-secondary, rgba(0,0,0,0.04));
+    color: var(--color-foreground-heading);
+    font-family: var(--font-body--family);
+    font-size: 11.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid var(--color-border, rgba(0,0,0,0.1));
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nani-pill:hover {
+    border-color: var(--color-foreground-heading);
+    color: var(--color-foreground-heading);
+  }
+  .nani-pill--active {
+    background: var(--color-foreground-heading);
+    color: var(--color-background);
+    border-color: var(--color-foreground-heading);
+  }
+  .nani-pill--featured {
+    background: #F0E3B8;
+    color: #0D0A0B;
+    border-color: transparent;
+  }
+  .nani-pill--featured:hover {
+    background: #C9A227;
+  }
+  .nani-pill__icon {
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  @media screen and (max-width: 749px) {
+    .nani-pills__inner {
+      padding-left: 24px;
+      padding-right: 24px;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      scrollbar-width: none;
+    }
+    .nani-pills__inner::-webkit-scrollbar { display: none; }
+    .nani-pill {
+      flex-shrink: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Category pills",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["collection", "list-collections", "search", "page", "index"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "pill",
+      "name": "Pill",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Lip Gloss"
+        },
+        {
+          "type": "text",
+          "id": "count_text",
+          "label": "Count text (appended after label, e.g. \"48 items\")"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Link to collection"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Override URL (optional)"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon character (optional, e.g. ★)"
+        },
+        {
+          "type": "checkbox",
+          "id": "featured",
+          "label": "Featured (champagne background)",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "force_active",
+          "label": "Force active styling",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Category pills",
+      "category": "Redkisses",
+      "blocks": [
+        { "type": "pill", "settings": { "label": "All", "count_text": "20", "force_active": true } },
+        { "type": "pill", "settings": { "label": "Lip Gloss", "count_text": "3" } },
+        { "type": "pill", "settings": { "label": "Jewelry", "count_text": "4" } },
+        { "type": "pill", "settings": { "label": "Shades", "count_text": "4" } },
+        { "type": "pill", "settings": { "label": "Sets & Apparel", "count_text": "3" } },
+        { "type": "pill", "settings": { "label": "Gift Sets", "count_text": "6", "icon": "★", "featured": true } }
+      ]
+    }
+  ]
+}
+{% endschema %}
