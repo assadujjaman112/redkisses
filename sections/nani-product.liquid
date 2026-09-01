@@ -2,8 +2,14 @@
   assign s = section.settings
   assign p = product
 
+  comment
+    has_product means "a real Shopify product object is in scope", nothing more.
+    It must NOT depend on availability: product.available is false for a sold-out
+    product, and false == blank in Liquid, so testing it would push every sold-out
+    product into the placeholder/demo branches below.
+  endcomment
   assign has_product = false
-  if p != blank and p.available != blank
+  if p != blank
     assign has_product = true
   endif
 
@@ -26,12 +32,22 @@
 
   assign media_items = p.media
   assign placeholder_thumbs = 'pink gold mauve rose plum' | split: ' '
+
+  comment
+    Single source of truth for purchasability. Only a real product can be sold out;
+    the demo/placeholder branches keep their preview behaviour.
+  endcomment
+  assign is_sold_out = false
+  if has_product and current_variant.available == false
+    assign is_sold_out = true
+  endif
+
   assign inventory_label = ''
-  if current_variant.inventory_management == 'shopify' and current_variant.inventory_policy == 'deny'
+  if is_sold_out
+    assign inventory_label = 'Sold out'
+  elsif current_variant.inventory_management == 'shopify' and current_variant.inventory_policy == 'deny'
     if current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= 5
       assign inventory_label = 'Only ' | append: current_variant.inventory_quantity | append: ' left'
-    elsif current_variant.inventory_quantity == 0
-      assign inventory_label = 'Sold out'
     endif
   endif
 %}
@@ -296,8 +312,8 @@
             <button type="button" class="nani-pdp__qty-btn" data-qty-step="1" aria-label="Increase quantity">+</button>
             <input type="hidden" name="quantity" value="1" data-qty-input>
           </div>
-          <button type="submit" class="nani-pdp__atc" {% if has_product and current_variant.available == false %}disabled{% endif %}>
-            <span>{% if has_product and current_variant.available == false %}Sold out{% else %}Add to bag{% endif %}</span>
+          <button type="submit" class="nani-pdp__atc" {% if is_sold_out %}disabled{% endif %}>
+            <span>{% if is_sold_out %}Sold out{% else %}Add to bag{% endif %}</span>
             <span class="nani-pdp__atc-price" data-atc-price>— {{ price_now | money }}</span>
           </button>
         </div>

@@ -32,7 +32,20 @@
     {%- comment -%} FILTERS SIDEBAR {%- endcomment -%}
     <aside class="nani-col__filters" aria-label="Filters">
       {% if has_filters %}
-        <form class="nani-col__filters-form">
+        <form
+          class="nani-col__filters-form"
+          method="get"
+          action="{{ collection.url }}"
+          data-nani-filters
+        >
+          {%- comment -%}
+            Carry the active sort through a filter change, otherwise submitting this
+            form replaces the whole query string and silently resets the sort order.
+          {%- endcomment -%}
+          {% if collection.sort_by != blank %}
+            <input type="hidden" name="sort_by" value="{{ collection.sort_by }}">
+          {% endif %}
+
           {% for filter in collection.filters %}
             <details class="nani-col__fgroup" open>
               <summary class="nani-col__fhead">
@@ -56,18 +69,28 @@
                   {% when 'price_range' %}
                     <div class="nani-col__range">
                       <input type="number" name="{{ filter.min_value.param_name }}"
-                        value="{{ filter.min_value.value }}"
-                        placeholder="${{ filter.range_min | money_without_currency | round }}">
+                        aria-label="{{ filter.label }} from"
+                        min="0"
+                        max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                        {% if filter.min_value.value %}value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"{% endif %}
+                        placeholder="${{ filter.range_min | money_without_currency | replace: ',', '' }}">
                       <span>—</span>
                       <input type="number" name="{{ filter.max_value.param_name }}"
-                        value="{{ filter.max_value.value }}"
-                        placeholder="${{ filter.range_max | money_without_currency | round }}">
+                        aria-label="{{ filter.label }} to"
+                        min="0"
+                        max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                        {% if filter.max_value.value %}value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"{% endif %}
+                        placeholder="${{ filter.range_max | money_without_currency | replace: ',', '' }}">
                     </div>
                 {% endcase %}
               </div>
             </details>
           {% endfor %}
-          <noscript><button type="submit" class="nani-col__fsubmit">Apply filters</button></noscript>
+          {%- comment -%}
+            Always rendered so filtering works without JavaScript. The inline script
+            below marks the form as auto-submitting, which hides this button.
+          {%- endcomment -%}
+          <button type="submit" class="nani-col__fsubmit">Apply filters</button>
         </form>
       {% else %}
         {%- comment -%} Placeholder filter UI — shown until admin configures filters in Search & Discovery {%- endcomment -%}
@@ -232,6 +255,38 @@
   </div>
 </section>
 
+<script>
+  (function () {
+    const section = document.getElementById('shopify-section-{{ section.id }}');
+    if (!section) return;
+
+    const form = section.querySelector('[data-nani-filters]');
+    if (!form) return;
+
+    // JavaScript is available, so filters apply on change and the fallback
+    // "Apply filters" button is no longer needed.
+    form.classList.add('nani-col__filters-form--auto');
+
+    // An untouched price field would otherwise submit as an empty parameter.
+    const stripEmptyPriceInputs = () => {
+      form.querySelectorAll('input[type="number"]').forEach((input) => {
+        if (input.value === '') input.disabled = true;
+      });
+    };
+
+    let submitting = false;
+
+    form.addEventListener('submit', stripEmptyPriceInputs);
+
+    form.addEventListener('change', () => {
+      if (submitting) return;
+      submitting = true;
+      stripEmptyPriceInputs();
+      form.submit();
+    });
+  })();
+</script>
+
 {% stylesheet %}
   .nani-col {
     position: relative;
@@ -368,6 +423,7 @@
     cursor: pointer;
     width: 100%;
   }
+  .nani-col__filters-form--auto .nani-col__fsubmit { display: none; }
 
   /* MAIN */
   .nani-col__main { min-width: 0; }

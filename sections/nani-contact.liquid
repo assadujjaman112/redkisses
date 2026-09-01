@@ -41,7 +41,7 @@
             {% assign is_link = true %}
             {% if href == blank %}{% assign is_link = false %}{% endif %}
 
-            <{% if is_link %}a href="{{ href }}"{% else %}div{% endif %} class="nani-contact__chan{% if is_link == false %} nani-contact__chan--static{% endif %}" {% if b.type == 'instagram' or b.type == 'url' %}target="_blank" rel="noopener"{% endif %} {{ block.shopify_attributes }}>
+            {%- capture chan_inner -%}
               <span class="nani-contact__chan-ico" aria-hidden="true">
                 {% case b.type %}
                   {% when 'instagram' %}
@@ -65,8 +65,23 @@
                   <p>{{ b.description }}</p>
                 {% endif %}
               </div>
-              {% if is_link %}<span class="nani-contact__chan-arrow" aria-hidden="true">→</span>{% endif %}
-            </{% if is_link %}a{% else %}div{% endif %}>
+            {%- endcapture -%}
+
+            {% if is_link %}
+              <a
+                href="{{ href }}"
+                class="nani-contact__chan"
+                {% if b.type == 'instagram' or b.type == 'url' %}target="_blank" rel="noopener"{% endif %}
+                {{ block.shopify_attributes }}
+              >
+                {{ chan_inner }}
+                <span class="nani-contact__chan-arrow" aria-hidden="true">→</span>
+              </a>
+            {% else %}
+              <div class="nani-contact__chan nani-contact__chan--static" {{ block.shopify_attributes }}>
+                {{ chan_inner }}
+              </div>
+            {% endif %}
           {% endif %}
         {% endfor %}
       </div>
