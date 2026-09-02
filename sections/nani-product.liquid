@@ -55,6 +55,8 @@
 <div class="section-background color-{{ s.color_scheme }}"></div>
 <section class="nani-pdp color-{{ s.color_scheme }}"
   style="--pbs: {{ s.padding-block-start }}px; --pbe: {{ s.padding-block-end }}px;"
+  data-money-format="{{ shop.money_format | strip_html }}"
+  data-currency="{{ localization.country.currency.iso_code }}"
 >
   {% if s.show_crumb %}
     <nav class="nani-pdp__crumb" aria-label="Breadcrumb">
@@ -319,9 +321,21 @@
         </div>
 
         {% if s.show_buy_now and has_product and current_variant.available %}
-          <div class="nani-pdp__buynow-wrap" data-buy-now>
-            {{ content_for_additional_checkout_buttons | default: '' }}
-          </div>
+          {%- comment -%}
+            On a product page the accelerated checkout button must come from the
+            product form via `payment_button`, so it checks out the variant being
+            viewed. `content_for_additional_checkout_buttons` is cart-scoped and
+            checks out the cart instead. Captured first so the wrapper is only
+            emitted when the shop actually has dynamic checkout enabled.
+          {%- endcomment -%}
+          {%- capture buy_now_button -%}
+            {{ form | payment_button }}
+          {%- endcapture -%}
+          {% if buy_now_button != blank %}
+            <div class="nani-pdp__buynow-wrap" data-buy-now>
+              {{ buy_now_button }}
+            </div>
+          {% endif %}
         {% endif %}
 
         <button type="button" class="nani-pdp__wish">
@@ -380,9 +394,10 @@
 </script>
 {% endif %}
 
-<script>
+<script type="module">
+  import { formatMoney } from '@theme/money-formatting';
+
   (function(){
-    const root = document.currentScript.previousElementSibling;
     const section = document.querySelector('.nani-pdp');
     if (!section) return;
 
@@ -426,10 +441,14 @@
     const installmentEl = section.querySelector('[data-installment]');
     const atcBtn = section.querySelector('.nani-pdp__atc');
 
-    function money(cents){
-      if (cents == null) return '';
-      const n = (cents / 100).toFixed(2);
-      return '$' + n;
+    // Mirrors the server-side `money` filter so variant switches keep the shop's
+    // own currency symbol, separators and decimal precision.
+    const moneyFormat = section.dataset.moneyFormat || '{% raw %}{{amount}}{% endraw %}';
+    const currency = section.dataset.currency || 'USD';
+
+    function money(amount){
+      if (amount == null) return '';
+      return formatMoney(amount, moneyFormat, currency);
     }
 
     function selectedOptions(){
