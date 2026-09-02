@@ -135,7 +135,21 @@
                   role="cell"
                   headers="productImage"
                 >
-                  {% if item.image -%}
+                  {%- comment -%}
+                    Demo stand-in photo, used only when the line item's product has no
+                    image of its own. See snippets/nani-demo-media.liquid — remove this
+                    fallback once real product media exists.
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign demo_image = ''
+                    unless item.image
+                      capture demo_media
+                        render 'nani-demo-media', handle: item.product.handle
+                      endcapture
+                      assign demo_image = demo_media | strip | split: '|' | first
+                    endunless
+                  -%}
+                  {% if item.image or demo_image != blank -%}
                     {% liquid
                       assign ratio = 1
                       assign border_opacity = settings.cart_thumbnail_border_opacity | divided_by: 100.0
@@ -146,7 +160,7 @@
                       endif
                       if block_settings.image_ratio == 'portrait'
                         assign ratio = 0.8
-                      elsif block_settings.image_ratio == 'adapt'
+                      elsif block_settings.image_ratio == 'adapt' and item.image
                         assign ratio = item.image.aspect_ratio
                       endif
                     %}
@@ -155,9 +169,22 @@
                       class="cart-items__media-container"
                       style="--ratio:{{ ratio }};"
                     >
-                      {%- liquid
-                        echo item.image | image_url: width: 250 | image_tag: class: 'cart-items__media-image border-style', style: border_override
-                      -%}
+                      {%- if item.image -%}
+                        {%- liquid
+                          echo item.image | image_url: width: 250 | image_tag: class: 'cart-items__media-image border-style', style: border_override
+                        -%}
+                      {%- else -%}
+                        <img
+                          class="cart-items__media-image border-style"
+                          style="{{ border_override }}"
+                          src="{{ demo_image }}?w=250&h=250&fit=crop&q=75&fm=jpg"
+                          alt="{{ item.product.title | escape }}"
+                          width="250"
+                          height="250"
+                          loading="lazy"
+                          decoding="async"
+                        >
+                      {%- endif -%}
                     </a>
                   {%- endif %}
                 </td>

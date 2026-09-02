@@ -55,6 +55,17 @@
       assign ratio = product.featured_media.preview_image.aspect_ratio | default: '1'
   endcase
 
+  # Demo stand-in photo, used only when the product has no media of its own.
+  # See snippets/nani-demo-media.liquid — remove this fallback once real product
+  # media exists.
+  assign demo_image = ''
+  if product != blank and product.media.size == 0
+    capture demo_media
+      render 'nani-demo-media', handle: product.handle
+    endcapture
+    assign demo_image = demo_media | strip | split: '|' | first
+  endif
+
   if block_settings.image_ratio == 'adapt' and block_settings.constrain_to_viewport
     if block_settings.constrain_to_viewport != ''
       assign constrain_to_viewport = true
@@ -172,6 +183,25 @@
         attributes: slideshow_attributes
       %}
     </a>
+  {% elsif product != blank and demo_image != blank %}
+    <a
+      class="contents"
+      ref="cardGalleryLink"
+      href="{{ product.selected_or_first_available_variant.url }}"
+      aria-label="{{- product.title -}}"
+    >
+      <img
+        class="card-gallery__demo-image"
+        src="{{ demo_image }}?w=800&h=800&fit=crop&q=75&fm=jpg"
+        srcset="{{ demo_image }}?w=400&h=400&fit=crop&q=75&fm=jpg 400w, {{ demo_image }}?w=800&h=800&fit=crop&q=75&fm=jpg 800w"
+        sizes="{{ image_sizes }}"
+        alt="{{ product.title | escape }}"
+        width="800"
+        height="800"
+        loading="lazy"
+        decoding="async"
+      >
+    </a>
   {% elsif product != blank and product.media.size == 0 %}
     <product-title class="product-card-gallery__title-placeholder">
       <a
@@ -207,6 +237,15 @@
     overflow: hidden;
     container-type: inline-size; /* Make card-gallery a container */
     container-name: card-gallery-container; /* Optional: name the container */
+  }
+
+  .card-gallery__demo-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--gallery-aspect-ratio, var(--ratio));
+    object-fit: cover;
+    object-position: center center;
+    border-radius: var(--product-corner-radius);
   }
 
   .card-gallery__placeholder svg {
