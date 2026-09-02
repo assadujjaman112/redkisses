@@ -24,7 +24,10 @@
         {% endif %}
       </div>
       {% if s.link_label != blank %}
-        <a class="cat-grid__link" href="{{ s.link_url | default: '#' }}">
+        {%- capture header_href -%}
+          {% render 'nani-collection-url', url: s.link_url %}
+        {%- endcapture -%}
+        <a class="cat-grid__link" href="{{ header_href | strip }}">
           <span>{{ s.link_label }}</span>
           <span aria-hidden="true" class="cat-grid__link-arrow">→</span>
         </a>
@@ -37,9 +40,12 @@
           assign b = block.settings
           assign tile_index = forloop.index | prepend: '0' | slice: -2, 2
         %}
+        {%- capture tile_href -%}
+          {% render 'nani-collection-url', url: b.link %}
+        {%- endcapture -%}
         <a
           class="cat-tile"
-          href="{{ b.link | default: '#' }}"
+          href="{{ tile_href | strip }}"
           style="
             --cat-tile-grad-from: {{ b.gradient_from | default: '#F7E1E4' }};
             --cat-tile-grad-to: {{ b.gradient_to | default: '#EFB7BE' }};

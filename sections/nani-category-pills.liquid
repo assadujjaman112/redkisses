@@ -14,7 +14,13 @@
     {% for block in section.blocks %}
       {% liquid
         assign b = block.settings
-        assign pill_handle = b.collection
+
+        comment
+          b.collection is a `collection`-type setting, so it is a collection object,
+          not a handle string. Comparing or concatenating the object itself never
+          matches a handle and builds a broken URL.
+        endcomment
+        assign pill_handle = b.collection.handle
         assign is_active = false
         if pill_handle != blank and pill_handle == active_handle
           assign is_active = true
@@ -23,21 +29,17 @@
           assign is_active = true
         endif
 
-        assign pill_href = '#'
-        if b.url != blank
-          assign pill_href = b.url
-        elsif b.collection != blank
-          assign pill_href = routes.collections_url | append: '/' | append: b.collection
-        endif
-
         assign label = b.label
         assign count_text = b.count_text
         if count_text != blank
           assign label = label | append: ' · ' | append: count_text
         endif
       %}
+      {%- capture pill_href -%}
+        {% render 'nani-collection-url', collection: b.collection, url: b.url %}
+      {%- endcapture -%}
       <a class="nani-pill{% if is_active %} nani-pill--active{% endif %}{% if b.featured %} nani-pill--featured{% endif %}"
-         href="{{ pill_href }}"
+         href="{{ pill_href | strip }}"
          {{ block.shopify_attributes }}>
         {% if b.icon != blank %}<span class="nani-pill__icon" aria-hidden="true">{{ b.icon }}</span>{% endif %}
         <span>{{ label }}</span>

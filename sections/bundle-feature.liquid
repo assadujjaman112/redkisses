@@ -74,13 +74,19 @@
       {% if s.primary_cta_label != blank or s.secondary_cta_label != blank %}
         <div class="bundle-feat__ctas">
           {% if s.primary_cta_label != blank %}
-            <a class="bundle-feat__btn bundle-feat__btn--gold" href="{{ s.primary_cta_link | default: '#' }}">
+            {%- capture primary_href -%}
+              {% render 'nani-collection-url', url: s.primary_cta_link %}
+            {%- endcapture -%}
+            <a class="bundle-feat__btn bundle-feat__btn--gold" href="{{ primary_href | strip }}">
               <span>{{ s.primary_cta_label }}</span>
               <span aria-hidden="true">→</span>
             </a>
           {% endif %}
           {% if s.secondary_cta_label != blank %}
-            <a class="bundle-feat__btn bundle-feat__btn--ghost" href="{{ s.secondary_cta_link | default: '#' }}">
+            {%- capture secondary_href -%}
+              {% render 'nani-collection-url', url: s.secondary_cta_link %}
+            {%- endcapture -%}
+            <a class="bundle-feat__btn bundle-feat__btn--ghost" href="{{ secondary_href | strip }}">
               {{ s.secondary_cta_label }}
             </a>
           {% endif %}

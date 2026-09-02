@@ -37,7 +37,10 @@
       {% if s.primary_cta_label != blank or s.secondary_cta_label != blank %}
         <div class="hero-split__ctas">
           {% if s.primary_cta_label != blank %}
-            <a class="hero-split__btn hero-split__btn--primary" href="{{ s.primary_cta_link | default: '#' }}">
+            {%- capture primary_href -%}
+              {% render 'nani-collection-url', url: s.primary_cta_link %}
+            {%- endcapture -%}
+            <a class="hero-split__btn hero-split__btn--primary" href="{{ primary_href | strip }}">
               <span>{{ s.primary_cta_label }}</span>
               <svg class="hero-split__btn-arrow" viewBox="0 0 14 8" fill="none" aria-hidden="true">
                 <path d="M1 4h12M9 1l4 3-4 3" stroke="currentColor" stroke-width="1.2" fill="none"/>
@@ -45,7 +48,10 @@
             </a>
           {% endif %}
           {% if s.secondary_cta_label != blank %}
-            <a class="hero-split__btn hero-split__btn--ghost" href="{{ s.secondary_cta_link | default: '#' }}">
+            {%- capture secondary_href -%}
+              {% render 'nani-collection-url', url: s.secondary_cta_link %}
+            {%- endcapture -%}
+            <a class="hero-split__btn hero-split__btn--ghost" href="{{ secondary_href | strip }}">
               {{ s.secondary_cta_label }}
             </a>
           {% endif %}
