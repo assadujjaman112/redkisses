@@ -1,0 +1,78 @@
+{% doc %}
+  Resolves a collection link to a URL that actually exists on the storefront.
+
+  Demo content and theme-editor settings in this theme point at collection handles
+  (gift-sets, lip-gloss, jewelry, ...) that a store may not have created yet.
+  Emitting those handles straight into an href produces a hard 404, so any handle
+  that doesn't resolve to a real collection degrades to the fallback instead.
+  `/collections/all` is a virtual collection Shopify always serves, so it is safe
+  as a default. Once the merchant creates the real collection, the original link
+  starts resolving again on its own with no theme change.
+
+  Non-collection URLs (pages, policies, external links) are passed through
+  untouched — this snippet only validates /collections/ links.
+
+  Outputs the URL. Capture it to use as an href.
+
+  @param {object} [collection] - A collection object from a `collection`-type setting
+  @param {string} [url] - A `url`-type setting value, e.g. "/collections/gift-sets"
+  @param {string} [fallback] - URL used when nothing resolves. Defaults to /collections/all
+
+  @example
+  {% capture href %}
+    {% render 'nani-collection-url', collection: block.settings.collection, url: block.settings.url %}
+  {% endcapture %}
+  <a href="{{ href | strip }}">Shop</a>
+{% enddoc %}
+
+{%- liquid
+  assign safe_fallback = fallback
+  if safe_fallback == blank
+    assign safe_fallback = routes.collections_url | append: '/all'
+  endif
+
+  assign resolved = ''
+
+  comment
+    A `collection`-type setting hands back a collection object. If it is populated
+    the collection exists by definition, so its own .url is always safe.
+  endcomment
+  if collection != blank and collection.handle != blank
+    assign resolved = collection.url
+
+  elsif url != blank
+    if url contains '/collections/'
+      comment
+        Covers both "/collections/<handle>" and "shopify://collections/<handle>",
+        and tolerates a trailing query string or anchor.
+      endcomment
+      assign handle = url | split: '/collections/' | last | split: '?' | first | split: '#' | first | split: '/' | first
+
+      comment
+        Shopify normally resolves a `shopify://` setting to a real path before it
+        reaches Liquid. If one ever slips through unresolved it would 404 as a
+        relative href, so rebuild it from routes instead of echoing it back.
+      endcomment
+      assign safe_url = url
+      if url contains 'shopify://'
+        assign safe_url = routes.collections_url | append: '/' | append: handle
+      endif
+
+      if handle == 'all'
+        assign resolved = safe_url
+      elsif collections[handle].handle != blank
+        assign resolved = safe_url
+      endif
+    else
+      comment
+        Not a collection link (page, policy, external) — leave it alone.
+      endcomment
+      assign resolved = url
+    endif
+  endif
+
+  if resolved == blank
+    assign resolved = safe_fallback
+  endif
+-%}
+{{- resolved -}}
