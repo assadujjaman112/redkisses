@@ -2,7 +2,19 @@
   assign s = section.settings
 %}
 
-<div class="section-background color-{{ s.color_scheme }}"></div>
+{%- comment -%}
+  No `.section-background` element here on purpose. Horizon only contains that
+  element by giving the `.shopify-section` wrapper `position: relative`, and its
+  rule for that (`.shopify-section:has(.section)`) requires a `.section` element
+  inside the section. This footer renders `.nani-footer` instead, so the
+  background div had no positioned ancestor: it sized itself against the initial
+  containing block and painted the scheme's near-black over the whole first
+  viewport of every page, at `z-index: -2`. It was invisible on pages whose
+  sections paint their own opaque backgrounds, but showed through on any page
+  built from Horizon `.section` elements (base.css forces those transparent) —
+  the cart page most visibly. `.nani-footer` already carries the color scheme
+  class, so it paints its own background and the extra element was redundant.
+{%- endcomment -%}
 <footer class="nani-footer color-{{ s.color_scheme }}">
   <div class="nani-footer__inner">
 
