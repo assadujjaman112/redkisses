@@ -4,8 +4,17 @@
   if col == blank
     assign col = collections.all
   endif
-  assign products = col.products | slice: 0, s.max_products
+  comment
+    collection.products is a lazy drop, not an Array. Passing it through `slice`
+    made Liquid fall back to string slicing: the drop was stringified and cut to
+    a 4-character string, so `for` iterated it once and rendered a single empty
+    "Product name" card. Cap the count here and let the loop do the limiting.
+  endcomment
+  assign products = col.products
   assign product_count = products.size
+  if product_count > s.max_products
+    assign product_count = s.max_products
+  endif
   assign placeholder_count = 0
   if product_count < s.max_products
     assign placeholder_count = s.max_products | minus: product_count
@@ -40,7 +49,7 @@
     </header>
 
     <div class="featured-products__grid">
-      {% for p in products %}
+      {% for p in products limit: s.max_products %}
         {% render 'nani-product-card',
           product: p,
           show_rating: s.show_rating,
