@@ -43,6 +43,16 @@
   endif
 %}
 
+{%- comment -%}
+  Demo stand-in photo, used only when the product has no image of its own.
+  See snippets/nani-demo-media.liquid — remove both once real product media exists.
+{%- endcomment -%}
+{% assign demo_image = '' %}
+{% if p != blank and p.featured_image == blank %}
+  {% capture demo_media %}{% render 'nani-demo-media', handle: p.handle %}{% endcapture %}
+  {% assign demo_image = demo_media | strip | split: '|' | first %}
+{% endif %}
+
 {{ 'nani-product-card.css' | asset_url | stylesheet_tag }}
 
 <article class="nani-card">
@@ -55,6 +65,19 @@
           sizes: '(min-width: 1100px) 22vw, (min-width: 750px) 45vw, 80vw',
           loading: 'lazy',
           alt: p.featured_image.alt | default: p.title }}
+      {% elsif demo_image != blank %}
+        <img
+          class="nani-card__image"
+          src="{{ demo_image }}?w=800&h=800&fit=crop&q=75&fm=jpg"
+          srcset="{{ demo_image }}?w=480&h=480&fit=crop&q=75&fm=jpg 480w,
+                  {{ demo_image }}?w=800&h=800&fit=crop&q=75&fm=jpg 800w"
+          sizes="(min-width: 1100px) 22vw, (min-width: 750px) 45vw, 80vw"
+          alt="{{ p.title | escape }}"
+          loading="lazy"
+          decoding="async"
+          width="800"
+          height="800"
+        >
       {% else %}
         <div class="nani-card__placeholder {{ placeholder_class }}" aria-hidden="true"></div>
       {% endif %}

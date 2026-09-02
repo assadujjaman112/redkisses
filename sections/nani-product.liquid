@@ -75,6 +75,18 @@
   <div class="nani-pdp__grid">
     {%- comment -%} GALLERY {%- endcomment -%}
     <div class="nani-pdp__gallery">
+      {%- comment -%}
+        Demo stand-in gallery, used only when the product has no media of its own.
+        See snippets/nani-demo-media.liquid — remove both once real media exists.
+        Thumbs and main slots share one list so their data-index values stay aligned
+        for the gallery script.
+      {%- endcomment -%}
+      {% assign demo_urls = '' | split: '|' %}
+      {% if has_product and p.media.size == 0 %}
+        {% capture demo_media %}{% render 'nani-demo-media', handle: p.handle %}{% endcapture %}
+        {% assign demo_urls = demo_media | strip | split: '|' %}
+      {% endif %}
+
       <div class="nani-pdp__thumbs" role="tablist" aria-label="Product gallery thumbnails">
         {% if has_product and p.media.size > 0 %}
           {% for media in p.media limit: 6 %}
@@ -92,6 +104,24 @@
               {% if media.media_type == 'video' or media.media_type == 'external_video' %}
                 <span class="nani-pdp__thumb-play" aria-hidden="true">▶</span>
               {% endif %}
+            </button>
+          {% endfor %}
+        {% elsif demo_urls.size > 0 %}
+          {% for url in demo_urls %}
+            <button class="nani-pdp__thumb{% if forloop.first %} nani-pdp__thumb--on{% endif %}"
+              type="button"
+              role="tab"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              data-index="{{ forloop.index0 }}">
+              <img
+                class="nani-pdp__thumb-img"
+                src="{{ url }}?w=176&h=176&fit=crop&q=75&fm=jpg"
+                alt="{{ p.title | escape }}"
+                loading="lazy"
+                decoding="async"
+                width="176"
+                height="176"
+              >
             </button>
           {% endfor %}
         {% else %}
@@ -122,6 +152,24 @@
                 sizes: '(min-width: 1100px) 50vw, 90vw',
                 class: 'nani-pdp__main-image',
                 alt: media.alt | default: p.title }}
+            </div>
+          {% endfor %}
+        {% elsif demo_urls.size > 0 %}
+          {% for url in demo_urls %}
+            <div class="nani-pdp__main-slot{% if forloop.first %} nani-pdp__main-slot--on{% endif %}"
+              data-index="{{ forloop.index0 }}">
+              <img
+                class="nani-pdp__main-image"
+                src="{{ url }}?w=1200&h=1200&fit=crop&q=80&fm=jpg"
+                srcset="{{ url }}?w=720&h=720&fit=crop&q=80&fm=jpg 720w,
+                        {{ url }}?w=1200&h=1200&fit=crop&q=80&fm=jpg 1200w"
+                sizes="(min-width: 1100px) 50vw, 90vw"
+                alt="{{ p.title | escape }}"
+                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                decoding="async"
+                width="1200"
+                height="1200"
+              >
             </div>
           {% endfor %}
         {% else %}

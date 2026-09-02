@@ -1,0 +1,78 @@
+{% doc %}
+  DEMO SCAFFOLDING — maps a product handle to stand-in photography.
+
+  The Redkisses demo store is on a Shopify trial plan, and Shopify blocks all
+  product media uploads on trial accounts ("The file is not supported on trial
+  accounts"). So the demo products have no images of their own. This snippet
+  supplies stand-in photos so the storefront can be demoed with real imagery.
+
+  It is a FALLBACK ONLY: every caller checks the product's own media first, so
+  the moment the store is upgraded and real images are uploaded, these stop
+  being used with no theme change. Once that happens this snippet and its two
+  call sites can be deleted outright.
+
+  Images are free Unsplash photos (images.unsplash.com), loaded remotely — the
+  same approach the category-grid and instagram-grid sections already use for
+  their demo imagery. Unsplash+ premium photos were deliberately excluded.
+
+  Outputs a "|"-delimited list of base image URLs, or nothing if the handle is
+  unknown. Callers append their own sizing params.
+
+  @param {string} handle - The product handle to look up
+
+  @example
+  {% capture demo %}{% render 'nani-demo-media', handle: product.handle %}{% endcapture %}
+  {% assign demo_urls = demo | strip | split: '|' %}
+{% enddoc %}
+
+{%- liquid
+  assign u = ''
+
+  case handle
+    when 'signature-lip-gloss-ruby-red'
+      assign u = 'https://images.unsplash.com/photo-1549153052-247abe00d6d9|https://images.unsplash.com/photo-1586811032606-f8fd4a8f80dd'
+    when 'signature-lip-gloss-hot-pink'
+      assign u = 'https://images.unsplash.com/photo-1635263282145-253319c75fd4|https://images.unsplash.com/photo-1631214524115-9942bf927d4a'
+    when 'signature-lip-gloss-nude-kiss'
+      assign u = 'https://images.unsplash.com/photo-1616606694598-134840770529|https://images.unsplash.com/photo-1631214499500-2e34edcaccfe'
+
+    when 'gold-crystal-anklet'
+      assign u = 'https://images.unsplash.com/photo-1744722091259-ed1cf11ac97f|https://images.unsplash.com/photo-1786052337924-ddf5fa9048bf'
+    when 'beaded-charm-anklet'
+      assign u = 'https://images.unsplash.com/photo-1778000000834-cd4896383602|https://images.unsplash.com/photo-1758995115643-1e8348bfde39'
+    when 'rose-gold-hoop-earrings'
+      assign u = 'https://images.unsplash.com/photo-1708220040824-b273dd0a17cc|https://images.unsplash.com/photo-1665194132409-36fc84b2fe87'
+    when 'layered-chain-necklace'
+      assign u = 'https://images.unsplash.com/photo-1778000001290-0b67eeb2fbc2|https://images.unsplash.com/photo-1614113753022-06b2575e4f4c'
+
+    when 'cat-eye-sunglasses-black'
+      assign u = 'https://images.unsplash.com/photo-1584036553516-bf83210aa16c|https://images.unsplash.com/photo-1608539733292-190446b22b83'
+    when 'oversized-sunglasses-tortoise'
+      assign u = 'https://images.unsplash.com/photo-1577803645773-f96470509666|https://images.unsplash.com/photo-1572635196237-14b3f281503f'
+    when 'retro-square-sunglasses-rose'
+      assign u = 'https://images.unsplash.com/photo-1508296695146-257a814070b4|https://images.unsplash.com/photo-1653038282189-803202722a05'
+    when 'slim-oval-sunglasses-gold'
+      assign u = 'https://images.unsplash.com/photo-1511499767150-a48a237f0083|https://images.unsplash.com/photo-1610136649349-0f646f318053'
+
+    when 'redkisses-logo-tee'
+      assign u = 'https://images.unsplash.com/photo-1581655353564-df123a1eb820|https://images.unsplash.com/photo-1618677603286-0ec56cb6e1b5'
+    when 'lounge-set-blush'
+      assign u = 'https://images.unsplash.com/photo-1759229874709-a8d0de083b91|https://images.unsplash.com/photo-1770294759055-2fddfc606537'
+    when 'satin-robe-rose'
+      assign u = 'https://images.unsplash.com/photo-1770294759006-356f25f4f156|https://images.unsplash.com/photo-1750064139819-da3bf362e7b3'
+
+    when 'mini-gloss-stocking-set'
+      assign u = 'https://images.unsplash.com/photo-1643168343279-3f93c2e592ef|https://images.unsplash.com/photo-1512101147095-d05249ea9a04'
+    when 'gloss-trio-gift-box'
+      assign u = 'https://images.unsplash.com/photo-1598452963314-b09f397a5c48|https://images.unsplash.com/photo-1513201099705-a9746e1e201f'
+    when 'anklet-and-gloss-duo'
+      assign u = 'https://images.unsplash.com/photo-1680789527162-a2e5b9b94874|https://images.unsplash.com/photo-1617118601021-4992c028fe5d'
+    when 'date-night-kit'
+      assign u = 'https://images.unsplash.com/photo-1586359526010-3b87482012ef|https://images.unsplash.com/photo-1671150590216-f138600130ce'
+    when 'bridesmaid-gift-box'
+      assign u = 'https://images.unsplash.com/photo-1598528738936-c50861cc75a9|https://images.unsplash.com/photo-1674620213535-9b2a2553ef40'
+    when 'deluxe-beauty-gift-set'
+      assign u = 'https://images.unsplash.com/photo-1512207724313-a4e675ec79ab|https://images.unsplash.com/photo-1577217534079-41d6bb68ac50'
+  endcase
+-%}
+{{- u -}}
